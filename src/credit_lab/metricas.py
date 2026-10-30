@@ -2,6 +2,27 @@
 
 import numpy as np
 import pandas as pd
+from scipy.stats import ks_2samp
+from sklearn.metrics import brier_score_loss, roc_auc_score
+
+
+def discriminacion(y, score) -> dict:
+    """AUC, Gini y KS. `score` debe crecer con el riesgo (PD, tasa, etc.)."""
+    y, score = np.asarray(y), np.asarray(score, dtype=float)
+    auc = roc_auc_score(y, score)
+    ks = ks_2samp(score[y == 1], score[y == 0]).statistic
+    return {"auc": auc, "gini": 2 * auc - 1, "ks": float(ks)}
+
+
+def resumen(y, pd_estimada) -> dict:
+    """Discriminación + calibración para una PD (probabilidad entre 0 y 1)."""
+    y = np.asarray(y)
+    return {
+        **discriminacion(y, pd_estimada),
+        "brier": brier_score_loss(y, pd_estimada),
+        "pd_media": float(np.mean(pd_estimada)),
+        "tasa_real": float(y.mean()),
+    }
 
 
 def psi(esperado: pd.Series, actual: pd.Series, n_tramos: int = 10) -> float:

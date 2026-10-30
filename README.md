@@ -32,7 +32,7 @@ flowchart LR
 | 1 ✅ | Entorno + datos + definir el target | Datos descargados, decisión 001 |
 | 2 ✅ | EDA y fuga de información (leakage) | Notebook con mis conclusiones, decisión 002 |
 | 3 ✅ | Features: WoE, IV, partición fuera de tiempo | Pipeline de features + tests, decisión 003 |
-| 4 | Línea base: regresión logística / scorecard | Modelo 1 + métricas |
+| 4 ✅ | Línea base: regresión logística / scorecard | Modelo 1 + métricas, decisión 004 |
 | 5 | Random Forest, XGBoost, LightGBM, red neuronal | Modelos 2–5 con la misma validación |
 | 6 | Comparación: AUC, KS, Gini, Brier, PSI, utilidad por punto de corte | Elección del campeón (decisión mía) |
 | 7 | Explicabilidad (SHAP) y política de corte | Reporte de drivers |
