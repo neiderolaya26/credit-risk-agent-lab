@@ -1,0 +1,17 @@
+# Datos: el crudo y los intermedios no se suben (pesan > 100 MB y traen campos sensibles).
+# Sí se suben data/sample/ y data/processed/ ya anonimizados (ver política de datos del portafolio).
+data/raw/
+data/interim/
+*.zip
+*.gz
+
+# Secretos
+.env
+kaggle.json
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.pytest_cache/
