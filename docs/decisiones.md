@@ -15,3 +15,28 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
   - **Validación:** entrenar con 2012–2014 y validar fuera de tiempo con 2015.
 - **Alternativas consideradas:** todos los préstamos terminados de 2007–2018 (descartada por el sesgo de censura); incluir los de 60 meses (otro perfil de riesgo: 25% de malos y solo ~55 mil maduros); empezar en 2007 (sin `mort_acc` ni `bc_util` antes de 2012); contar la mora de 31–120 días como malo (casi no existe en los años maduros).
 - **Por qué (en mis palabras):** solo 36 meses ya que se evalúan los madurados; 2012–2015 para no tener un training tan malo; `int_rate` como benchmark para medir el modelo challenger.
+
+---
+
+## 002 — Selección de variables por familia de modelo
+
+- **Fecha:** 2026-10-30
+- **Contexto:** con el entrenamiento 2012–2014, la mejor variable propia (FICO) tiene un IV de 0,13, frente a 0,29–0,31 del score de Lending Club. La mora previa casi no predice (IV ≈ 0) por el sesgo de selección de la aprobación. Ver `notebooks/02_eda_variables.ipynb`.
+- **Decisión:**
+  - **Regresión logística:** 16 variables limpias con IV ≥ 0,02.
+  - **Árboles (RF, XGBoost, LightGBM) y red neuronal:** 31 variables limpias, incluidas las de IV bajo, porque pueden servir en interacciones.
+  - **Excluidas:** `installment` (se calcula con `int_rate`), `funded_amnt`, `fico_range_low/high` (se usa `fico_medio`), `initial_list_status`, `application_type` (constante) y **`verification_status`**.
+  - Listas en `src/credit_lab/features.py`.
+- **Alternativas consideradas:** A) solo IV ≥ 0,02 para todos los modelos; B) todas las variables limpias para todos los modelos.
+- **Por qué (en mis palabras):** C para poder evaluar todos los modelos, y `verification_status` la excluyo porque es política de LC.
+
+---
+
+## 003 — Inicio del entrenamiento en septiembre de 2012
+
+- **Fecha:** 2026-10-30
+- **Contexto:** 7 variables de buró tenían un PSI de ~0,84 entre entrenamiento y 2015. Sin contar los nulos, el PSI era < 0,01: los clientes no cambiaron. Lending Club empezó a reportar esas variables entre marzo y septiembre de 2012, así que de ene a ago-2012 vienen vacías, y en 2015 nunca hay nulos. Ver `notebooks/03_pipeline_estabilidad.ipynb`.
+- **Decisión:** el entrenamiento empieza en **sep-2012**. Se excluyen 23.209 préstamos (7,6% del entrenamiento original; 14,1% de malos). Con la población final, el PSI máximo de todas las variables es 0,036. Queda: entrenamiento sep-2012 a 2014 con 283.253 préstamos y 13,2% de malos; OOT 2015 con 283.026 préstamos y 14,9% de malos.
+- **Consecuencia:** al recalcular el IV con la nueva población, se aplica la regla de la decisión 002 (IV ≥ 0,02) a la lista de la logística. Salen `revol_util` (0,019) e `inq_last_6mths` (0,0198) y entran `antig_credito_meses` (0,0205) y `num_actv_rev_tl` (0,0213). Todas siguen en los modelos de árboles.
+- **Alternativas consideradas:** B) dejar esos préstamos con los nulos (los árboles podrían aprender un patrón "nulo = 2012" que no se repite); C) sacar las 7 variables (se pierden variables con buen IV).
+- **Por qué (en mis palabras):** A, para tener una población homogénea sin nulos artificiales.
