@@ -1,0 +1,393 @@
+"""Agente de crédito 100% IA en LangGraph (decisión 016).
+
+    solicitud ─┬─ especialista de riesgo      (Claude + PD y razones SHAP)
+               ├─ especialista de economía    (Claude + prepago y pérdida)
+               └─ especialista de cupo/pricing (Claude + motor, estrés y simulación)
+                      ↓ (en paralelo)
+               comité (Claude: decide y redacta el memo)
+                      ↓
+               reglas duras (código: cuota ≤ 20% del ingreso y ROI esperado ≥ 0%)
+                      ↓
+               auditor (Claude: verifica números y reglas) ── observaciones → comité
+                      ↓
+               decisión final
+
+Los números salen siempre de las herramientas (código sobre los modelos del
+repo); los LLM interpretan, deciden y redactan. Si el auditor no aprueba tras
+INTENTOS rondas, la decisión final es rechazar (conservador).
+
+Uso:
+    python -m credit_lab.agente               # un préstamo de jul–dic 2015
+    python -m credit_lab.agente --semilla 7   # otro préstamo
+Requiere ANTHROPIC_API_KEY (variable de entorno o archivo .env, que no se sube a git).
+"""
+
+import argparse
+import copy
+import json
+import math
+import operator
+import os
+from typing import Annotated, Literal, TypedDict
+
+import numpy as np
+import pandas as pd
+from pydantic import BaseModel
+
+from credit_lab.motor import CUOTA_MAX, ROI_EQUILIBRIO, Motor, cuota
+from credit_lab.poblacion import RAIZ
+
+MODELO = "claude-sonnet-5-5"
+BETAS = ["server-side-fallback-2026-07-01"]
+INTENTOS = 2
+MAX_TURNOS = 6
+MONTO_MAX = 35_000
+TASA_MIN, TASA_MAX = 5.0, 30.0
+
+CAMPOS_SOLICITUD = {
+    "loan_amnt": "monto pedido (USD)", "int_rate": "tasa ofrecida por Lending Club (%)",
+    "annual_inc": "ingreso anual (USD)", "purpose": "propósito", "dti": "deuda / ingreso (%)",
+    "fico_range_low": "FICO", "emp_length": "antigüedad laboral", "home_ownership": "vivienda",
+    "revol_util": "uso de tarjetas (%)", "inq_last_6mths": "consultas últimos 6 meses",
+}
+
+
+# ---------- utilidades ----------
+
+def cargar_env(ruta=RAIZ / ".env") -> None:
+    """Lee KEY=VALOR de .env sin sobrescribir variables ya definidas. Nunca imprime valores."""
+    if not ruta.exists():
+        return
+    for linea in ruta.read_text(encoding="utf-8").splitlines():
+        if "=" in linea and not linea.lstrip().startswith("#"):
+            clave, valor = linea.split("=", 1)
+            os.environ.setdefault(clave.strip(), valor.strip().strip('"').strip("'"))
+
+
+def limpio(x):
+    """Convierte tipos de numpy/pandas a JSON (NaN → None)."""
+    if isinstance(x, dict):
+        return {k: limpio(v) for k, v in x.items()}
+    if isinstance(x, (list, tuple)):
+        return [limpio(v) for v in x]
+    if isinstance(x, (np.floating, float)):
+        return None if math.isnan(float(x)) else round(float(x), 6)
+    if isinstance(x, (np.integer,)):
+        return int(x)
+    if isinstance(x, (np.bool_,)):
+        return bool(x)
+    if x is pd.NA or x is pd.NaT:
+        return None
+    return x
+
+
+def resumen_solicitud(fila: pd.DataFrame) -> dict:
+    f = fila.iloc[0]
+    return {nombre: limpio(f.get(campo)) for campo, nombre in CAMPOS_SOLICITUD.items()}
+
+
+# ---------- herramientas: código puro sobre los modelos ----------
+
+class Herramientas:
+    def __init__(self, motor: Motor | None = None):
+        from credit_lab.explicar import explicar_prestamo
+
+        self.motor = motor or Motor()
+        self.motor_estres = copy.copy(self.motor)
+        self.motor_estres.estres = True
+        self._explicar = explicar_prestamo
+
+    def riesgo(self, sol: pd.DataFrame) -> dict:
+        r = self._explicar(self.motor.campeon, sol)
+        return limpio({"pd": r["pd"], "pd_promedio_cartera": r["pd_base"],
+                       "razones": [{k: x[k] for k in ("descripcion", "valor", "efecto", "contribucion_logit")}
+                                   for x in r["razones"]]})
+
+    def economia(self, sol: pd.DataFrame) -> dict:
+        ev = self.motor.evaluar(sol).iloc[0]
+        p = self.motor.supervivencia.distribucion(sol)[0]
+        return limpio({"r_bueno": ev["r_bueno"], "r_malo": ev["r_malo"], "pd": ev["pd"],
+                       "roi_esperado": ev["roi_esperado"], "utilidad_esperada": ev["utilidad_esperada"],
+                       "prob_prepago_antes_mes_30": p[:29].sum(),
+                       "mes_esperado_de_pago": float((np.arange(1, 37) * p).sum())})
+
+    def cupo_pricing(self, sol: pd.DataFrame) -> dict:
+        base, estres = self.motor.recomendar(sol), self.motor_estres.recomendar(sol)
+        return limpio(base | {"tasa_equilibrio_estres": estres["tasa_equilibrio"],
+                              "tasa_sugerida_estres": estres["tasa_sugerida"],
+                              "regla_cuota_max": CUOTA_MAX})
+
+    def simular_oferta(self, sol: pd.DataFrame, monto: float, tasa: float) -> dict:
+        s = sol.copy()
+        s["loan_amnt"], s["int_rate"] = float(monto), float(tasa)
+        ev = self.motor.evaluar(s).iloc[0]
+        return limpio({"monto": monto, "tasa": tasa, "pd": ev["pd"], "roi_esperado": ev["roi_esperado"],
+                       "utilidad_esperada": ev["utilidad_esperada"], "cuota_ingreso": ev["cuota_ingreso"],
+                       "cumple_capacidad": ev["cumple_capacidad"], "tasa_mercado": ev["tasa_mercado"],
+                       "fuera_de_rango": ev["fuera_de_rango"]})
+
+
+SIN_ARGUMENTOS = {"type": "object", "properties": {}, "required": [], "additionalProperties": False}
+ESQUEMA_SIMULAR = {
+    "type": "object",
+    "properties": {"monto": {"type": "number", "description": "Monto en USD (1.000 a 35.000)"},
+                   "tasa": {"type": "number", "description": "Tasa anual en % (5 a 30)"}},
+    "required": ["monto", "tasa"], "additionalProperties": False,
+}
+SIMULAR = ("simular_oferta", "Calcula PD, ROI esperado, utilidad, cuota/ingreso y bandera fuera de rango "
+           "para un monto y una tasa dados.", ESQUEMA_SIMULAR)
+
+ESPECIALISTAS = {
+    "riesgo": {
+        "sistema": "Eres el especialista de riesgo de crédito. Usa la herramienta para obtener la PD del "
+                   "modelo campeón (LightGBM recalibrado) y sus razones SHAP. Explica qué impulsa el riesgo.",
+        "herramientas": [("consultar_riesgo", "PD del cliente y las 5 razones que más la mueven.", SIN_ARGUMENTOS)],
+    },
+    "economia": {
+        "sistema": "Eres el especialista de economía del préstamo. Usa las herramientas para obtener el "
+                   "rendimiento si sale bueno (prepago por supervivencia), el rendimiento si sale malo "
+                   "(pérdida económica) y el ROI esperado. Explica qué tan rentable es a la tasa ofrecida.",
+        "herramientas": [("consultar_economia", "Rendimientos, prepago esperado y ROI a la tasa ofrecida.", SIN_ARGUMENTOS),
+                         SIMULAR],
+    },
+    "cupo": {
+        "sistema": "Eres el especialista de cupo y pricing. Usa las herramientas para obtener el monto máximo, "
+                   "la tasa de equilibrio (ROI ≥ 0%), la tasa sugerida (ROI ≥ 4%), el escenario de estrés "
+                   "(la PD sube 1 pt por punto de sobreprecio) y la bandera fuera de rango (> 1 pt de la tasa "
+                   "de mercado: sin evidencia). Puedes simular ofertas alternativas. Propón la mejor oferta.",
+        "herramientas": [("consultar_cupo_pricing", "Monto máximo, tasas de equilibrio y sugerida, estrés y "
+                          "capacidad de pago.", SIN_ARGUMENTOS), SIMULAR],
+    },
+}
+INSTRUCCION_ESPECIALISTA = (
+    "Responde en español, en máximo 150 palabras: hallazgos clave y una señal final "
+    "(favorable / neutral / desfavorable). Cita solo números que devolvieron tus herramientas; "
+    "no inventes datos."
+)
+
+
+# ---------- salidas estructuradas ----------
+
+class Decision(BaseModel):
+    decision: Literal["aprobar", "rechazar", "contraoferta"]
+    monto: float
+    tasa: float
+    razones: list[str]
+    memo: str
+
+
+class Auditoria(BaseModel):
+    aprobado: bool
+    hallazgos: list[str]
+
+
+SISTEMA_COMITE = f"""Eres el comité de crédito. Decides con base en el análisis de tres especialistas y los
+resultados de sus herramientas. Política del banco:
+- Aprobar si, al monto y tasa ofrecidos, el ROI esperado es ≥ 4% y la cuota es ≤ {CUOTA_MAX:.0%} del ingreso.
+- Contraoferta si con otro monto (≤ monto máximo) u otra tasa (≥ tasa sugerida, entre {TASA_MIN:g}% y {TASA_MAX:g}%)
+  sí se cumple; usa los números de las herramientas.
+- Rechazar si ninguna oferta razonable lleva el ROI esperado a ≥ 0% o no hay capacidad de pago.
+- Considera el escenario de estrés y la bandera fuera de rango como señales de cautela.
+- Si rechazas, monto = 0 y tasa = 0.
+El memo va en español, en markdown, con secciones: Resumen, Decisión, Riesgo, Economía, Cupo y precio, Alertas.
+Cita solo números que aparecen en los resultados de las herramientas."""
+
+SISTEMA_AUDITOR = f"""Eres el auditor de crédito: reemplazas la revisión humana. Verifica que:
+1. Cada número del memo coincide (con redondeo) con los resultados de las herramientas.
+2. La decisión es coherente con la política (ROI ≥ 4% para aprobar; cuota ≤ {CUOTA_MAX:.0%} del ingreso).
+3. No hay datos inventados ni contradicciones entre memo, razones y decisión.
+4. Si hay violaciones de reglas duras, no puedes aprobar.
+Aprueba solo si todo se cumple. En hallazgos, lista cada problema concreto (vacío si apruebas)."""
+
+
+# ---------- reglas duras ----------
+
+def reglas_duras(decision: dict, oferta: dict | None) -> list[str]:
+    """Reglas que ningún LLM puede saltarse. Devuelve la lista de violaciones."""
+    if decision["decision"] == "rechazar":
+        return []
+    v = []
+    if not (0 < decision["monto"] <= MONTO_MAX):
+        v.append(f"monto fuera de rango: {decision['monto']}")
+    if not (TASA_MIN <= decision["tasa"] <= TASA_MAX):
+        v.append(f"tasa fuera de la grilla: {decision['tasa']}")
+    if oferta is not None:
+        if oferta["cuota_ingreso"] is None or oferta["cuota_ingreso"] > CUOTA_MAX:
+            v.append(f"cuota/ingreso {oferta['cuota_ingreso']} supera el máximo de {CUOTA_MAX:.0%}")
+        if oferta["roi_esperado"] is None or oferta["roi_esperado"] < ROI_EQUILIBRIO:
+            v.append(f"ROI esperado {oferta['roi_esperado']} menor que {ROI_EQUILIBRIO:.0%}")
+    return v
+
+
+# ---------- llamadas a Claude ----------
+
+def _llamar(cliente, **kw):
+    """Todas las llamadas usan el modelo elegido y la red de seguridad de fallback del servidor."""
+    return kw.pop("_metodo")(model=MODELO, betas=BETAS, fallbacks="default", **kw)
+
+
+def _texto(respuesta) -> str:
+    return "".join(b.text for b in respuesta.content if b.type == "text").strip()
+
+
+def correr_especialista(cliente, herr: Herramientas, nombre: str, sol: pd.DataFrame) -> dict:
+    cfg = ESPECIALISTAS[nombre]
+    funciones = {
+        "consultar_riesgo": lambda _: herr.riesgo(sol),
+        "consultar_economia": lambda _: herr.economia(sol),
+        "consultar_cupo_pricing": lambda _: herr.cupo_pricing(sol),
+        "simular_oferta": lambda a: herr.simular_oferta(sol, a["monto"], a["tasa"]),
+    }
+    tools = [{"name": n, "description": d, "input_schema": e, "strict": True} for n, d, e in cfg["herramientas"]]
+    mensajes = [{"role": "user", "content": "Solicitud:\n" + json.dumps(resumen_solicitud(sol), ensure_ascii=False)
+                 + "\n\n" + INSTRUCCION_ESPECIALISTA}]
+    llamadas = []
+    for _ in range(MAX_TURNOS):
+        r = _llamar(cliente, _metodo=cliente.beta.messages.create, max_tokens=8000,
+                    system=cfg["sistema"], tools=tools, messages=mensajes,
+                    output_config={"effort": "medium"})
+        if r.stop_reason == "refusal":
+            return {"analisis": "El modelo declinó analizar esta solicitud.", "herramientas": llamadas}
+        mensajes.append({"role": "assistant", "content": r.content})
+        usos = [b for b in r.content if b.type == "tool_use"]
+        if not usos:
+            break
+        resultados = []
+        for u in usos:
+            try:
+                salida = funciones[u.name](u.input)
+                resultados.append({"type": "tool_result", "tool_use_id": u.id,
+                                   "content": json.dumps(salida, ensure_ascii=False)})
+                llamadas.append({"herramienta": u.name, "entrada": u.input, "salida": salida})
+            except Exception as e:  # el error vuelve al modelo en vez de tumbar el flujo
+                resultados.append({"type": "tool_result", "tool_use_id": u.id,
+                                   "content": f"Error: {e}", "is_error": True})
+        mensajes.append({"role": "user", "content": resultados})
+    return {"analisis": _texto(r), "herramientas": llamadas}
+
+
+def _contexto(estado) -> str:
+    return json.dumps({"solicitud": resumen_solicitud(estado["solicitud"]),
+                       "especialistas": estado["especialistas"]}, ensure_ascii=False, indent=1)
+
+
+def decidir(cliente, estado) -> dict:
+    partes = [_contexto(estado)]
+    if estado.get("auditoria") and not estado["auditoria"]["aprobado"]:
+        partes.append("El auditor rechazó tu decisión anterior. Corrige estos hallazgos:\n- "
+                      + "\n- ".join(estado["auditoria"]["hallazgos"] + estado.get("violaciones", [])))
+    r = _llamar(cliente, _metodo=cliente.beta.messages.parse, max_tokens=16000, system=SISTEMA_COMITE,
+                messages=[{"role": "user", "content": "\n\n".join(partes)}], output_format=Decision,
+                output_config={"effort": "high"})
+    if r.stop_reason == "refusal" or r.parsed_output is None:
+        return {"decision": "rechazar", "monto": 0.0, "tasa": 0.0,
+                "razones": ["El comité no pudo emitir una decisión."], "memo": ""}
+    return r.parsed_output.model_dump()
+
+
+def auditar(cliente, estado) -> dict:
+    contenido = (_contexto(estado) + "\n\nDecisión del comité:\n"
+                 + json.dumps(estado["decision"], ensure_ascii=False, indent=1)
+                 + "\n\nOferta recalculada con el motor:\n" + json.dumps(estado.get("oferta"), ensure_ascii=False)
+                 + "\n\nViolaciones de reglas duras:\n" + json.dumps(estado.get("violaciones", []), ensure_ascii=False))
+    r = _llamar(cliente, _metodo=cliente.beta.messages.parse, max_tokens=8000, system=SISTEMA_AUDITOR,
+                messages=[{"role": "user", "content": contenido}], output_format=Auditoria,
+                output_config={"effort": "high"})
+    if r.stop_reason == "refusal" or r.parsed_output is None:
+        return {"aprobado": False, "hallazgos": ["El auditor no pudo completar la revisión."]}
+    return r.parsed_output.model_dump()
+
+
+# ---------- grafo ----------
+
+class Estado(TypedDict, total=False):
+    solicitud: pd.DataFrame
+    especialistas: Annotated[dict, operator.or_]
+    decision: dict
+    oferta: dict | None
+    violaciones: list[str]
+    auditoria: dict
+    intentos: int
+    final: dict
+
+
+def construir(cliente=None, herr: Herramientas | None = None):
+    from langgraph.graph import END, START, StateGraph
+
+    if cliente is None:
+        import anthropic
+
+        cargar_env()
+        cliente = anthropic.Anthropic()
+    herr = herr or Herramientas()
+
+    def especialista(nombre):
+        return lambda estado: {"especialistas": {nombre: correr_especialista(cliente, herr, nombre, estado["solicitud"])}}
+
+    def comite(estado):
+        return {"decision": decidir(cliente, estado), "intentos": estado.get("intentos", 0) + 1}
+
+    def reglas(estado):
+        d = estado["decision"]
+        oferta = None if d["decision"] == "rechazar" else herr.simular_oferta(estado["solicitud"], d["monto"], d["tasa"])
+        return {"oferta": oferta, "violaciones": reglas_duras(d, oferta)}
+
+    def auditor(estado):
+        a = auditar(cliente, estado)
+        if estado["violaciones"]:  # el código manda: con violaciones no hay aprobación
+            a = {"aprobado": False, "hallazgos": a["hallazgos"] + estado["violaciones"]}
+        return {"auditoria": a}
+
+    def siguiente(estado):
+        if estado["auditoria"]["aprobado"] or estado["intentos"] >= INTENTOS:
+            return "finalizar"
+        return "comite"
+
+    def finalizar(estado):
+        d = dict(estado["decision"])
+        if not estado["auditoria"]["aprobado"]:
+            d = {"decision": "rechazar", "monto": 0.0, "tasa": 0.0,
+                 "razones": ["La decisión no pasó la auditoría tras {} intentos.".format(estado["intentos"])]
+                            + estado["auditoria"]["hallazgos"],
+                 "memo": d.get("memo", "")}
+        return {"final": d | {"auditoria": estado["auditoria"], "intentos": estado["intentos"]}}
+
+    g = StateGraph(Estado)
+    for nombre in ESPECIALISTAS:
+        g.add_node(nombre, especialista(nombre))
+        g.add_edge(START, nombre)
+    g.add_node("comite", comite)
+    g.add_node("reglas", reglas)
+    g.add_node("auditor", auditor)
+    g.add_node("finalizar", finalizar)
+    g.add_edge(list(ESPECIALISTAS), "comite")
+    g.add_edge("comite", "reglas")
+    g.add_edge("reglas", "auditor")
+    g.add_conditional_edges("auditor", siguiente, {"comite": "comite", "finalizar": "finalizar"})
+    g.add_edge("finalizar", END)
+    return g.compile()
+
+
+def evaluar_solicitud(grafo, solicitud: pd.DataFrame) -> dict:
+    return grafo.invoke({"solicitud": solicitud, "especialistas": {}})
+
+
+def main() -> None:
+    from credit_lab.poblacion import cargar_poblacion
+
+    p = argparse.ArgumentParser(description="Evalúa una solicitud de jul–dic 2015 con el agente 100% IA.")
+    p.add_argument("--semilla", type=int, default=0)
+    args = p.parse_args()
+    df = cargar_poblacion()
+    s2 = df[df["issue_d"] >= "2015-07-01"]
+    sol = s2.sample(1, random_state=args.semilla)
+    estado = evaluar_solicitud(construir(), sol)
+    final = estado["final"]
+    print(final["memo"])
+    print(f"\nDecisión: {final['decision']} · monto {final['monto']:,.0f} · tasa {final['tasa']:.2f}% · "
+          f"auditoría {'aprobada' if final['auditoria']['aprobado'] else 'rechazada'} en {final['intentos']} intento(s)")
+    print(f"Resultado real (no visto por el agente): {'malo' if sol['malo'].iloc[0] else 'bueno'}")
+
+
+if __name__ == "__main__":
+    main()

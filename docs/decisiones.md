@@ -208,3 +208,20 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
   - No se estima heterogeneidad (sin identificación no tiene sentido) ni la "tasa que maximiza el ROI" (requiere datos de aceptación). Ver `notebooks/10_inferencia_causal.ipynb`.
 - **Alternativas consideradas:** buscar otro diseño (event study, B); integrar igual la estimación del DML (C).
 - **Por qué (en mis palabras):** A, resultado negativo + estrés.
+
+---
+
+## 016 — Agente 100% IA: especialistas con LLM + comité + auditor
+
+- **Fecha:** 2026-10-31
+- **Contexto:** la decisión 009 planteaba un agente con aprobación humana al final. Neider pidió un flujo **100% IA**, sin humano. Se compararon tres arquitecturas: números por código con un Claude que decide y otro que audita (A), especialistas con LLM (B) y un solo agente ReAct (C).
+- **Decisión:** **B**, en LangGraph:
+  - **Tres especialistas Claude en paralelo**, cada uno con sus herramientas sobre los modelos del repo: riesgo (PD + razones SHAP), economía (prepago + pérdida) y cupo/pricing (monto máximo, tasas, estrés, fuera de rango).
+  - **Comité de IA** que consolida y decide: aprobar, rechazar o contraofertar con monto y tasa.
+  - **Auditor de IA** que reemplaza al humano: verifica que los números del memo coincidan con los de las herramientas y que se cumplan las reglas. Si falla, devuelve el caso al comité.
+  - **Reglas duras** que ningún LLM puede saltarse: cuota ≤ 20% del ingreso (decisión 012) y rechazo si el ROI esperado < 0% (decisión 013).
+  - Modelo: **Claude Sonnet 5.5** (`claude-sonnet-5-5`).
+- **Trade-offs aceptados:** unas 5 llamadas por solicitud (≈3× costo y latencia frente a A) y más puntos donde pueden aparecer números inventados; se mitigan con el auditor, las reglas duras y las evals de la sesión 12.
+- **Alternativas consideradas:** A (números por código) y C (un solo agente ReAct).
+- **Por qué (en mis palabras):** B, especialistas con LLM; quiero que todo sea full IA, sin una persona al final del flujo.
+- **Pendiente (2026-10-31):** la prueba con Claude real queda pendiente porque no se pudo cargar saldo a la API. El flujo está probado con un cliente simulado (4 tests) y las herramientas con los modelos reales.
