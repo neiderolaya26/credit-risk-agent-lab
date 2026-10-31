@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from credit_lab.metricas import psi
+from credit_lab.metricas import discriminacion, psi
 from credit_lab.transformadores import CENTINELA, Limpieza, Winsorizador, WoE
 
 
@@ -29,6 +29,13 @@ def test_woe_maneja_nulos_y_categorias_nuevas():
     out = woe.transform(nuevo)
     assert out.notna().all().all()
     assert out.loc[0, "cat"] == 0.0  # categoría no vista = riesgo promedio
+
+
+def test_discriminacion_perfecta_y_aleatoria():
+    y = np.array([0, 0, 1, 1])
+    perfecta = discriminacion(y, [0.1, 0.2, 0.8, 0.9])
+    assert perfecta["auc"] == 1 and perfecta["gini"] == 1 and perfecta["ks"] == 1
+    assert discriminacion(y, [0.5, 0.5, 0.5, 0.5])["auc"] == 0.5
 
 
 def test_psi_cero_si_misma_distribucion_y_alto_si_cambia():

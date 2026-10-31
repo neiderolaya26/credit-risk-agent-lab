@@ -1,11 +1,16 @@
 import pandas as pd
 
-from credit_lab.features import ARBOLES, EXCLUIDAS, LOGISTICA, derivar
+from credit_lab.features import ARBOLES, EXCLUIDAS, LOGISTICA, SIGNO_INCORRECTO, derivar
 from credit_lab.poblacion import BENCHMARK, FUGA
 
 
 def test_logistica_es_subconjunto_de_arboles():
     assert set(LOGISTICA) <= set(ARBOLES)
+
+
+def test_signo_incorrecto_sale_de_logistica_pero_no_de_arboles():
+    assert not set(SIGNO_INCORRECTO) & set(LOGISTICA)
+    assert set(SIGNO_INCORRECTO) <= set(ARBOLES)
 
 
 def test_sin_fuga_ni_benchmark_ni_excluidas():

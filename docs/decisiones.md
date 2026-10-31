@@ -40,3 +40,13 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
 - **Consecuencia:** al recalcular el IV con la nueva población, se aplica la regla de la decisión 002 (IV ≥ 0,02) a la lista de la logística. Salen `revol_util` (0,019) e `inq_last_6mths` (0,0198) y entran `antig_credito_meses` (0,0205) y `num_actv_rev_tl` (0,0213). Todas siguen en los modelos de árboles.
 - **Alternativas consideradas:** B) dejar esos préstamos con los nulos (los árboles podrían aprender un patrón "nulo = 2012" que no se repite); C) sacar las 7 variables (se pierden variables con buen IV).
 - **Por qué (en mis palabras):** A, para tener una población homogénea sin nulos artificiales.
+
+---
+
+## 004 — Variables con signo contrario a la lógica en la logística
+
+- **Fecha:** 2026-10-30
+- **Contexto:** con las 16 variables, tres coeficientes sobre WoE salieron positivos, es decir, contrarios a la lógica de riesgo, por multicolinealidad: `tot_cur_bal` (correlación 0,89 con `avg_cur_bal`, VIF 7,1), `bc_util` (correlación 0,79 con `percent_bc_gt_75`) y `antig_credito_meses` (duplica `mo_sin_old_rev_tl_op`). Ver `notebooks/04_logistica_scorecard.ipynb`.
+- **Decisión:** quitar las 3 de la **regresión logística**; queda con 13 variables, todas con signo lógico. Los modelos de árboles las conservan. El AUC fuera de tiempo pasa de 0,6534 a 0,6526 (−0,0008).
+- **Alternativas consideradas:** B) dejarlas para ganar una milésima de AUC; C) quitar la otra variable de cada par correlacionado.
+- **Por qué (en mis palabras):** A, para que todos los signos sean lógicos y explicables. Sobre la antigüedad crediticia, no creo que sea una variable aceptada ya que va en contra de la lógica.

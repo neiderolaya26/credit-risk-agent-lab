@@ -20,14 +20,25 @@ EXCLUIDAS = {
     "application_type": "constante en la población (todas Individual)",
 }
 
-LOGISTICA = [
+# Variables limpias con IV >= 0,02 (decisiones 002 y 003)
+IV_ALTO = [
     "fico_medio", "annual_inc", "total_bc_limit", "avg_cur_bal", "tot_cur_bal",
     "total_rev_hi_lim", "dti", "monto_ingreso", "home_ownership", "mort_acc",
     "percent_bc_gt_75", "bc_util", "mo_sin_old_rev_tl_op", "purpose",
     "antig_credito_meses", "num_actv_rev_tl",
 ]
 
-ARBOLES = LOGISTICA + [
+# Decisión 004: signo contrario a la lógica en la logística por multicolinealidad.
+# Solo salen de la logística; los árboles las conservan.
+SIGNO_INCORRECTO = {
+    "tot_cur_bal": "correlación 0,89 con avg_cur_bal",
+    "bc_util": "correlación 0,79 con percent_bc_gt_75",
+    "antig_credito_meses": "duplica mo_sin_old_rev_tl_op (antigüedad crediticia)",
+}
+
+LOGISTICA = [c for c in IV_ALTO if c not in SIGNO_INCORRECTO]
+
+ARBOLES = IV_ALTO + [
     "revol_util", "inq_last_6mths", "revol_bal", "emp_length",
     "addr_state", "total_acc", "loan_amnt", "mths_since_last_delinq",
     "delinq_2yrs", "pct_tl_nvr_dlq", "pub_rec", "pub_rec_bankruptcies",
