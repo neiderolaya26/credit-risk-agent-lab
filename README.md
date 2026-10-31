@@ -42,10 +42,10 @@ flowchart LR
 | 8 ✅ | Modelo de prepago (el "churn" del crédito) y severidad (LGD) | Supervivencia + pérdida económica, decisiones 009-011 |
 | 9 ✅ | Motor de cupo óptimo y pricing (tasa mínima rentable) | Monto máximo y tasas de equilibrio y sugerida, decisiones 012-013 |
 | 10 ✅ | **Inferencia causal**: efecto de la tasa en la mora (efectos fijos, placebo, DML) | Resultado negativo + escenario de estrés, decisiones 014-015 |
-| 11 🟡 | Agente LangGraph 100% IA: especialistas Claude en paralelo + comité + auditor | Agente construido y probado con un cliente simulado; prueba con Claude real pendiente (sin saldo en la API), decisión 016 |
+| 11 ✅ | Agente LangGraph 100% IA: especialistas Claude en paralelo + comité + auditor | Agente funcionando con Claude Sonnet 5.5 (~USD 0,07 y ~30 s por solicitud), decisión 016 |
 | 12 ✅ | Servidor MCP con las herramientas del motor (riesgo, economía, cupo/pricing, simulación) | Servidor `credit-lab`, decisión 017 |
-| 13 🟡 | Registro de ejecuciones en SQLite + trazas en LangSmith (desempeño agéntico) | Registro y observabilidad listos; se llenan con la prueba real, decisión 018 |
-| 14 | Evals, demo, prueba del agente con Claude real y publicación | Release v1.0.0 |
+| 13 ✅ | Registro de ejecuciones en SQLite + trazas en LangSmith (desempeño agéntico) | Ejecuciones registradas con su resultado real y trazadas, decisión 018 |
+| 14 | Evals del agente, demo y publicación | Release v1.0.0 |
 
 ## Decisiones y trade-offs
 

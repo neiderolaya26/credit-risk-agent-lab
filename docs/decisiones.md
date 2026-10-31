@@ -224,7 +224,7 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
 - **Trade-offs aceptados:** unas 5 llamadas por solicitud (≈3× costo y latencia frente a A) y más puntos donde pueden aparecer números inventados; se mitigan con el auditor, las reglas duras y las evals de la sesión 12.
 - **Alternativas consideradas:** A (números por código) y C (un solo agente ReAct).
 - **Por qué (en mis palabras):** B, especialistas con LLM; quiero que todo sea full IA, sin una persona al final del flujo.
-- **Pendiente (2026-10-31):** la prueba con Claude real queda pendiente porque no se pudo cargar saldo a la API. El flujo está probado con un cliente simulado (4 tests) y las herramientas con los modelos reales.
+- **Pendiente resuelto (2026-10-31):** la prueba con Claude real queda pendiente porque no se pudo cargar saldo a la API. El flujo está probado con un cliente simulado (4 tests) y las herramientas con los modelos reales. Ese mismo día se cargó saldo y el agente corrió con Claude real; ver la decisión 018.
 
 ---
 
@@ -254,4 +254,4 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
   - **La base no se sube a git;** más adelante se puede publicar un resumen agregado de las evals.
 - **Alternativas consideradas:** solo SQLite; solo LangSmith; publicar la base.
 - **Por qué (en mis palabras):** SQLite + LangSmith, fuera de git y en una sesión aparte.
-- **Pendiente:** las filas y las trazas se llenan cuando el agente corra con Claude real (sin saldo en la API por ahora).
+- **Prueba real (2026-10-31):** 3 préstamos de jul–dic 2015 registrados en SQLite y trazados en LangSmith (región US). Cada solicitud usa 8 llamadas, cuesta ~USD 0,07 y tarda ~30 s. En un caso el auditor rechazó el primer memo por inconsistencias de argumentación (no de números) y el comité lo corrigió.
