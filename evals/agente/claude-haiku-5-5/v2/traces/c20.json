@@ -1,0 +1,240 @@
+{
+ "historial": [
+  {
+   "nodo": "cupo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave**\n\n- **Monto máximo:** 20.000 USD, igual al pedido. La cuota/ingreso es 0,196, dentro del límite de 0,2.\n- **Tasa:** la ofrecida (19,19%) está por encima de la de mercado (15,49%), con una diferencia de unos 3,7 pts. Eso supera el umbral de 1 pt, así que la oferta queda fuera de rango y no tiene evidencia histórica.\n- **Riesgo y rentabilidad:** PD de 0,367 y ROI esperado de 0,008083, con utilidad esperada de 161,67 USD.\n- **Equilibrio y sugerida:** la tasa de equilibrio es 18,5% y la sugerida (ROI ≥ 4%) es 23%, que también está fuera de rango. El escenario de estrés no devuelve valores.\n- **Alternativa:** con 16,5% el ROI sería −0,014683 (utilidad −293,67 USD).\n\n**Mejor oferta:** de las probadas, la tasa de 19,19% es la única que supera el equilibrio. Mantenerla por encima de 18,5% es lo mínimo, pero no alcanza el objetivo de 4% y queda fuera de rango.\n\n**Señal final: desfavorable.** La PD es alta, el retorno es delgado y la tasa no tiene respaldo histórico.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_cupo_pricing",
+      "entrada": {},
+      "salida": {
+       "monto_pedido": 20000.0,
+       "tasa_ofrecida": 19.190001,
+       "tasa_mercado": 15.48551,
+       "pd": 0.36697,
+       "roi_esperado": 0.008083,
+       "utilidad_esperada": 161.668438,
+       "cuota_ingreso": 0.196011,
+       "monto_maximo": 20000.0,
+       "tasa_equilibrio": 18.5,
+       "tasa_sugerida": 23.0,
+       "sugerida_fuera_de_rango": true,
+       "tasa_equilibrio_estres": null,
+       "tasa_sugerida_estres": null,
+       "regla_cuota_max": 0.2,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 20000,
+       "tasa": 19.190001
+      },
+      "salida": {
+       "monto": 20000,
+       "tasa": 19.190001,
+       "pd": 0.36697,
+       "roi_esperado": 0.008083,
+       "utilidad_esperada": 161.668526,
+       "cuota_ingreso": 0.196011,
+       "cumple_capacidad": true,
+       "tasa_mercado": 15.48551,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 20000,
+       "tasa": 16.5
+      },
+      "salida": {
+       "monto": 20000,
+       "tasa": 16.5,
+       "pd": 0.36697,
+       "roi_esperado": -0.014683,
+       "utilidad_esperada": -293.668434,
+       "cuota_ingreso": 0.188823,
+       "cumple_capacidad": true,
+       "tasa_mercado": 15.48551,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "economia",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave**\n\n- **Escenario bueno:** rendimiento de 26,6%.\n- **Escenario malo:** pérdida económica de -43,7%.\n- **Probabilidad de incumplimiento (PD):** 36,7%, alta para este perfil.\n- **ROI esperado:** 0,81%, equivalente a una utilidad esperada de unos 162 USD sobre 20.000 USD. Es positivo pero delgado frente al riesgo.\n- **Prepago:** 49,8% de probabilidad de prepago antes del mes 30; el mes esperado de pago es 26.\n- **Capacidad:** la cuota equivale al 19,6% del ingreso y cumple el criterio de capacidad.\n- **Tasa de mercado estimada:** 15,49%. La oferta de 19,19% se aleja más de 1 punto, por lo que queda fuera de rango y no hay evidencia histórica que la respalde.\n\n**Señal final: desfavorable.** El rendimiento esperado es positivo, pero el margen es muy estrecho frente a una PD de 36,7% y una pérdida de -43,7% en el escenario malo. La tasa además está por encima de la tasa de mercado sin respaldo histórico. Conviene revisar el precio o el monto antes de aprobarla.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_economia",
+      "entrada": {},
+      "salida": {
+       "r_bueno": 0.266099,
+       "r_malo": -0.436998,
+       "pd": 0.36697,
+       "roi_esperado": 0.008083,
+       "utilidad_esperada": 161.668438,
+       "prob_prepago_antes_mes_30": 0.497636,
+       "mes_esperado_de_pago": 26.082213
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 20000,
+       "tasa": 19.190001
+      },
+      "salida": {
+       "monto": 20000,
+       "tasa": 19.190001,
+       "pd": 0.36697,
+       "roi_esperado": 0.008083,
+       "utilidad_esperada": 161.668526,
+       "cuota_ingreso": 0.196011,
+       "cumple_capacidad": true,
+       "tasa_mercado": 15.48551,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "riesgo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: desfavorable.**\n\nLa PD del modelo campeón (LightGBM recalibrado) es **36,7%**, frente a un promedio de cartera de **12,9%**.\n\n**Factores que suben el riesgo:**\n- **Propósito \"small_business\":** es el factor más fuerte (contribución logit 0,66).\n- **Monto sobre ingreso anual (44,4%):** contribución 0,36.\n- **DTI de 28%:** contribución 0,19.\n- **Monto solicitado de USD 20.000:** contribución 0,08.\n\n**Factor que atenúa el riesgo:**\n- **2 cuentas rotativas activas:** contribución −0,14.\n\nEl perfil de riesgo viene sobre todo del destino del crédito y de la carga relativa de la deuda frente al ingreso. El FICO de 697 y el uso de rotativo de 42,9% no aparecen entre las cinco razones principales, así que no son los que más mueven la PD en este caso. La herramienta no informa el efecto de la tasa ofrecida (19,19%) ni de la antigüedad laboral entre las cinco razones principales.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_riesgo",
+      "entrada": {},
+      "salida": {
+       "pd": 0.36697,
+       "pd_promedio_cartera": 0.128836,
+       "razones": [
+        {
+         "descripcion": "Propósito del préstamo",
+         "valor": "small_business",
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.663842
+        },
+        {
+         "descripcion": "Monto solicitado sobre ingreso anual",
+         "valor": 0.444444,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.359844
+        },
+        {
+         "descripcion": "Endeudamiento sobre ingreso (DTI)",
+         "valor": 27.969999,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.190579
+        },
+        {
+         "descripcion": "Cuentas rotativas activas",
+         "valor": 2.0,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.136952
+        },
+        {
+         "descripcion": "Monto solicitado",
+         "valor": 20000.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.084642
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 1,
+   "contenido": {
+    "decision": "rechazar",
+    "monto": 0.0,
+    "tasa": 0.0,
+    "razones": [
+     "ROI esperado de 0,008083 al monto y tasa ofrecidos (20000 USD a 19,19%), por debajo del umbral de 4% de la política.",
+     "La cuota es 0,196011 del ingreso, dentro del límite de 0,2, pero no compensa el ROI insuficiente.",
+     "La tasa sugerida con ROI de 4% es 23, que está entre 5 y 30, pero la herramienta no reporta la cuota a esa tasa. La cuota sube con la tasa (0,188823 a 16,5 y 0,196011 a 19,19), así que a 23 superaría 0,2.",
+     "El monto máximo a la tasa ofrecida es 20000, igual al pedido, así que no hay contraoferta por monto menor.",
+     "La tasa ofrecida de 19,19 está fuera de rango frente a la tasa de mercado de 15,48551, sin evidencia histórica que la respalde."
+    ],
+    "memo": "## Resumen\nSolicitud de 20000 USD a una tasa ofrecida de 19,19% para propósito small_business, con ingreso anual de 45000 USD. El comité rechaza la solicitud porque ninguna opción de la política se cumple.\n\n## Decisión\nRechazar, con monto 0 y tasa 0.\n- Paso 1 (aprobar): el ROI esperado es 0,008083, por debajo del 4% exigido. La cuota es 0,196011 del ingreso, dentro del 20%. No aprueba por ROI.\n- Paso 2a (contraoferta a tasa sugerida): la tasa sugerida es 23, que está entre 5% y 30%. La herramienta no reporta la cuota a esa tasa, pero la cuota sube con la tasa (0,188823 a 16,5 y 0,196011 a 19,19), por lo que a 23 superaría el 20%. No cumple.\n- Paso 2b (monto máximo): el monto máximo a la tasa ofrecida es 20000, igual al pedido y no menor. No aplica.\n- Paso 3: rechazar.\n\n## Riesgo\nEl especialista de riesgo reporta una PD de 0,36697 con el modelo campeón (LightGBM recalibrado), frente a un promedio de cartera de 0,128836. Según este especialista, los factores que más suben el riesgo son el propósito small_business (contribución logit 0,663842), el monto solicitado sobre ingreso anual de 0,444444 (0,359844), el DTI de 27,969999 (0,190579) y el monto solicitado de 20000 (0,084642). Las cuentas rotativas activas, con valor 2, atenúan el riesgo (-0,136952). Según la herramienta, el FICO de 697 (punto medio del rango, el que usa el modelo) y el uso de rotativo de 42,900002 no están entre las cinco razones principales.\n\n## Economía\nEl especialista de economía reporta un rendimiento de 0,266099 en el escenario bueno y de -0,436998 en el escenario malo. El ROI esperado es 0,008083 y la utilidad esperada es 161,668438 USD. La probabilidad de prepago antes del mes 30 es 0,497636 y el mes esperado de pago es 26,082213. Según este especialista, el margen es muy estrecho frente a la PD.\n\n## Cupo y precio\nEl especialista de cupo indica que el monto máximo es 20000, igual al pedido. La tasa de mercado estimada es 15,48551, y la ofrecida de 19,190001 queda fuera de rango porque se aleja más de 1 punto, sin evidencia histórica. La tasa de equilibrio es 18,5 y la tasa sugerida con ROI de 4% es 23, que también está fuera de rango. Con una tasa de 16,5 el ROI sería -0,014683, con utilidad esperada de -293,668434 USD. Según este especialista, de las tasas probadas, 19,190001 es la única que supera el equilibrio.\n\n## Alertas\n- La tasa ofrecida está fuera de rango frente a la tasa de mercado.\n- La tasa sugerida de 23 está fuera de rango.\n- El escenario de estrés no devuelve valores: la tasa de equilibrio y la tasa sugerida de estrés son nulas.\n- Los tres especialistas dan una señal final desfavorable.\n- Estas alertas se mencionan, pero por sí solas no cambian la decisión."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 1,
+   "contenido": {
+    "aprobado": true,
+    "hallazgos": [
+     "Menor: la cuota a la tasa sugerida de 23% no la reporta la herramienta; el memo la infiere por tendencia creciente con la tasa, y una amortización a 36 meses confirma que ronda 0,206, por encima del límite de 0,20. La conclusión es correcta, pero conviene indicar que es una estimación.",
+     "Menor: las razones del comité y el memo citan la tasa sugerida como 23 sin el símbolo de porcentaje, y la tasa ofrecida aparece como 19,19 en unos lugares y 19,190001 en otros. No cambia la decisión.",
+     "Menor: el memo describe la tasa de 23% como fuera de rango, pero la política trata esa bandera solo como alerta; el memo ya lo reconoce, así que no afecta la decisión.",
+     "Verificado: ROI esperado 0,008083 < 4% impide aprobar; cuota 0,196011 ≤ 20%; monto máximo 20000 igual al pedido, por lo que no aplica la contraoferta 2b; la decisión de rechazar con monto 0 y tasa 0 corresponde a la política. Los números del memo coinciden con las herramientas y no hay violaciones de reglas duras."
+    ],
+    "oferta": null,
+    "violaciones": []
+   }
+  }
+ ],
+ "final": {
+  "decision": "rechazar",
+  "monto": 0.0,
+  "tasa": 0.0,
+  "razones": [
+   "ROI esperado de 0,008083 al monto y tasa ofrecidos (20000 USD a 19,19%), por debajo del umbral de 4% de la política.",
+   "La cuota es 0,196011 del ingreso, dentro del límite de 0,2, pero no compensa el ROI insuficiente.",
+   "La tasa sugerida con ROI de 4% es 23, que está entre 5 y 30, pero la herramienta no reporta la cuota a esa tasa. La cuota sube con la tasa (0,188823 a 16,5 y 0,196011 a 19,19), así que a 23 superaría 0,2.",
+   "El monto máximo a la tasa ofrecida es 20000, igual al pedido, así que no hay contraoferta por monto menor.",
+   "La tasa ofrecida de 19,19 está fuera de rango frente a la tasa de mercado de 15,48551, sin evidencia histórica que la respalde."
+  ],
+  "memo": "## Resumen\nSolicitud de 20000 USD a una tasa ofrecida de 19,19% para propósito small_business, con ingreso anual de 45000 USD. El comité rechaza la solicitud porque ninguna opción de la política se cumple.\n\n## Decisión\nRechazar, con monto 0 y tasa 0.\n- Paso 1 (aprobar): el ROI esperado es 0,008083, por debajo del 4% exigido. La cuota es 0,196011 del ingreso, dentro del 20%. No aprueba por ROI.\n- Paso 2a (contraoferta a tasa sugerida): la tasa sugerida es 23, que está entre 5% y 30%. La herramienta no reporta la cuota a esa tasa, pero la cuota sube con la tasa (0,188823 a 16,5 y 0,196011 a 19,19), por lo que a 23 superaría el 20%. No cumple.\n- Paso 2b (monto máximo): el monto máximo a la tasa ofrecida es 20000, igual al pedido y no menor. No aplica.\n- Paso 3: rechazar.\n\n## Riesgo\nEl especialista de riesgo reporta una PD de 0,36697 con el modelo campeón (LightGBM recalibrado), frente a un promedio de cartera de 0,128836. Según este especialista, los factores que más suben el riesgo son el propósito small_business (contribución logit 0,663842), el monto solicitado sobre ingreso anual de 0,444444 (0,359844), el DTI de 27,969999 (0,190579) y el monto solicitado de 20000 (0,084642). Las cuentas rotativas activas, con valor 2, atenúan el riesgo (-0,136952). Según la herramienta, el FICO de 697 (punto medio del rango, el que usa el modelo) y el uso de rotativo de 42,900002 no están entre las cinco razones principales.\n\n## Economía\nEl especialista de economía reporta un rendimiento de 0,266099 en el escenario bueno y de -0,436998 en el escenario malo. El ROI esperado es 0,008083 y la utilidad esperada es 161,668438 USD. La probabilidad de prepago antes del mes 30 es 0,497636 y el mes esperado de pago es 26,082213. Según este especialista, el margen es muy estrecho frente a la PD.\n\n## Cupo y precio\nEl especialista de cupo indica que el monto máximo es 20000, igual al pedido. La tasa de mercado estimada es 15,48551, y la ofrecida de 19,190001 queda fuera de rango porque se aleja más de 1 punto, sin evidencia histórica. La tasa de equilibrio es 18,5 y la tasa sugerida con ROI de 4% es 23, que también está fuera de rango. Con una tasa de 16,5 el ROI sería -0,014683, con utilidad esperada de -293,668434 USD. Según este especialista, de las tasas probadas, 19,190001 es la única que supera el equilibrio.\n\n## Alertas\n- La tasa ofrecida está fuera de rango frente a la tasa de mercado.\n- La tasa sugerida de 23 está fuera de rango.\n- El escenario de estrés no devuelve valores: la tasa de equilibrio y la tasa sugerida de estrés son nulas.\n- Los tres especialistas dan una señal final desfavorable.\n- Estas alertas se mencionan, pero por sí solas no cambian la decisión.",
+  "auditoria": {
+   "aprobado": true,
+   "hallazgos": [
+    "Menor: la cuota a la tasa sugerida de 23% no la reporta la herramienta; el memo la infiere por tendencia creciente con la tasa, y una amortización a 36 meses confirma que ronda 0,206, por encima del límite de 0,20. La conclusión es correcta, pero conviene indicar que es una estimación.",
+    "Menor: las razones del comité y el memo citan la tasa sugerida como 23 sin el símbolo de porcentaje, y la tasa ofrecida aparece como 19,19 en unos lugares y 19,190001 en otros. No cambia la decisión.",
+    "Menor: el memo describe la tasa de 23% como fuera de rango, pero la política trata esa bandera solo como alerta; el memo ya lo reconoce, así que no afecta la decisión.",
+    "Verificado: ROI esperado 0,008083 < 4% impide aprobar; cuota 0,196011 ≤ 20%; monto máximo 20000 igual al pedido, por lo que no aplica la contraoferta 2b; la decisión de rechazar con monto 0 y tasa 0 corresponde a la política. Los números del memo coinciden con las herramientas y no hay violaciones de reglas duras."
+   ]
+  },
+  "intentos": 1
+ },
+ "juez": {
+  "veredicto": {
+   "justifica_con_numeros": true,
+   "coherente": true,
+   "alertas": true,
+   "sin_invenciones": true,
+   "claro": true,
+   "explicacion_justifica_con_numeros": "Justifica el rechazo con cifras concretas: ROI esperado de 0,008083 frente al 4% exigido, cuota/ingreso de 0,196011 frente al 20%, monto máximo de 20000 igual al pedido y tasa sugerida de 23.",
+   "explicacion_coherente": "El resumen, la sección Decisión y los datos coinciden: rechazar, con monto 0 y tasa 0.",
+   "explicacion_alertas": "Menciona la tasa ofrecida y la sugerida fuera de rango, el estrés sin valores y las señales desfavorables de los especialistas. El margen estrecho aparece en Economía y en el Paso 1, y la cuota de 0,196 cercana al límite queda reflejada en el análisis. No inventa alertas.",
+   "explicacion_sin_invenciones": "Las cifras salen de los datos. La afirmación de que a 23% la cuota superaría el 20% se razona explícitamente a partir de dos puntos reportados y es correcta (≈0,206 a 36 meses). La explicación del FICO 697 como punto medio del rango es una aclaración menor y consistente con lo que reporta el especialista.",
+   "explicacion_claro": "Está bien estructurado. Los pasos de la política muestran rápidamente por qué se rechaza: ROI insuficiente, contraoferta inviable por cuota y monto máximo no menor al pedido."
+  },
+  "modelo": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 5231,
+   "output_tokens": 1727
+  }
+ }
+}

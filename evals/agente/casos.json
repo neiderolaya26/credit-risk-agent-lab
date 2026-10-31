@@ -1,0 +1,602 @@
+[
+ {
+  "id": "c00",
+  "posicion": 120029,
+  "decision_motor": "aprobar",
+  "malo_real": 0,
+  "subgrado": "C3",
+  "roi_esperado_motor": 0.1161,
+  "solicitud": {
+   "monto pedido (USD)": 5000.0,
+   "tasa ofrecida por Lending Club (%)": 13.33,
+   "ingreso anual (USD)": 50000.0,
+   "propósito": "debt_consolidation",
+   "deuda / ingreso (%)": 10.59,
+   "FICO": 660.0,
+   "antigüedad laboral": "10+ years",
+   "vivienda": "MORTGAGE",
+   "uso de tarjetas (%)": 65.0,
+   "consultas últimos 6 meses": 0.0
+  }
+ },
+ {
+  "id": "c01",
+  "posicion": 97809,
+  "decision_motor": "aprobar",
+  "malo_real": 0,
+  "subgrado": "A5",
+  "roi_esperado_motor": 0.0655,
+  "solicitud": {
+   "monto pedido (USD)": 3500.0,
+   "tasa ofrecida por Lending Club (%)": 7.89,
+   "ingreso anual (USD)": 70000.0,
+   "propósito": "other",
+   "deuda / ingreso (%)": 8.13,
+   "FICO": 740.0,
+   "antigüedad laboral": "6 years",
+   "vivienda": "MORTGAGE",
+   "uso de tarjetas (%)": 2.8,
+   "consultas últimos 6 meses": 0.0
+  }
+ },
+ {
+  "id": "c02",
+  "posicion": 10312,
+  "decision_motor": "aprobar",
+  "malo_real": 0,
+  "subgrado": "D1",
+  "roi_esperado_motor": 0.1135,
+  "solicitud": {
+   "monto pedido (USD)": 2400.0,
+   "tasa ofrecida por Lending Club (%)": 15.41,
+   "ingreso anual (USD)": 58000.0,
+   "propósito": "other",
+   "deuda / ingreso (%)": 27.120001,
+   "FICO": 690.0,
+   "antigüedad laboral": "2 years",
+   "vivienda": "RENT",
+   "uso de tarjetas (%)": 29.0,
+   "consultas últimos 6 meses": 1.0
+  }
+ },
+ {
+  "id": "c03",
+  "posicion": 57963,
+  "decision_motor": "aprobar",
+  "malo_real": 0,
+  "subgrado": "C5",
+  "roi_esperado_motor": 0.0817,
+  "solicitud": {
+   "monto pedido (USD)": 15000.0,
+   "tasa ofrecida por Lending Club (%)": 14.65,
+   "ingreso anual (USD)": 50890.0,
+   "propósito": "debt_consolidation",
+   "deuda / ingreso (%)": 31.959999,
+   "FICO": 690.0,
+   "antigüedad laboral": "9 years",
+   "vivienda": "MORTGAGE",
+   "uso de tarjetas (%)": 98.0,
+   "consultas últimos 6 meses": 0.0
+  }
+ },
+ {
+  "id": "c04",
+  "posicion": 93270,
+  "decision_motor": "aprobar",
+  "malo_real": 0,
+  "subgrado": "A4",
+  "roi_esperado_motor": 0.0522,
+  "solicitud": {
+   "monto pedido (USD)": 16000.0,
+   "tasa ofrecida por Lending Club (%)": 7.26,
+   "ingreso anual (USD)": 41000.0,
+   "propósito": "medical",
+   "deuda / ingreso (%)": 9.92,
+   "FICO": 735.0,
+   "antigüedad laboral": "2 years",
+   "vivienda": "MORTGAGE",
+   "uso de tarjetas (%)": 43.099998,
+   "consultas últimos 6 meses": 0.0
+  }
+ },
+ {
+  "id": "c05",
+  "posicion": 16542,
+  "decision_motor": "aprobar",
+  "malo_real": 1,
+  "subgrado": "C2",
+  "roi_esperado_motor": 0.109,
+  "solicitud": {
+   "monto pedido (USD)": 6000.0,
+   "tasa ofrecida por Lending Club (%)": 12.59,
+   "ingreso anual (USD)": 28000.0,
+   "propósito": "credit_card",
+   "deuda / ingreso (%)": 25.799999,
+   "FICO": 690.0,
+   "antigüedad laboral": "7 years",
+   "vivienda": "RENT",
+   "uso de tarjetas (%)": 62.400002,
+   "consultas últimos 6 meses": 0.0
+  }
+ },
+ {
+  "id": "c06",
+  "posicion": 112215,
+  "decision_motor": "aprobar",
+  "malo_real": 1,
+  "subgrado": "B2",
+  "roi_esperado_motor": 0.0412,
+  "solicitud": {
+   "monto pedido (USD)": 12000.0,
+   "tasa ofrecida por Lending Club (%)": 9.17,
+   "ingreso anual (USD)": 29000.0,
+   "propósito": "credit_card",
+   "deuda / ingreso (%)": 24.17,
+   "FICO": 715.0,
+   "antigüedad laboral": "2 years",
+   "vivienda": "RENT",
+   "uso de tarjetas (%)": 24.200001,
+   "consultas últimos 6 meses": 0.0
+  }
+ },
+ {
+  "id": "c07",
+  "posicion": 27996,
+  "decision_motor": "aprobar",
+  "malo_real": 1,
+  "subgrado": "E2",
+  "roi_esperado_motor": 0.0833,
+  "solicitud": {
+   "monto pedido (USD)": 5300.0,
+   "tasa ofrecida por Lending Club (%)": 18.49,
+   "ingreso anual (USD)": 14748.0,
+   "propósito": "debt_consolidation",
+   "deuda / ingreso (%)": 29.9,
+   "FICO": 670.0,
+   "antigüedad laboral": null,
+   "vivienda": "RENT",
+   "uso de tarjetas (%)": 26.9,
+   "consultas últimos 6 meses": 0.0
+  }
+ },
+ {
+  "id": "c08",
+  "posicion": 41901,
+  "decision_motor": "aprobar",
+  "malo_real": 1,
+  "subgrado": "C1",
+  "roi_esperado_motor": 0.0473,
+  "solicitud": {
+   "monto pedido (USD)": 4000.0,
+   "tasa ofrecida por Lending Club (%)": 12.05,
+   "ingreso anual (USD)": 32000.0,
+   "propósito": "other",
+   "deuda / ingreso (%)": 16.35,
+   "FICO": 660.0,
+   "antigüedad laboral": null,
+   "vivienda": "OWN",
+   "uso de tarjetas (%)": 53.599998,
+   "consultas últimos 6 meses": 0.0
+  }
+ },
+ {
+  "id": "c09",
+  "posicion": 36865,
+  "decision_motor": "aprobar",
+  "malo_real": 1,
+  "subgrado": "G1",
+  "roi_esperado_motor": 0.1705,
+  "solicitud": {
+   "monto pedido (USD)": 7200.0,
+   "tasa ofrecida por Lending Club (%)": 26.77,
+   "ingreso anual (USD)": 24000.0,
+   "propósito": "debt_consolidation",
+   "deuda / ingreso (%)": 18.25,
+   "FICO": 665.0,
+   "antigüedad laboral": "10+ years",
+   "vivienda": "RENT",
+   "uso de tarjetas (%)": 33.099998,
+   "consultas últimos 6 meses": 3.0
+  }
+ },
+ {
+  "id": "c10",
+  "posicion": 130314,
+  "decision_motor": "contraoferta",
+  "malo_real": 0,
+  "subgrado": "B2",
+  "roi_esperado_motor": 0.0191,
+  "solicitud": {
+   "monto pedido (USD)": 15000.0,
+   "tasa ofrecida por Lending Club (%)": 9.17,
+   "ingreso anual (USD)": 60000.0,
+   "propósito": "debt_consolidation",
+   "deuda / ingreso (%)": 18.34,
+   "FICO": 660.0,
+   "antigüedad laboral": "3 years",
+   "vivienda": "RENT",
+   "uso de tarjetas (%)": 29.4,
+   "consultas últimos 6 meses": 1.0
+  }
+ },
+ {
+  "id": "c11",
+  "posicion": 146584,
+  "decision_motor": "contraoferta",
+  "malo_real": 0,
+  "subgrado": "A1",
+  "roi_esperado_motor": 0.0261,
+  "solicitud": {
+   "monto pedido (USD)": 20800.0,
+   "tasa ofrecida por Lending Club (%)": 5.32,
+   "ingreso anual (USD)": 67000.0,
+   "propósito": "credit_card",
+   "deuda / ingreso (%)": 22.809999,
+   "FICO": 720.0,
+   "antigüedad laboral": "3 years",
+   "vivienda": "RENT",
+   "uso de tarjetas (%)": 29.299999,
+   "consultas últimos 6 meses": 1.0
+  }
+ },
+ {
+  "id": "c12",
+  "posicion": 116316,
+  "decision_motor": "contraoferta",
+  "malo_real": 0,
+  "subgrado": "A3",
+  "roi_esperado_motor": 0.0397,
+  "solicitud": {
+   "monto pedido (USD)": 24000.0,
+   "tasa ofrecida por Lending Club (%)": 6.89,
+   "ingreso anual (USD)": 120000.0,
+   "propósito": "credit_card",
+   "deuda / ingreso (%)": 14.56,
+   "FICO": 680.0,
+   "antigüedad laboral": "10+ years",
+   "vivienda": "MORTGAGE",
+   "uso de tarjetas (%)": 91.5,
+   "consultas últimos 6 meses": 1.0
+  }
+ },
+ {
+  "id": "c13",
+  "posicion": 138816,
+  "decision_motor": "contraoferta",
+  "malo_real": 0,
+  "subgrado": "A5",
+  "roi_esperado_motor": 0.0084,
+  "solicitud": {
+   "monto pedido (USD)": 10000.0,
+   "tasa ofrecida por Lending Club (%)": 7.89,
+   "ingreso anual (USD)": 70000.0,
+   "propósito": "debt_consolidation",
+   "deuda / ingreso (%)": 29.85,
+   "FICO": 690.0,
+   "antigüedad laboral": "< 1 year",
+   "vivienda": "OWN",
+   "uso de tarjetas (%)": 89.099998,
+   "consultas últimos 6 meses": 0.0
+  }
+ },
+ {
+  "id": "c14",
+  "posicion": 16276,
+  "decision_motor": "contraoferta",
+  "malo_real": 0,
+  "subgrado": "A5",
+  "roi_esperado_motor": 0.0376,
+  "solicitud": {
+   "monto pedido (USD)": 10000.0,
+   "tasa ofrecida por Lending Club (%)": 7.89,
+   "ingreso anual (USD)": 65000.0,
+   "propósito": "debt_consolidation",
+   "deuda / ingreso (%)": 2.18,
+   "FICO": 680.0,
+   "antigüedad laboral": "5 years",
+   "vivienda": "RENT",
+   "uso de tarjetas (%)": 25.6,
+   "consultas últimos 6 meses": 0.0
+  }
+ },
+ {
+  "id": "c15",
+  "posicion": 98680,
+  "decision_motor": "contraoferta",
+  "malo_real": 1,
+  "subgrado": "B3",
+  "roi_esperado_motor": -0.003,
+  "solicitud": {
+   "monto pedido (USD)": 16000.0,
+   "tasa ofrecida por Lending Club (%)": 9.99,
+   "ingreso anual (USD)": 46000.0,
+   "propósito": "car",
+   "deuda / ingreso (%)": 4.07,
+   "FICO": 675.0,
+   "antigüedad laboral": "8 years",
+   "vivienda": "RENT",
+   "uso de tarjetas (%)": 63.599998,
+   "consultas últimos 6 meses": 0.0
+  }
+ },
+ {
+  "id": "c16",
+  "posicion": 24371,
+  "decision_motor": "contraoferta",
+  "malo_real": 1,
+  "subgrado": "A4",
+  "roi_esperado_motor": -0.0223,
+  "solicitud": {
+   "monto pedido (USD)": 10000.0,
+   "tasa ofrecida por Lending Club (%)": 7.26,
+   "ingreso anual (USD)": 34736.0,
+   "propósito": "home_improvement",
+   "deuda / ingreso (%)": 35.970001,
+   "FICO": 725.0,
+   "antigüedad laboral": null,
+   "vivienda": "RENT",
+   "uso de tarjetas (%)": 58.400002,
+   "consultas últimos 6 meses": 0.0
+  }
+ },
+ {
+  "id": "c17",
+  "posicion": 55020,
+  "decision_motor": "contraoferta",
+  "malo_real": 1,
+  "subgrado": "B1",
+  "roi_esperado_motor": -0.0048,
+  "solicitud": {
+   "monto pedido (USD)": 5000.0,
+   "tasa ofrecida por Lending Club (%)": 8.18,
+   "ingreso anual (USD)": 51000.0,
+   "propósito": "medical",
+   "deuda / ingreso (%)": 25.84,
+   "FICO": 685.0,
+   "antigüedad laboral": null,
+   "vivienda": "MORTGAGE",
+   "uso de tarjetas (%)": 23.9,
+   "consultas últimos 6 meses": 1.0
+  }
+ },
+ {
+  "id": "c18",
+  "posicion": 136449,
+  "decision_motor": "contraoferta",
+  "malo_real": 1,
+  "subgrado": "C3",
+  "roi_esperado_motor": 0.0175,
+  "solicitud": {
+   "monto pedido (USD)": 13000.0,
+   "tasa ofrecida por Lending Club (%)": 13.33,
+   "ingreso anual (USD)": 37000.0,
+   "propósito": "debt_consolidation",
+   "deuda / ingreso (%)": 28.190001,
+   "FICO": 660.0,
+   "antigüedad laboral": "7 years",
+   "vivienda": "MORTGAGE",
+   "uso de tarjetas (%)": 73.400002,
+   "consultas últimos 6 meses": 0.0
+  }
+ },
+ {
+  "id": "c19",
+  "posicion": 88071,
+  "decision_motor": "contraoferta",
+  "malo_real": 1,
+  "subgrado": "C1",
+  "roi_esperado_motor": 0.039,
+  "solicitud": {
+   "monto pedido (USD)": 7000.0,
+   "tasa ofrecida por Lending Club (%)": 12.29,
+   "ingreso anual (USD)": 40000.0,
+   "propósito": "debt_consolidation",
+   "deuda / ingreso (%)": 15.2,
+   "FICO": 685.0,
+   "antigüedad laboral": "10+ years",
+   "vivienda": "OWN",
+   "uso de tarjetas (%)": 54.400002,
+   "consultas últimos 6 meses": 2.0
+  }
+ },
+ {
+  "id": "c20",
+  "posicion": 110102,
+  "decision_motor": "rechazar",
+  "malo_real": 1,
+  "subgrado": "E3",
+  "roi_esperado_motor": 0.0081,
+  "solicitud": {
+   "monto pedido (USD)": 20000.0,
+   "tasa ofrecida por Lending Club (%)": 19.190001,
+   "ingreso anual (USD)": 45000.0,
+   "propósito": "small_business",
+   "deuda / ingreso (%)": 27.969999,
+   "FICO": 695.0,
+   "antigüedad laboral": "5 years",
+   "vivienda": "RENT",
+   "uso de tarjetas (%)": 42.900002,
+   "consultas últimos 6 meses": 1.0
+  }
+ },
+ {
+  "id": "c21",
+  "posicion": 154210,
+  "decision_motor": "aprobar",
+  "malo_real": 1,
+  "subgrado": "B4",
+  "roi_esperado_motor": 0.0609,
+  "solicitud": {
+   "monto pedido (USD)": 24000.0,
+   "tasa ofrecida por Lending Club (%)": 10.99,
+   "ingreso anual (USD)": 72000.0,
+   "propósito": "credit_card",
+   "deuda / ingreso (%)": 10.18,
+   "FICO": 660.0,
+   "antigüedad laboral": null,
+   "vivienda": "MORTGAGE",
+   "uso de tarjetas (%)": 44.200001,
+   "consultas últimos 6 meses": 2.0
+  }
+ },
+ {
+  "id": "c22",
+  "posicion": 22037,
+  "decision_motor": "contraoferta",
+  "malo_real": 0,
+  "subgrado": "A4",
+  "roi_esperado_motor": 0.0246,
+  "solicitud": {
+   "monto pedido (USD)": 30000.0,
+   "tasa ofrecida por Lending Club (%)": 7.26,
+   "ingreso anual (USD)": 160000.0,
+   "propósito": "debt_consolidation",
+   "deuda / ingreso (%)": 22.73,
+   "FICO": 750.0,
+   "antigüedad laboral": "3 years",
+   "vivienda": "RENT",
+   "uso de tarjetas (%)": 14.7,
+   "consultas últimos 6 meses": 1.0
+  }
+ },
+ {
+  "id": "c23",
+  "posicion": 7577,
+  "decision_motor": "aprobar",
+  "malo_real": 0,
+  "subgrado": "B1",
+  "roi_esperado_motor": 0.0581,
+  "solicitud": {
+   "monto pedido (USD)": 12000.0,
+   "tasa ofrecida por Lending Club (%)": 8.38,
+   "ingreso anual (USD)": 48000.0,
+   "propósito": "credit_card",
+   "deuda / ingreso (%)": 29.940001,
+   "FICO": 665.0,
+   "antigüedad laboral": "10+ years",
+   "vivienda": "MORTGAGE",
+   "uso de tarjetas (%)": 60.5,
+   "consultas últimos 6 meses": 0.0
+  }
+ },
+ {
+  "id": "c24",
+  "posicion": 136420,
+  "decision_motor": "aprobar",
+  "malo_real": 0,
+  "subgrado": "A5",
+  "roi_esperado_motor": 0.0717,
+  "solicitud": {
+   "monto pedido (USD)": 12000.0,
+   "tasa ofrecida por Lending Club (%)": 7.89,
+   "ingreso anual (USD)": 60000.0,
+   "propósito": "home_improvement",
+   "deuda / ingreso (%)": 13.9,
+   "FICO": 690.0,
+   "antigüedad laboral": "4 years",
+   "vivienda": "MORTGAGE",
+   "uso de tarjetas (%)": 62.700001,
+   "consultas últimos 6 meses": 0.0
+  }
+ },
+ {
+  "id": "c25",
+  "posicion": 145026,
+  "decision_motor": "aprobar",
+  "malo_real": 0,
+  "subgrado": "B5",
+  "roi_esperado_motor": 0.1401,
+  "solicitud": {
+   "monto pedido (USD)": 12000.0,
+   "tasa ofrecida por Lending Club (%)": 11.53,
+   "ingreso anual (USD)": 300000.0,
+   "propósito": "debt_consolidation",
+   "deuda / ingreso (%)": 12.67,
+   "FICO": 690.0,
+   "antigüedad laboral": "5 years",
+   "vivienda": "MORTGAGE",
+   "uso de tarjetas (%)": 81.5,
+   "consultas últimos 6 meses": 0.0
+  }
+ },
+ {
+  "id": "c26",
+  "posicion": 132695,
+  "decision_motor": "aprobar",
+  "malo_real": 0,
+  "subgrado": "C2",
+  "roi_esperado_motor": 0.1324,
+  "solicitud": {
+   "monto pedido (USD)": 12575.0,
+   "tasa ofrecida por Lending Club (%)": 12.69,
+   "ingreso anual (USD)": 80000.0,
+   "propósito": "credit_card",
+   "deuda / ingreso (%)": 14.51,
+   "FICO": 670.0,
+   "antigüedad laboral": null,
+   "vivienda": "MORTGAGE",
+   "uso de tarjetas (%)": 93.300003,
+   "consultas últimos 6 meses": 0.0
+  }
+ },
+ {
+  "id": "c27",
+  "posicion": 143691,
+  "decision_motor": "aprobar",
+  "malo_real": 0,
+  "subgrado": "E1",
+  "roi_esperado_motor": 0.0668,
+  "solicitud": {
+   "monto pedido (USD)": 8000.0,
+   "tasa ofrecida por Lending Club (%)": 18.25,
+   "ingreso anual (USD)": 36000.0,
+   "propósito": "house",
+   "deuda / ingreso (%)": 24.030001,
+   "FICO": 665.0,
+   "antigüedad laboral": "4 years",
+   "vivienda": "OWN",
+   "uso de tarjetas (%)": 78.699997,
+   "consultas últimos 6 meses": 1.0
+  }
+ },
+ {
+  "id": "c28",
+  "posicion": 146032,
+  "decision_motor": "contraoferta",
+  "malo_real": 0,
+  "subgrado": "D5",
+  "roi_esperado_motor": 0.0314,
+  "solicitud": {
+   "monto pedido (USD)": 14050.0,
+   "tasa ofrecida por Lending Club (%)": 17.860001,
+   "ingreso anual (USD)": 37000.0,
+   "propósito": "credit_card",
+   "deuda / ingreso (%)": 30.879999,
+   "FICO": 670.0,
+   "antigüedad laboral": "8 years",
+   "vivienda": "RENT",
+   "uso de tarjetas (%)": 50.400002,
+   "consultas últimos 6 meses": 2.0
+  }
+ },
+ {
+  "id": "c29",
+  "posicion": 29618,
+  "decision_motor": "contraoferta",
+  "malo_real": 0,
+  "subgrado": "C5",
+  "roi_esperado_motor": 0.0324,
+  "solicitud": {
+   "monto pedido (USD)": 12600.0,
+   "tasa ofrecida por Lending Club (%)": 14.33,
+   "ingreso anual (USD)": 35000.0,
+   "propósito": "debt_consolidation",
+   "deuda / ingreso (%)": 12.65,
+   "FICO": 675.0,
+   "antigüedad laboral": "< 1 year",
+   "vivienda": "RENT",
+   "uso de tarjetas (%)": 58.5,
+   "consultas últimos 6 meses": 1.0
+  }
+ }
+]

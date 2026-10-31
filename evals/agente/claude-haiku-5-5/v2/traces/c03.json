@@ -1,0 +1,266 @@
+{
+ "historial": [
+  {
+   "nodo": "cupo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave (USD 15.000, FICO 692)**\n\n- **Oferta original (14,65%):** ROI esperado 8,17%, utilidad esperada USD 1.225,59, PD 21,61%. Cuota/ingreso 12,20%, dentro del límite de 20%. Pero la tasa de mercado es 13,41%, así que queda fuera de rango (más de 1 pt de diferencia) y no tiene respaldo histórico.\n- **Cupo:** monto máximo USD 24.000. El monto solicitado es viable.\n- **Tasas de referencia:** equilibrio 7,5%; sugerida 11,0%, pero esta también está fuera de rango.\n- **Alternativas:**\n  - 14,40%: ROI 8,04%, utilidad USD 1.205,34, dentro de rango (0,99 pt sobre mercado).\n  - 12,40%: ROI 5,74%, utilidad USD 861,74, fuera de rango.\n- **Estrés:** el escenario de estrés devolvió los mismos valores que el caso base (equilibrio 7,5%, sugerida 11,0%).\n\n**Mejor oferta:** 14,40% por USD 15.000. Mantiene un ROI similar al original y queda dentro del rango con evidencia.\n\n**Señal final: neutral.** El riesgo de crédito es alto (PD 21,61%), pero el precio de 14,40% es defendible. La oferta original de 14,65% no lo es.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_cupo_pricing",
+      "entrada": {},
+      "salida": {
+       "monto_pedido": 15000.0,
+       "tasa_ofrecida": 14.65,
+       "tasa_mercado": 13.409578,
+       "pd": 0.216146,
+       "roi_esperado": 0.081706,
+       "utilidad_esperada": 1225.59004,
+       "cuota_ingreso": 0.122007,
+       "monto_maximo": 24000.0,
+       "tasa_equilibrio": 7.5,
+       "tasa_sugerida": 11.0,
+       "sugerida_fuera_de_rango": true,
+       "tasa_equilibrio_estres": 7.5,
+       "tasa_sugerida_estres": 11.0,
+       "regla_cuota_max": 0.2,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 15000,
+       "tasa": 14.65
+      },
+      "salida": {
+       "monto": 15000,
+       "tasa": 14.65,
+       "pd": 0.216146,
+       "roi_esperado": 0.081706,
+       "utilidad_esperada": 1225.590107,
+       "cuota_ingreso": 0.122007,
+       "cumple_capacidad": true,
+       "tasa_mercado": 13.409578,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 15000,
+       "tasa": 14.4
+      },
+      "salida": {
+       "monto": 15000,
+       "tasa": 14.4,
+       "pd": 0.216146,
+       "roi_esperado": 0.080356,
+       "utilidad_esperada": 1205.344224,
+       "cuota_ingreso": 0.121576,
+       "cumple_capacidad": true,
+       "tasa_mercado": 13.409578,
+       "fuera_de_rango": false,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 15000,
+       "tasa": 12.4
+      },
+      "salida": {
+       "monto": 15000,
+       "tasa": 12.4,
+       "pd": 0.216146,
+       "roi_esperado": 0.057449,
+       "utilidad_esperada": 861.73664,
+       "cuota_ingreso": 0.118157,
+       "cumple_capacidad": true,
+       "tasa_mercado": 13.409578,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "economia",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave (monto USD 15.000, tasa 14,65%)**\n\n- **Escenario bueno:** rendimiento de 20,6%.\n- **Escenario malo:** pérdida económica de -36,9%.\n- **Probabilidad de incumplimiento (PD):** 21,6%.\n- **ROI esperado:** 8,17%, con utilidad esperada de USD 1.225,59.\n- **Prepago:** la probabilidad de prepagar antes del mes 30 es 46,9%, y el mes esperado de pago es 27,1.\n- **Capacidad de pago:** la cuota equivale al 12,2% del ingreso, dentro del límite.\n- **Tasa de mercado estimada:** 13,41%. La oferta se aleja más de 1 punto de ese valor, por lo que la herramienta la marca como fuera de rango. No hay evidencia histórica para esa zona.\n\n**Lectura:** el ROI esperado es positivo, pero la PD de 21,6% y la pérdida de -36,9% en el escenario malo son altas. Además, la tasa está por encima del mercado estimado sin respaldo histórico, lo que hace incierta la estimación de rentabilidad.\n\n**Señal final: neutral.** La oferta es rentable en promedio, pero el riesgo de pérdida y la falta de evidencia para la tasa obligan a cautela.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_economia",
+      "entrada": {},
+      "salida": {
+       "r_bueno": 0.206044,
+       "r_malo": -0.369207,
+       "pd": 0.216146,
+       "roi_esperado": 0.081706,
+       "utilidad_esperada": 1225.59004,
+       "prob_prepago_antes_mes_30": 0.468629,
+       "mes_esperado_de_pago": 27.0955
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 15000,
+       "tasa": 14.65
+      },
+      "salida": {
+       "monto": 15000,
+       "tasa": 14.65,
+       "pd": 0.216146,
+       "roi_esperado": 0.081706,
+       "utilidad_esperada": 1225.590107,
+       "cuota_ingreso": 0.122007,
+       "cumple_capacidad": true,
+       "tasa_mercado": 13.409578,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "riesgo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: desfavorable.**\n\nLa PD estimada es **21,6%**, frente a un promedio de cartera de **12,9%**, es decir, más del doble de riesgo promedio... en concreto, unas 1,7 veces el promedio.\n\nLo que más empuja el riesgo al alza:\n- **Deuda sobre ingreso (31,96%)**: es el factor más influyente.\n- **Monto solicitado sobre ingreso anual (0,29)**: el préstamo equivale a cerca del 29% del ingreso.\n- **Uso del crédito rotativo (98%)**: utilización muy alta de la línea disponible.\n- **Uso de tarjetas (98,7%)**: refuerza la señal de presión de liquidez.\n\nLo que reduce el riesgo:\n- **Cero consultas de crédito en los últimos 6 meses**, un efecto moderado.\n\nLa antigüedad laboral de 9 años, el FICO de 692 y la hipoteca no aparecen entre las cinco razones principales, así que no tengo datos sobre su contribución. La tasa ofrecida tampoco aparece entre estos factores.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_riesgo",
+      "entrada": {},
+      "salida": {
+       "pd": 0.216146,
+       "pd_promedio_cartera": 0.128836,
+       "razones": [
+        {
+         "descripcion": "Endeudamiento sobre ingreso (DTI)",
+         "valor": 31.959999,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.236853
+        },
+        {
+         "descripcion": "Monto solicitado sobre ingreso anual",
+         "valor": 0.294753,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.16297
+        },
+        {
+         "descripcion": "Uso del crédito rotativo (%)",
+         "valor": 98.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.144607
+        },
+        {
+         "descripcion": "Uso de tarjetas (%)",
+         "valor": 98.699997,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.131983
+        },
+        {
+         "descripcion": "Consultas de crédito en los últimos 6 meses",
+         "valor": 0.0,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.122747
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 1,
+   "contenido": {
+    "decision": "aprobar",
+    "monto": 15000.0,
+    "tasa": 14.65,
+    "razones": [
+     "ROI esperado de 8,17%, por encima del mínimo de 4% de la política al monto y tasa ofrecidos",
+     "Cuota de 12,2% del ingreso, por debajo del límite de 20%",
+     "La regla 1 de la política se cumple, por lo que no aplica contraoferta",
+     "La tasa está fuera de rango frente a la tasa de mercado estimada de 13,41% y no tiene respaldo histórico; es una alerta que no cambia la decisión",
+     "El escenario de estrés devolvió los mismos valores que el caso base; es una alerta que no cambia la decisión"
+    ],
+    "memo": "## Resumen\n\nEl comité aprueba USD 15.000 a una tasa de 14,65%. Al monto y la tasa ofrecidos, el ROI esperado es 8,17% y la cuota equivale al 12,2% del ingreso anual, por lo que se cumplen las dos condiciones de la regla 1 de la política.\n\n## Decisión\n\nAprobar USD 15.000 a 14,65%. La política se aplica en su orden: la regla 1 se cumple con la oferta original, así que no corresponde contraoferta ni rechazo. Las reglas duras también se cumplen: cuota de 12,2% (límite 20%) y ROI de 8,17% (mínimo 0%).\n\n## Riesgo\n\nEl especialista de riesgo dio señal desfavorable. La PD estimada es 21,6%, frente a un promedio de cartera de 12,9%. Según la herramienta de riesgo, los factores que suben el riesgo son: deuda sobre ingreso de 31,96%, monto sobre ingreso anual de 0,29, uso del crédito rotativo de 98% y uso de tarjetas de 98,7%. El factor que reduce el riesgo es tener 0 consultas de crédito en los últimos 6 meses. La antigüedad laboral de 9 años, el FICO de 692 y la vivienda con hipoteca no aparecen entre las cinco razones de la herramienta.\n\n## Economía\n\nEl especialista de economía dio señal neutral. Escenario bueno: rendimiento de 20,6%. Escenario malo: pérdida económica de -36,9%. PD de 21,6%, ROI esperado de 8,17% y utilidad esperada de USD 1.225,59. La probabilidad de prepagar antes del mes 30 es 46,9% y el mes esperado de pago es 27,1. La cuota equivale al 12,2% del ingreso.\n\n## Cupo y precio\n\nEl especialista de cupo dio señal neutral. El monto máximo a la tasa ofrecida es USD 24.000, así que el monto pedido es viable. Tasa de equilibrio: 7,5%. Tasa sugerida: 11,0%, fuera de rango. Alternativas simuladas: 14,40% con ROI de 8,04% y utilidad de USD 1.205,34, dentro de rango; 12,40% con ROI de 5,74% y utilidad de USD 861,74, fuera de rango. El especialista indicó que consideraba mejor 14,40%, y que la oferta de 14,65% no era defendible. El comité aplica la política, que sí se cumple con 14,65%.\n\n## Alertas\n\n- La tasa ofrecida de 14,65% se aleja más de 1 punto de la tasa de mercado estimada de 13,41%. La herramienta la marca como fuera de rango, sin evidencia histórica para esa zona.\n- La tasa sugerida de 11,0% también está fuera de rango.\n- El escenario de estrés devolvió los mismos valores que el caso base (equilibrio 7,5%, sugerida 11,0%).\n- Las señales de los especialistas son neutral (cupo y economía) y desfavorable (riesgo). Ninguna alerta cambia la decisión según la política."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 1,
+   "contenido": {
+    "aprobado": true,
+    "hallazgos": [
+     "Menor: el análisis del especialista de riesgo dice que la PD de 21,6% es \"más del doble\" del promedio de cartera de 12,9% y luego indica \"unas 1,7 veces\"; el cociente real es 1,7, así que la primera frase es imprecisa. El memo no repite esa afirmación y no afecta la decisión."
+    ],
+    "oferta": {
+     "monto": 15000.0,
+     "tasa": 14.65,
+     "pd": 0.216146,
+     "roi_esperado": 0.081706,
+     "utilidad_esperada": 1225.590107,
+     "cuota_ingreso": 0.122007,
+     "cumple_capacidad": true,
+     "tasa_mercado": 13.409578,
+     "fuera_de_rango": true,
+     "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+     "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+    },
+    "violaciones": []
+   }
+  }
+ ],
+ "final": {
+  "decision": "aprobar",
+  "monto": 15000.0,
+  "tasa": 14.65,
+  "razones": [
+   "ROI esperado de 8,17%, por encima del mínimo de 4% de la política al monto y tasa ofrecidos",
+   "Cuota de 12,2% del ingreso, por debajo del límite de 20%",
+   "La regla 1 de la política se cumple, por lo que no aplica contraoferta",
+   "La tasa está fuera de rango frente a la tasa de mercado estimada de 13,41% y no tiene respaldo histórico; es una alerta que no cambia la decisión",
+   "El escenario de estrés devolvió los mismos valores que el caso base; es una alerta que no cambia la decisión"
+  ],
+  "memo": "## Resumen\n\nEl comité aprueba USD 15.000 a una tasa de 14,65%. Al monto y la tasa ofrecidos, el ROI esperado es 8,17% y la cuota equivale al 12,2% del ingreso anual, por lo que se cumplen las dos condiciones de la regla 1 de la política.\n\n## Decisión\n\nAprobar USD 15.000 a 14,65%. La política se aplica en su orden: la regla 1 se cumple con la oferta original, así que no corresponde contraoferta ni rechazo. Las reglas duras también se cumplen: cuota de 12,2% (límite 20%) y ROI de 8,17% (mínimo 0%).\n\n## Riesgo\n\nEl especialista de riesgo dio señal desfavorable. La PD estimada es 21,6%, frente a un promedio de cartera de 12,9%. Según la herramienta de riesgo, los factores que suben el riesgo son: deuda sobre ingreso de 31,96%, monto sobre ingreso anual de 0,29, uso del crédito rotativo de 98% y uso de tarjetas de 98,7%. El factor que reduce el riesgo es tener 0 consultas de crédito en los últimos 6 meses. La antigüedad laboral de 9 años, el FICO de 692 y la vivienda con hipoteca no aparecen entre las cinco razones de la herramienta.\n\n## Economía\n\nEl especialista de economía dio señal neutral. Escenario bueno: rendimiento de 20,6%. Escenario malo: pérdida económica de -36,9%. PD de 21,6%, ROI esperado de 8,17% y utilidad esperada de USD 1.225,59. La probabilidad de prepagar antes del mes 30 es 46,9% y el mes esperado de pago es 27,1. La cuota equivale al 12,2% del ingreso.\n\n## Cupo y precio\n\nEl especialista de cupo dio señal neutral. El monto máximo a la tasa ofrecida es USD 24.000, así que el monto pedido es viable. Tasa de equilibrio: 7,5%. Tasa sugerida: 11,0%, fuera de rango. Alternativas simuladas: 14,40% con ROI de 8,04% y utilidad de USD 1.205,34, dentro de rango; 12,40% con ROI de 5,74% y utilidad de USD 861,74, fuera de rango. El especialista indicó que consideraba mejor 14,40%, y que la oferta de 14,65% no era defendible. El comité aplica la política, que sí se cumple con 14,65%.\n\n## Alertas\n\n- La tasa ofrecida de 14,65% se aleja más de 1 punto de la tasa de mercado estimada de 13,41%. La herramienta la marca como fuera de rango, sin evidencia histórica para esa zona.\n- La tasa sugerida de 11,0% también está fuera de rango.\n- El escenario de estrés devolvió los mismos valores que el caso base (equilibrio 7,5%, sugerida 11,0%).\n- Las señales de los especialistas son neutral (cupo y economía) y desfavorable (riesgo). Ninguna alerta cambia la decisión según la política.",
+  "auditoria": {
+   "aprobado": true,
+   "hallazgos": [
+    "Menor: el análisis del especialista de riesgo dice que la PD de 21,6% es \"más del doble\" del promedio de cartera de 12,9% y luego indica \"unas 1,7 veces\"; el cociente real es 1,7, así que la primera frase es imprecisa. El memo no repite esa afirmación y no afecta la decisión."
+   ]
+  },
+  "intentos": 1
+ },
+ "juez": {
+  "veredicto": {
+   "justifica_con_numeros": true,
+   "coherente": true,
+   "alertas": true,
+   "sin_invenciones": true,
+   "claro": true,
+   "explicacion_justifica_con_numeros": "Justifica la aprobación con cifras concretas: ROI esperado de 8,17%, cuota/ingreso de 12,2% frente a un límite de 20% y monto máximo de USD 24.000.",
+   "explicacion_coherente": "Resumen, Decisión y el resto del memo coinciden: aprobar USD 15.000 a 14,65%. Esto concuerda con la sección Decisión de los datos.",
+   "explicacion_alertas": "Menciona las señales de cautela: tasa fuera de rango frente al mercado de 13,41%, tasa sugerida también fuera de rango, estrés con los mismos valores que el caso base, señales neutral/desfavorable y PD de 21,6% frente a 12,9% de la cartera. No inventa alertas sobre la cuota ni sobre el ROI, que no son señales de cautela.",
+   "explicacion_sin_invenciones": "Las cifras salen de los datos. Las referencias a la regla 1 y al ROI mínimo de 0% se atribuyen a la política y no contradicen los datos, aunque no se pueden verificar aquí. Atribuye correctamente al especialista de cupo la preferencia por 14,40%. La frase 'monto máximo a la tasa ofrecida' es una precisión menor no explícita en los datos.",
+   "explicacion_claro": "Está bien estructurado: la decisión y su porqué (cumple la regla 1 con ROI 8,17% y cuota 12,2%) aparecen en el resumen y se entienden rápido."
+  },
+  "modelo": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 5463,
+   "output_tokens": 1012
+  }
+ }
+}

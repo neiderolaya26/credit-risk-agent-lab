@@ -1,0 +1,289 @@
+{
+ "historial": [
+  {
+   "nodo": "cupo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave**\n\n- **Oferta actual (9,17 %):** ROI esperado de 1,91 % con PD de 22,76 %, por debajo del objetivo de 4 %. Utilidad esperada de USD 287,13.\n- **Límites de pricing:** tasa de equilibrio 7,5 %, tasa sugerida 11,5 %. Monto máximo USD 23.000, así que el monto pedido (USD 15.000) está dentro del cupo.\n- **Estrés:** las tasas de equilibrio y sugerida no cambian (7,5 % y 11,5 %). La herramienta no devolvió un escenario de PD distinto.\n- **Oferta alternativa (11,5 %):** ROI esperado de 4,35 %, utilidad de USD 652,46, cuota/ingreso de 9,89 % y cumple capacidad de pago.\n- **Bandera fuera de rango:** la oferta de 9,17 % queda marcada porque está a más de 1 pt de la tasa de mercado (11,62 %). Con 11,5 % no hay bandera.\n\n**Mejor oferta:** USD 15.000 a 11,5 %, la tasa sugerida, que alcanza el ROI objetivo y está dentro de rango.\n\n**Señal final: neutral.** La oferta original (9,17 %) es desfavorable en rentabilidad y está marcada fuera de rango. Con 11,5 % la operación es viable, aunque la PD de 22,76 % es alta.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_cupo_pricing",
+      "entrada": {},
+      "salida": {
+       "monto_pedido": 15000.0,
+       "tasa_ofrecida": 9.17,
+       "tasa_mercado": 11.616665,
+       "pd": 0.22756,
+       "roi_esperado": 0.019142,
+       "utilidad_esperada": 287.13316,
+       "cuota_ingreso": 0.095637,
+       "monto_maximo": 23000.0,
+       "tasa_equilibrio": 7.5,
+       "tasa_sugerida": 11.5,
+       "sugerida_fuera_de_rango": false,
+       "tasa_equilibrio_estres": 7.5,
+       "tasa_sugerida_estres": 11.5,
+       "regla_cuota_max": 0.2
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 15000,
+       "tasa": 9.17
+      },
+      "salida": {
+       "monto": 15000,
+       "tasa": 9.17,
+       "pd": 0.22756,
+       "roi_esperado": 0.019142,
+       "utilidad_esperada": 287.133148,
+       "cuota_ingreso": 0.095637,
+       "cumple_capacidad": true,
+       "tasa_mercado": 11.616665,
+       "fuera_de_rango": true
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 15000,
+       "tasa": 11.5
+      },
+      "salida": {
+       "monto": 15000,
+       "tasa": 11.5,
+       "pd": 0.22756,
+       "roi_esperado": 0.043497,
+       "utilidad_esperada": 652.460053,
+       "cuota_ingreso": 0.098928,
+       "cumple_capacidad": true,
+       "tasa_mercado": 11.616665,
+       "fuera_de_rango": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "economia",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave (préstamo de USD 15.000 a 9,17%)**\n\n- **Rendimiento si sale bien:** 12,06% anual.\n- **Rendimiento si sale mal:** -32,51%, es decir, pérdida económica.\n- **Probabilidad de incumplimiento (PD):** 22,76%.\n- **ROI esperado:** 1,91%, con utilidad esperada de USD 287,13.\n- **Prepago:** 55,87% de probabilidad de pagar antes del mes 30; mes esperado de pago 25,09.\n- **Capacidad de pago:** la cuota equivale al 9,56% del ingreso y cumple el criterio.\n- **Tasa de mercado estimada:** 11,62%. La oferta de 9,17% queda por debajo y la herramienta la marca como **fuera de rango**.\n\n**Lectura:** El ROI esperado es bajo para el riesgo que implica una PD de 22,76% y una pérdida de -32,51% en el escenario malo. La tasa ofrecida está por debajo de la de mercado, lo que reduce el margen. La capacidad de pago no es el problema; el problema es la relación entre rentabilidad y riesgo.\n\n**Señal final: DESFAVORABLE.** Para que fuera aceptable, la tasa tendría que subir hacia la de mercado o el riesgo tendría que bajar.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_economia",
+      "entrada": {},
+      "salida": {
+       "r_bueno": 0.120559,
+       "r_malo": -0.325112,
+       "pd": 0.22756,
+       "roi_esperado": 0.019142,
+       "utilidad_esperada": 287.13316,
+       "prob_prepago_antes_mes_30": 0.558738,
+       "mes_esperado_de_pago": 25.085959
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 15000,
+       "tasa": 9.17
+      },
+      "salida": {
+       "monto": 15000,
+       "tasa": 9.17,
+       "pd": 0.22756,
+       "roi_esperado": 0.019142,
+       "utilidad_esperada": 287.133148,
+       "cuota_ingreso": 0.095637,
+       "cumple_capacidad": true,
+       "tasa_mercado": 11.616665,
+       "fuera_de_rango": true
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "riesgo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: desfavorable.**\n\n- **PD del modelo:** 22,76%, frente a una PD promedio de cartera de 12,88%. Casi el doble del promedio.\n- **Principal impulsor:** el puntaje FICO sube el riesgo (contribución logit +0,377). La herramienta registra un FICO de 662, mientras que la solicitud indica 660. Conviene verificar cuál es el dato correcto.\n- **Vivienda en alquiler:** sube el riesgo (+0,105).\n- **Tarjetas con uso mayor al 75%:** 50% de las tarjetas están en ese rango, lo que sube el riesgo (+0,074).\n- **Factores mitigantes:**\n  - Antigüedad de la cuenta rotativa más vieja: 248 meses, baja el riesgo (−0,136).\n  - 76,7% de las cuentas nunca han estado en mora, lo que baja el riesgo (−0,088).\n\nEl perfil tiene algunos puntos a favor, pero el FICO bajo y la presión de tarjetas más la vivienda en alquiler empujan la PD muy por encima de la cartera.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_riesgo",
+      "entrada": {},
+      "salida": {
+       "pd": 0.22756,
+       "pd_promedio_cartera": 0.128836,
+       "razones": [
+        {
+         "descripcion": "Puntaje FICO",
+         "valor": 662.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.377477
+        },
+        {
+         "descripcion": "Antigüedad de la cuenta rotativa más vieja (meses)",
+         "valor": 248.0,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.136096
+        },
+        {
+         "descripcion": "Tipo de vivienda",
+         "valor": "RENT",
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.104933
+        },
+        {
+         "descripcion": "% de cuentas que nunca han estado en mora",
+         "valor": 76.699997,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.087641
+        },
+        {
+         "descripcion": "% de tarjetas con uso mayor al 75%",
+         "valor": 50.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.07381
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 1,
+   "contenido": {
+    "decision": "contraoferta",
+    "monto": 15000.0,
+    "tasa": 11.5,
+    "razones": [
+     "Con la tasa ofrecida de 9,17% el ROI esperado es 1,91%, por debajo del mínimo de 4%.",
+     "Con 11,5% (tasa sugerida, dentro del rango 5%-30%) el ROI esperado es 4,35% y la cuota equivale al 9,89% del ingreso, cumpliendo ambas reglas de política.",
+     "El monto de USD 15.000 está dentro del máximo de USD 23.000.",
+     "La PD de 22,76% es casi el doble de la PD promedio de cartera (12,88%), lo que exige cautela.",
+     "La oferta original está marcada fuera de rango frente a la tasa de mercado de 11,62%.",
+     "El escenario de estrés no cambió las tasas de equilibrio ni sugerida y no se devolvió una PD estresada distinta."
+    ],
+    "memo": "## Resumen\nSolicitud de USD 15.000 para consolidación de deuda. Con la tasa ofrecida de 9,17% el ROI esperado es 1,91%, por debajo del mínimo de 4%. Se propone contraoferta a 11,5%, que cumple un ROI de 4,35% y una cuota de 9,89% del ingreso.\n\n## Decisión\nContraoferta: monto USD 15.000 a tasa 11,5%. La tasa es igual a la sugerida y está dentro del rango de 5% a 30%. El monto está dentro del máximo de USD 23.000. No se aprueba la oferta original.\n\n## Riesgo\nPD de 22,76% frente a una PD promedio de cartera de 12,88%. Factores que suben el riesgo: FICO (contribución logit 0,377), vivienda en alquiler (0,105) y uso de tarjetas mayor al 75% en 50% de las tarjetas (0,074). Factores mitigantes: antigüedad de la cuenta rotativa más vieja de 248 meses (-0,136) y 76,7% de cuentas sin mora (-0,088).\n\n## Economía\nCon 9,17%: rendimiento en escenario bueno de 12,06%, en escenario malo de -32,51% y utilidad esperada de USD 287,13. Con 11,5%: ROI esperado de 4,35% y utilidad esperada de USD 652,46. Probabilidad de prepago antes del mes 30 de 55,87%; mes esperado de pago 25,09.\n\n## Cupo y precio\nMonto máximo USD 23.000. Tasa de equilibrio 7,5%, tasa sugerida 11,5%. Propuesta: USD 15.000 a 11,5%, con cuota de 9,89% del ingreso, dentro del límite de 20%. El monto pedido ya es viable, por lo que no se propone otro monto.\n\n## Alertas\n- La oferta original de 9,17% está marcada fuera de rango frente a la tasa de mercado de 11,62%.\n- El escenario de estrés no cambió las tasas de equilibrio ni la sugerida, y la herramienta no devolvió una PD estresada distinta; el estrés no está cuantificado.\n- La PD de 22,76% es alta y el margen de ROI de 4,35% sobre el mínimo de 4% es estrecho.\n- El FICO usado por la herramienta no coincide con el de la solicitud; verificar el dato antes de formalizar.\n- El prepago esperado de 55,87% puede reducir los ingresos por intereses."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 1,
+   "contenido": {
+    "aprobado": false,
+    "hallazgos": [
+     "La decisión y las razones afirman que la tasa de 11,5% está dentro de un rango de 5% a 30%, pero ninguna herramienta devuelve ese rango. Solo consta la bandera sugerida_fuera_de_rango=false, por lo que este dato es inventado o no está respaldado por las salidas.",
+     "El FICO de la solicitud es 660, pero el modelo de riesgo usó 662 para calcular la PD de 22,76%. La discrepancia se señala en el memo, pero no se resuelve. Como la PD sustenta la decisión y el margen de ROI sobre el mínimo de 4% es estrecho (4,35%), el dato debe confirmarse antes de aprobar."
+    ],
+    "oferta": {
+     "monto": 15000.0,
+     "tasa": 11.5,
+     "pd": 0.22756,
+     "roi_esperado": 0.043497,
+     "utilidad_esperada": 652.460053,
+     "cuota_ingreso": 0.098928,
+     "cumple_capacidad": true,
+     "tasa_mercado": 11.616665,
+     "fuera_de_rango": false
+    },
+    "violaciones": []
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 2,
+   "contenido": {
+    "decision": "contraoferta",
+    "monto": 15000.0,
+    "tasa": 11.5,
+    "razones": [
+     "La oferta original de 9,17 % tiene ROI esperado de 1,91 %, por debajo del umbral de la política, así que no se aprueba en esos términos.",
+     "Con USD 15.000 a 11,5 % el ROI esperado es 4,35 %, la utilidad esperada USD 652,46 y la cuota/ingreso 9,89 %, con capacidad de pago cumplida.",
+     "El monto de USD 15.000 está dentro del monto máximo de USD 23.000 que devuelve la herramienta de cupo.",
+     "La tasa de 11,5 % es la tasa_sugerida que devuelve la herramienta, con sugerida_fuera_de_rango en false. El rango de 5 % a 30 % no aparece en ninguna herramienta, así que no se usa como sustento.",
+     "La PD de 22,76 % está muy por encima del promedio de cartera de 12,88 %, y el margen sobre el ROI objetivo es estrecho.",
+     "El FICO es 660 en la solicitud y 662 en el modelo de riesgo que calculó la PD y el ROI. La discrepancia no está resuelta.",
+     "La contraoferta queda condicionada a confirmar el FICO antes de aprobar. Si el dato real cambia la PD, el ROI debe recalcularse antes de formalizar.",
+     "El escenario de estrés no devolvió una PD distinta, y en el escenario malo el rendimiento es -32,51 %."
+    ],
+    "memo": "## Resumen\nLa solicitud de USD 15.000 para consolidación de deuda, a la tasa ofrecida de 9,17 %, no cumple la política porque el ROI esperado es 1,91 %. Se propone una contraoferta a 11,5 % con el mismo monto, condicionada a confirmar el FICO antes de aprobar.\n\n## Decisión\nContraoferta: USD 15.000 a 11,5 %. Con esta tasa el ROI esperado es 4,35 %, la utilidad esperada USD 652,46 y la cuota equivale al 9,89 % del ingreso. Condición previa: confirmar el FICO (660 en la solicitud, 662 en el modelo) antes de formalizar.\n\n## Riesgo\nPD de 22,76 % frente a una PD promedio de cartera de 12,88 %. Impulsores: FICO (+0,377 en logit), vivienda en alquiler (+0,105) y uso de tarjetas mayor al 75 % (+0,074). Mitigantes: antigüedad de la cuenta rotativa más vieja de 248 meses (-0,136) y 76,7 % de cuentas sin mora (-0,088). La discrepancia de FICO afecta directamente la PD.\n\n## Economía\nRendimiento en escenario bueno de 12,06 % y en escenario malo de -32,51 %. ROI esperado con 9,17 %: 1,91 %; con 11,5 %: 4,35 %. Probabilidad de prepago antes del mes 30: 55,87 %; mes esperado de pago 25,09. La oferta original queda por debajo de la tasa de mercado de 11,62 %, lo que reduce el margen.\n\n## Cupo y precio\nMonto máximo USD 23.000; el monto pedido está dentro del cupo. Tasa de equilibrio 7,5 % y tasa sugerida 11,5 %. Ambas no cambian en el escenario de estrés, y la herramienta no devolvió una PD de estrés distinta. La tasa de 11,5 % no tiene bandera de fuera de rango. La regla de cuota máxima de 20 % se cumple con 9,89 %.\n\n## Alertas\n- FICO: 660 en la solicitud y 662 en el cálculo de riesgo. Si el FICO real es 660, la PD y el ROI deben recalcularse; el margen sobre el umbral es estrecho con 4,35 %.\n- Oferta original de 9,17 %: marcada fuera de rango, con ROI de 1,91 %.\n- Escenario de estrés sin PD distinta; escenario malo de -32,51 %.\n- PD de 22,76 %, alta frente a la cartera."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 2,
+   "contenido": {
+    "aprobado": false,
+    "hallazgos": [
+     "El FICO es 660 en la solicitud y 662 en el modelo de riesgo que calculó la PD (22,76 %), y el ROI de 4,35 % a 11,5 % depende de esa PD. La discrepancia no está resuelta y contradice el dato de entrada.",
+     "Con 11,5 % el ROI esperado es 4,35 %, apenas 0,35 pt sobre el umbral de 4 %. Si el FICO real es 660 y la PD cambia, el ROI podría caer por debajo de la política y la contraoferta quedaría sin sustento.",
+     "La decisión 'contraoferta' queda condicionada a confirmar el FICO, pero el memo y las razones no definen qué ocurre si el FICO se confirma en 660 ni cuál es el umbral de PD o ROI que lo cambiaría.",
+     "El especialista de cupo marca la señal final como 'neutral', mientras que economía y riesgo la marcan como 'desfavorable'. El memo no reconcilia estas señales.",
+     "El escenario de estrés no devolvió una PD distinta (las tasas de equilibrio y sugerida tampoco cambiaron), por lo que no hay sensibilidad probada del ROI ante variaciones de riesgo."
+    ],
+    "oferta": {
+     "monto": 15000.0,
+     "tasa": 11.5,
+     "pd": 0.22756,
+     "roi_esperado": 0.043497,
+     "utilidad_esperada": 652.460053,
+     "cuota_ingreso": 0.098928,
+     "cumple_capacidad": true,
+     "tasa_mercado": 11.616665,
+     "fuera_de_rango": false
+    },
+    "violaciones": []
+   }
+  }
+ ],
+ "final": {
+  "decision": "rechazar",
+  "monto": 0.0,
+  "tasa": 0.0,
+  "razones": [
+   "La decisión no pasó la auditoría tras 2 intentos.",
+   "El FICO es 660 en la solicitud y 662 en el modelo de riesgo que calculó la PD (22,76 %), y el ROI de 4,35 % a 11,5 % depende de esa PD. La discrepancia no está resuelta y contradice el dato de entrada.",
+   "Con 11,5 % el ROI esperado es 4,35 %, apenas 0,35 pt sobre el umbral de 4 %. Si el FICO real es 660 y la PD cambia, el ROI podría caer por debajo de la política y la contraoferta quedaría sin sustento.",
+   "La decisión 'contraoferta' queda condicionada a confirmar el FICO, pero el memo y las razones no definen qué ocurre si el FICO se confirma en 660 ni cuál es el umbral de PD o ROI que lo cambiaría.",
+   "El especialista de cupo marca la señal final como 'neutral', mientras que economía y riesgo la marcan como 'desfavorable'. El memo no reconcilia estas señales.",
+   "El escenario de estrés no devolvió una PD distinta (las tasas de equilibrio y sugerida tampoco cambiaron), por lo que no hay sensibilidad probada del ROI ante variaciones de riesgo."
+  ],
+  "memo": "## Resumen\nLa solicitud de USD 15.000 para consolidación de deuda, a la tasa ofrecida de 9,17 %, no cumple la política porque el ROI esperado es 1,91 %. Se propone una contraoferta a 11,5 % con el mismo monto, condicionada a confirmar el FICO antes de aprobar.\n\n## Decisión\nContraoferta: USD 15.000 a 11,5 %. Con esta tasa el ROI esperado es 4,35 %, la utilidad esperada USD 652,46 y la cuota equivale al 9,89 % del ingreso. Condición previa: confirmar el FICO (660 en la solicitud, 662 en el modelo) antes de formalizar.\n\n## Riesgo\nPD de 22,76 % frente a una PD promedio de cartera de 12,88 %. Impulsores: FICO (+0,377 en logit), vivienda en alquiler (+0,105) y uso de tarjetas mayor al 75 % (+0,074). Mitigantes: antigüedad de la cuenta rotativa más vieja de 248 meses (-0,136) y 76,7 % de cuentas sin mora (-0,088). La discrepancia de FICO afecta directamente la PD.\n\n## Economía\nRendimiento en escenario bueno de 12,06 % y en escenario malo de -32,51 %. ROI esperado con 9,17 %: 1,91 %; con 11,5 %: 4,35 %. Probabilidad de prepago antes del mes 30: 55,87 %; mes esperado de pago 25,09. La oferta original queda por debajo de la tasa de mercado de 11,62 %, lo que reduce el margen.\n\n## Cupo y precio\nMonto máximo USD 23.000; el monto pedido está dentro del cupo. Tasa de equilibrio 7,5 % y tasa sugerida 11,5 %. Ambas no cambian en el escenario de estrés, y la herramienta no devolvió una PD de estrés distinta. La tasa de 11,5 % no tiene bandera de fuera de rango. La regla de cuota máxima de 20 % se cumple con 9,89 %.\n\n## Alertas\n- FICO: 660 en la solicitud y 662 en el cálculo de riesgo. Si el FICO real es 660, la PD y el ROI deben recalcularse; el margen sobre el umbral es estrecho con 4,35 %.\n- Oferta original de 9,17 %: marcada fuera de rango, con ROI de 1,91 %.\n- Escenario de estrés sin PD distinta; escenario malo de -32,51 %.\n- PD de 22,76 %, alta frente a la cartera.",
+  "auditoria": {
+   "aprobado": false,
+   "hallazgos": [
+    "El FICO es 660 en la solicitud y 662 en el modelo de riesgo que calculó la PD (22,76 %), y el ROI de 4,35 % a 11,5 % depende de esa PD. La discrepancia no está resuelta y contradice el dato de entrada.",
+    "Con 11,5 % el ROI esperado es 4,35 %, apenas 0,35 pt sobre el umbral de 4 %. Si el FICO real es 660 y la PD cambia, el ROI podría caer por debajo de la política y la contraoferta quedaría sin sustento.",
+    "La decisión 'contraoferta' queda condicionada a confirmar el FICO, pero el memo y las razones no definen qué ocurre si el FICO se confirma en 660 ni cuál es el umbral de PD o ROI que lo cambiaría.",
+    "El especialista de cupo marca la señal final como 'neutral', mientras que economía y riesgo la marcan como 'desfavorable'. El memo no reconcilia estas señales.",
+    "El escenario de estrés no devolvió una PD distinta (las tasas de equilibrio y sugerida tampoco cambiaron), por lo que no hay sensibilidad probada del ROI ante variaciones de riesgo."
+   ]
+  },
+  "intentos": 2
+ },
+ "juez": {
+  "veredicto": {
+   "justifica_con_numeros": true,
+   "coherente": false,
+   "alertas": true,
+   "sin_invenciones": false,
+   "claro": true,
+   "explicacion_justifica_con_numeros": "El memo usa varias cifras concretas: ROI de 1,91 % a 9,17 % y de 4,35 % a 11,5 %, PD de 22,76 % frente a 12,88 % de cartera, cuota/ingreso de 9,89 % y monto máximo de USD 23.000.",
+   "explicacion_coherente": "La sección Decisión de los datos indica 'rechazar' con monto 0 y tasa 0. El memo propone una contraoferta de USD 15.000 a 11,5 %, que contradice la decisión oficial.",
+   "explicacion_alertas": "Menciona las señales de cautela reales: la tasa de 9,17 % marcada fuera de rango, el ROI estrecho de 1,91 % y la PD alta frente a la cartera. No hay cuota alta y el memo no la señala como problema.",
+   "explicacion_sin_invenciones": "Afirma que la solicitud 'no cumple la política' y que existe un 'umbral', pero los datos no dan ningún umbral de ROI. Inventa además una condición previa de confirmar el FICO que no sale de los datos ni de la política. También simplifica mal un factor: '50 % de tarjetas con uso >75 %' aparece como 'uso de tarjetas mayor al 75 %'.",
+   "explicacion_claro": "La estructura es ordenada y la propuesta y su justificación se entienden rápido, aunque la propuesta no coincida con la decisión oficial."
+  },
+  "modelo": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 3154,
+   "output_tokens": 970
+  }
+ }
+}

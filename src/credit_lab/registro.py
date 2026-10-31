@@ -13,6 +13,8 @@ La base vive en data/agente/ y no se sube a git.
 
 import json
 import sqlite3
+from collections.abc import Iterator
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -57,12 +59,17 @@ CREATE TABLE IF NOT EXISTS pasos (
 """
 
 
-def conectar(ruta: Path = RUTA) -> sqlite3.Connection:
+@contextmanager
+def conectar(ruta: Path = RUTA) -> Iterator[sqlite3.Connection]:
+    """Abre la base (creando las tablas si faltan) y la cierra al salir del with."""
     ruta = Path(ruta)
     ruta.parent.mkdir(parents=True, exist_ok=True)
     con = sqlite3.connect(ruta)
-    con.executescript(ESQUEMA)
-    return con
+    try:
+        con.executescript(ESQUEMA)
+        yield con
+    finally:
+        con.close()
 
 
 def _json(x) -> str:
@@ -70,7 +77,7 @@ def _json(x) -> str:
 
 
 def guardar(con: sqlite3.Connection, estado: dict, medidor=None, segundos: float | None = None,
-            semilla: int | None = None) -> int:
+            semilla: int | None = None, modelo: str | None = None) -> int:
     """Guarda una ejecución y sus pasos; devuelve el id. Sin la columna `malo`, el resultado real queda vacío."""
     sol, final = estado["solicitud"], estado["final"]
     malo = int(sol["malo"].iloc[0]) if "malo" in sol else None
@@ -80,7 +87,8 @@ def guardar(con: sqlite3.Connection, estado: dict, medidor=None, segundos: float
             "INSERT INTO ejecuciones (fecha, modelo, semilla, solicitud, decision, monto, tasa, auditoria_aprobada,"
             " intentos, hallazgos, memo, llamadas_llm, tokens_entrada, tokens_salida, costo_usd, segundos,"
             " malo_real, roi_real) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (datetime.now(timezone.utc).isoformat(timespec="seconds"), MODELO, semilla,
+            (datetime.now(timezone.utc).isoformat(timespec="seconds"),
+             modelo or getattr(medidor, "modelo", None) or MODELO, semilla,
              _json(resumen_solicitud(sol)), final["decision"], final["monto"], final["tasa"],
              int(final["auditoria"]["aprobado"]), final["intentos"], _json(final["auditoria"]["hallazgos"]),
              final.get("memo", ""),

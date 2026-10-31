@@ -1,0 +1,271 @@
+{
+ "historial": [
+  {
+   "nodo": "cupo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave**\n\n- **Oferta (5.000 USD a 13,33%):** PD de 11,47%, ROI esperado de 11,61% y utilidad esperada de 580,49 USD.\n- **Tasa de mercado:** 12,39%. La oferta está 0,94 pts por encima, dentro de la banda de 1 pt, así que no se marca fuera de rango.\n- **Capacidad de pago:** cuota/ingreso de 4,06%, dentro del límite de 20%.\n- **Cupo máximo:** 24.000 USD.\n- **Tasas de referencia:** equilibrio en 5,0% y sugerida en 6,5%. La herramienta marca la sugerida como fuera de rango, así que no la uso como ancla de precio. El escenario de estrés devuelve los mismos valores (5,0% y 6,5%), y la oferta queda con margen amplio sobre ambos.\n- **Mejor oferta:** mantener 5.000 USD a 13,33%. No simulé alternativas porque la oferta ya cumple el ROI y la capacidad de pago.\n\n**Señal final: favorable.** La PD de 11,47% es el principal punto a vigilar.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_cupo_pricing",
+      "entrada": {},
+      "salida": {
+       "monto_pedido": 5000.0,
+       "tasa_ofrecida": 13.33,
+       "tasa_mercado": 12.390742,
+       "pd": 0.114726,
+       "roi_esperado": 0.116099,
+       "utilidad_esperada": 580.494305,
+       "cuota_ingreso": 0.040624,
+       "monto_maximo": 24000.0,
+       "tasa_equilibrio": 5.0,
+       "tasa_sugerida": 6.5,
+       "sugerida_fuera_de_rango": true,
+       "tasa_equilibrio_estres": 5.0,
+       "tasa_sugerida_estres": 6.5,
+       "regla_cuota_max": 0.2
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 5000,
+       "tasa": 13.33
+      },
+      "salida": {
+       "monto": 5000,
+       "tasa": 13.33,
+       "pd": 0.114726,
+       "roi_esperado": 0.116099,
+       "utilidad_esperada": 580.49431,
+       "cuota_ingreso": 0.040624,
+       "cumple_capacidad": true,
+       "tasa_mercado": 12.390742,
+       "fuera_de_rango": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "economia",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave (5.000 USD a 13,33%)**\n\n- **Escenario bueno:** rendimiento de 17,21%.\n- **Escenario malo:** pérdida económica de -31,63%.\n- **Probabilidad de impago (PD):** 11,47%.\n- **ROI esperado:** 11,61%, con utilidad esperada de 580,49 USD.\n- **Prepago:** probabilidad de 56,28% de pagar antes del mes 30; mes esperado de pago 24,29.\n- **Tasa de mercado estimada:** 12,39%. La oferta está unos 0,94 puntos por encima.\n- **Capacidad de pago:** cuota/ingreso de 4,06%, dentro del límite.\n- **Rango:** la simulación no marca fuera de rango.\n\n**Lectura:** a esta tasa el ROI esperado es positivo y la oferta supera la tasa de mercado estimada. El riesgo es considerable, porque una PD de 11,47% con pérdida de -31,63% en el escenario malo puede erosionar la utilidad si el impago se concentra. Además, el prepago temprano esperado (más de la mitad antes del mes 30) acorta el plazo de generación de intereses.\n\n**Señal final: favorable**, con margen moderado que depende de que la PD se mantenga en el nivel estimado.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_economia",
+      "entrada": {},
+      "salida": {
+       "r_bueno": 0.172129,
+       "r_malo": -0.316252,
+       "pd": 0.114726,
+       "roi_esperado": 0.116099,
+       "utilidad_esperada": 580.494305,
+       "prob_prepago_antes_mes_30": 0.562806,
+       "mes_esperado_de_pago": 24.28507
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 5000,
+       "tasa": 13.33
+      },
+      "salida": {
+       "monto": 5000,
+       "tasa": 13.33,
+       "pd": 0.114726,
+       "roi_esperado": 0.116099,
+       "utilidad_esperada": 580.49431,
+       "cuota_ingreso": 0.040624,
+       "cumple_capacidad": true,
+       "tasa_mercado": 12.390742,
+       "fuera_de_rango": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "riesgo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave**\n\n- **PD del modelo: 11.47%**, por debajo del promedio de la cartera (12.88%).\n- **Sube el riesgo:**\n  - **FICO (662):** es el factor más fuerte, con la mayor contribución al logit.\n  - **Cuentas rotativas activas (10):** aporta riesgo adicional.\n  - **Tarjetas con uso mayor al 75% (66.7% de las tarjetas):** también eleva la PD.\n- **Baja el riesgo:**\n  - **DTI (10.59%):** es el factor protector más importante.\n  - **Cero consultas de crédito en 6 meses:** reduce la PD.\n\n**Discrepancias de datos:** la herramienta usó FICO 662 y uso de tarjetas 66.7%, mientras que la solicitud indica 660 y 65%. Conviene verificar estos valores antes de decidir, aunque la diferencia no cambia la lectura general.\n\n**Señal final: favorable.** La PD está por debajo del promedio de la cartera, aunque el margen es moderado (unos 1.4 puntos porcentuales).",
+    "herramientas": [
+     {
+      "herramienta": "consultar_riesgo",
+      "entrada": {},
+      "salida": {
+       "pd": 0.114726,
+       "pd_promedio_cartera": 0.128836,
+       "razones": [
+        {
+         "descripcion": "Puntaje FICO",
+         "valor": 662.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.313012
+        },
+        {
+         "descripcion": "Endeudamiento sobre ingreso (DTI)",
+         "valor": 10.59,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.217981
+        },
+        {
+         "descripcion": "Cuentas rotativas activas",
+         "valor": 10.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.179233
+        },
+        {
+         "descripcion": "% de tarjetas con uso mayor al 75%",
+         "valor": 66.699997,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.128026
+        },
+        {
+         "descripcion": "Consultas de crédito en los últimos 6 meses",
+         "valor": 0.0,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.120911
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 1,
+   "contenido": {
+    "decision": "aprobar",
+    "monto": 5000.0,
+    "tasa": 13.33,
+    "razones": [
+     "ROI esperado de 11,61%, por encima del mínimo de 4%",
+     "Cuota de 4,06% del ingreso, dentro del límite de 20%",
+     "PD de 11,47%, por debajo del promedio de cartera de 12,88%",
+     "Oferta de 13,33% por encima de la tasa de mercado estimada de 12,39% y sin marca fuera de rango",
+     "Señales de cautela: escenario de estrés con pérdida de -31,63% y discrepancia de FICO y uso de tarjetas entre la solicitud y la herramienta de riesgo"
+    ],
+    "memo": "## Resumen\nSolicitud de 5.000 USD a 13,33% para consolidación de deuda. El ROI esperado es de 11,61% y la cuota equivale al 4,06% del ingreso. Se aprueba en los términos ofrecidos, con verificación de datos pendiente.\n\n## Decisión\nAprobar 5.000 USD a una tasa de 13,33%. Cumple las dos reglas de política: ROI esperado ≥ 4% y cuota ≤ 20% del ingreso. No se requiere contraoferta.\n\n## Riesgo\nPD del modelo de 11,47%, por debajo del promedio de cartera de 12,88%.\n- Suben el riesgo: FICO 662, 10 cuentas rotativas activas y 66,7% de tarjetas con uso mayor a 75%.\n- Bajan el riesgo: DTI de 10,59% y 0 consultas de crédito en 6 meses.\n- Discrepancia de datos: la herramienta usó FICO 662 y uso de tarjetas de 66,7%, valores que no coinciden con la solicitud. Deben verificarse antes del desembolso. La diferencia no cambia la lectura general.\n\n## Economía\n- ROI esperado: 11,61%; utilidad esperada: 580,49 USD.\n- Escenario bueno: rendimiento de 17,21%. Escenario de estrés: pérdida de -31,63%.\n- Probabilidad de prepago antes del mes 30: 56,28%; mes esperado de pago: 24,28507.\n\n## Cupo y precio\n- Monto máximo: 24.000 USD. La oferta de 5.000 USD está dentro de ese límite.\n- Tasa de mercado estimada: 12,39%. La oferta no está marcada fuera de rango.\n- Tasa de equilibrio: 5,0%. Tasa sugerida: 6,5%, marcada fuera de rango, por lo que no se usa como ancla de precio.\n- Se mantiene la oferta de 13,33%.\n\n## Alertas\n- El escenario de estrés arroja una pérdida de -31,63%; el impago concentrado puede erosionar la utilidad.\n- La PD de 11,47% es el principal punto a vigilar.\n- Discrepancia entre FICO y uso de tarjetas de la solicitud frente a la herramienta de riesgo: verificar antes de desembolsar.\n- El prepago temprano esperado acorta el periodo de generación de intereses."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 1,
+   "contenido": {
+    "aprobado": false,
+    "hallazgos": [
+     "Discrepancia no resuelta de datos de entrada: la solicitud indica FICO 660 y uso de tarjetas 65%, mientras que la herramienta consultar_riesgo usó FICO 662 y uso de tarjetas 66,7%. La PD de 11,47% y las razones del logit se calcularon con esos valores, así que la PD no corresponde a la solicitud tal como fue presentada.",
+     "El memo afirma que la diferencia 'no cambia la lectura general', pero no hay recálculo que lo respalde. La afirmación no está verificada por las herramientas.",
+     "Contradicción entre decisión y memo: el campo 'decision' es 'aprobar' sin condiciones, mientras que el resumen del memo dice 'Se aprueba en los términos ofrecidos, con verificación de datos pendiente' y la sección de riesgo indica que los datos 'deben verificarse antes del desembolso'. Una aprobación con verificación pendiente debería figurar como condicionada en la decisión.",
+     "La razón del comité sobre discrepancias ('Señales de cautela') reconoce el problema pero no lo convierte en condición de la aprobación, por lo que la decisión no refleja la gravedad declarada en el memo.",
+     "Formato numérico inconsistente en el memo: 'mes esperado de pago: 24,28507' muestra más decimales que el resto de cifras (que están redondeadas a dos decimales), sin justificación."
+    ],
+    "oferta": {
+     "monto": 5000.0,
+     "tasa": 13.33,
+     "pd": 0.114726,
+     "roi_esperado": 0.116099,
+     "utilidad_esperada": 580.49431,
+     "cuota_ingreso": 0.040624,
+     "cumple_capacidad": true,
+     "tasa_mercado": 12.390742,
+     "fuera_de_rango": false
+    },
+    "violaciones": []
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 2,
+   "contenido": {
+    "decision": "contraoferta",
+    "monto": 5000.0,
+    "tasa": 13.33,
+    "razones": [
+     "Con la PD reportada de 11,47% el ROI esperado es 11,61%, por encima del mínimo de 4%, y la cuota es 4,06% del ingreso, por debajo del límite de 20%.",
+     "La PD de 11,47% se calculó con FICO 662 y uso de tarjetas 66,7%, no con los valores de la solicitud (FICO 660 y uso de tarjetas 65%). Hasta verificarlos, la PD no corresponde a la solicitud presentada.",
+     "El esquema de decisión no tiene opción condicionada, así que la aprobación se registra como contraoferta con el mismo monto y tasa, sujeta a condiciones antes del desembolso.",
+     "Condición: verificar FICO y uso de tarjetas y volver a ejecutar consultar_riesgo, consultar_cupo_pricing, consultar_economia y simular_oferta con los datos verificados.",
+     "Condición: desembolsar solo si el ROI esperado sigue en al menos 4% y la cuota sigue en 20% o menos del ingreso. Si no se cumple, la decisión se reevalúa.",
+     "El escenario malo muestra pérdida económica de -31,63% y la tasa sugerida está marcada fuera de rango; ambas son señales de cautela."
+    ],
+    "memo": "## Resumen\nSe registra una decisión condicionada: contraoferta con el mismo monto (5000 USD) y la misma tasa (13,33%), sujeta a verificación de FICO y uso de tarjetas antes del desembolso. Con la PD reportada, la oferta cumple la política, pero esa PD se calculó con FICO 662 y uso de tarjetas 66,7%, no con 660 y 65%.\n\n## Decisión\nContraoferta condicionada. El esquema de decisión no tiene opción condicionada, por lo que se registra como contraoferta con mismo monto y tasa.\n\nCondiciones:\n1. Verificar FICO (solicitud 660, herramienta 662) y uso de tarjetas (solicitud 65%, herramienta 66,7%).\n2. Volver a ejecutar consultar_riesgo, consultar_cupo_pricing, consultar_economia y simular_oferta con los datos verificados.\n3. Desembolsar solo si el ROI esperado sigue en al menos 4% y la cuota sigue en 20% o menos del ingreso. Si no se cumple, reevaluar la decisión.\n\n## Riesgo\nPD del modelo de 11,47%, por debajo del promedio de cartera de 12,88%, pero calculada con FICO 662 y uso de tarjetas 66,7%. No se ha recalculado con los datos de la solicitud, así que no puede afirmarse que la PD corresponda a la solicitud tal como fue presentada.\n\nFactores que suben el riesgo: FICO, 10 cuentas rotativas activas y 66,7% de tarjetas con uso mayor al 75%.\nFactores que bajan el riesgo: DTI de 10,59% y cero consultas de crédito en 6 meses.\n\n## Economía\nA 5000 USD y 13,33%: ROI esperado de 11,61% y utilidad esperada de 580,49 USD. Escenario bueno con rendimiento de 17,21% y escenario malo con pérdida económica de -31,63%. Probabilidad de prepago antes del mes 30 de 56,28%, con mes esperado de pago de 24,29. Tasa de mercado estimada de 12,39%.\n\nEstos resultados dependen de la PD de 11,47%, que no está verificada con los datos de la solicitud.\n\n## Cupo y precio\nCupo máximo de 24000 USD. Cuota de 4,06% del ingreso frente al límite de 20%. Tasa de equilibrio de 5,0% y tasa sugerida de 6,5%; la sugerida está marcada fuera de rango, por lo que no se usa como ancla de precio. No se simularon alternativas porque la oferta original cumple la política. Se mantiene 5000 USD a 13,33%, sujeto a las condiciones.\n\n## Alertas\n- Discrepancia no resuelta en FICO (660 frente a 662) y uso de tarjetas (65% frente a 66,7%).\n- PD no verificada frente a la solicitud presentada.\n- Escenario malo con pérdida económica de -31,63%.\n- Tasa sugerida marcada fuera de rango.\n- Prepago temprano esperado de 56,28%."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 2,
+   "contenido": {
+    "aprobado": false,
+    "hallazgos": [
+     "La PD (11,47%), el ROI (11,61%), la utilidad (580,49 USD) y la cuota (4,06%) se calcularon con FICO 662 y uso de tarjetas 66,7%, pero la solicitud indica FICO 660 y uso de tarjetas 65%. Los resultados no corresponden a los datos de la solicitud presentada.",
+     "La decisión registrada es 'contraoferta' con el mismo monto (5.000 USD) y la misma tasa (13,33%), que equivale a una aprobación condicionada. Las razones reconocen que la PD no corresponde a la solicitud, por lo que la decisión no es coherente con la política mientras esa discrepancia no se resuelva.",
+     "El memo afirma que 'con la PD reportada, la oferta cumple la política', pero la PD reportada no está verificada con los datos de la solicitud. La conclusión de cumplimiento de ROI y cuota depende de un insumo no validado.",
+     "Las condiciones de desembolso (verificar FICO y uso de tarjetas, volver a ejecutar consultar_riesgo, consultar_cupo_pricing, consultar_economia y simular_oferta) están pendientes. No hay evidencia en el expediente de que se hayan cumplido.",
+     "El memo, el análisis de riesgo y las razones reconocen la discrepancia de FICO y uso de tarjetas, pero el análisis de riesgo califica la señal como 'favorable' sin resolverla, lo que genera una contradicción interna en la evaluación."
+    ],
+    "oferta": {
+     "monto": 5000.0,
+     "tasa": 13.33,
+     "pd": 0.114726,
+     "roi_esperado": 0.116099,
+     "utilidad_esperada": 580.49431,
+     "cuota_ingreso": 0.040624,
+     "cumple_capacidad": true,
+     "tasa_mercado": 12.390742,
+     "fuera_de_rango": false
+    },
+    "violaciones": []
+   }
+  }
+ ],
+ "final": {
+  "decision": "rechazar",
+  "monto": 0.0,
+  "tasa": 0.0,
+  "razones": [
+   "La decisión no pasó la auditoría tras 2 intentos.",
+   "La PD (11,47%), el ROI (11,61%), la utilidad (580,49 USD) y la cuota (4,06%) se calcularon con FICO 662 y uso de tarjetas 66,7%, pero la solicitud indica FICO 660 y uso de tarjetas 65%. Los resultados no corresponden a los datos de la solicitud presentada.",
+   "La decisión registrada es 'contraoferta' con el mismo monto (5.000 USD) y la misma tasa (13,33%), que equivale a una aprobación condicionada. Las razones reconocen que la PD no corresponde a la solicitud, por lo que la decisión no es coherente con la política mientras esa discrepancia no se resuelva.",
+   "El memo afirma que 'con la PD reportada, la oferta cumple la política', pero la PD reportada no está verificada con los datos de la solicitud. La conclusión de cumplimiento de ROI y cuota depende de un insumo no validado.",
+   "Las condiciones de desembolso (verificar FICO y uso de tarjetas, volver a ejecutar consultar_riesgo, consultar_cupo_pricing, consultar_economia y simular_oferta) están pendientes. No hay evidencia en el expediente de que se hayan cumplido.",
+   "El memo, el análisis de riesgo y las razones reconocen la discrepancia de FICO y uso de tarjetas, pero el análisis de riesgo califica la señal como 'favorable' sin resolverla, lo que genera una contradicción interna en la evaluación."
+  ],
+  "memo": "## Resumen\nSe registra una decisión condicionada: contraoferta con el mismo monto (5000 USD) y la misma tasa (13,33%), sujeta a verificación de FICO y uso de tarjetas antes del desembolso. Con la PD reportada, la oferta cumple la política, pero esa PD se calculó con FICO 662 y uso de tarjetas 66,7%, no con 660 y 65%.\n\n## Decisión\nContraoferta condicionada. El esquema de decisión no tiene opción condicionada, por lo que se registra como contraoferta con mismo monto y tasa.\n\nCondiciones:\n1. Verificar FICO (solicitud 660, herramienta 662) y uso de tarjetas (solicitud 65%, herramienta 66,7%).\n2. Volver a ejecutar consultar_riesgo, consultar_cupo_pricing, consultar_economia y simular_oferta con los datos verificados.\n3. Desembolsar solo si el ROI esperado sigue en al menos 4% y la cuota sigue en 20% o menos del ingreso. Si no se cumple, reevaluar la decisión.\n\n## Riesgo\nPD del modelo de 11,47%, por debajo del promedio de cartera de 12,88%, pero calculada con FICO 662 y uso de tarjetas 66,7%. No se ha recalculado con los datos de la solicitud, así que no puede afirmarse que la PD corresponda a la solicitud tal como fue presentada.\n\nFactores que suben el riesgo: FICO, 10 cuentas rotativas activas y 66,7% de tarjetas con uso mayor al 75%.\nFactores que bajan el riesgo: DTI de 10,59% y cero consultas de crédito en 6 meses.\n\n## Economía\nA 5000 USD y 13,33%: ROI esperado de 11,61% y utilidad esperada de 580,49 USD. Escenario bueno con rendimiento de 17,21% y escenario malo con pérdida económica de -31,63%. Probabilidad de prepago antes del mes 30 de 56,28%, con mes esperado de pago de 24,29. Tasa de mercado estimada de 12,39%.\n\nEstos resultados dependen de la PD de 11,47%, que no está verificada con los datos de la solicitud.\n\n## Cupo y precio\nCupo máximo de 24000 USD. Cuota de 4,06% del ingreso frente al límite de 20%. Tasa de equilibrio de 5,0% y tasa sugerida de 6,5%; la sugerida está marcada fuera de rango, por lo que no se usa como ancla de precio. No se simularon alternativas porque la oferta original cumple la política. Se mantiene 5000 USD a 13,33%, sujeto a las condiciones.\n\n## Alertas\n- Discrepancia no resuelta en FICO (660 frente a 662) y uso de tarjetas (65% frente a 66,7%).\n- PD no verificada frente a la solicitud presentada.\n- Escenario malo con pérdida económica de -31,63%.\n- Tasa sugerida marcada fuera de rango.\n- Prepago temprano esperado de 56,28%.",
+  "auditoria": {
+   "aprobado": false,
+   "hallazgos": [
+    "La PD (11,47%), el ROI (11,61%), la utilidad (580,49 USD) y la cuota (4,06%) se calcularon con FICO 662 y uso de tarjetas 66,7%, pero la solicitud indica FICO 660 y uso de tarjetas 65%. Los resultados no corresponden a los datos de la solicitud presentada.",
+    "La decisión registrada es 'contraoferta' con el mismo monto (5.000 USD) y la misma tasa (13,33%), que equivale a una aprobación condicionada. Las razones reconocen que la PD no corresponde a la solicitud, por lo que la decisión no es coherente con la política mientras esa discrepancia no se resuelva.",
+    "El memo afirma que 'con la PD reportada, la oferta cumple la política', pero la PD reportada no está verificada con los datos de la solicitud. La conclusión de cumplimiento de ROI y cuota depende de un insumo no validado.",
+    "Las condiciones de desembolso (verificar FICO y uso de tarjetas, volver a ejecutar consultar_riesgo, consultar_cupo_pricing, consultar_economia y simular_oferta) están pendientes. No hay evidencia en el expediente de que se hayan cumplido.",
+    "El memo, el análisis de riesgo y las razones reconocen la discrepancia de FICO y uso de tarjetas, pero el análisis de riesgo califica la señal como 'favorable' sin resolverla, lo que genera una contradicción interna en la evaluación."
+   ]
+  },
+  "intentos": 2
+ },
+ "juez": {
+  "veredicto": {
+   "justifica_con_numeros": true,
+   "coherente": false,
+   "alertas": true,
+   "sin_invenciones": false,
+   "claro": false,
+   "explicacion_justifica_con_numeros": "Cita varias cifras concretas: PD 11,47% frente a 12,88% de cartera, ROI 11,61%, utilidad 580,49 USD, cuota 4,06% frente al límite de 20% y cupo de 24000 USD.",
+   "explicacion_coherente": "La sección Decisión de los datos indica rechazar con monto 0 y tasa 0. El memo registra una contraoferta condicionada de 5000 USD al 13,33%, lo que contradice la decisión oficial.",
+   "explicacion_alertas": "Menciona la señal real de cautela: la tasa sugerida está marcada fuera de rango. La cuota es baja, el ROI es amplio y el escenario de estrés tiene tasa viable, y el memo no los presenta como problemas de esos tipos. Añade además alertas discutibles (prepago, escenario malo).",
+   "explicacion_sin_invenciones": "Inventa una discrepancia en el uso de tarjetas al confundir 'uso de tarjetas 65%' con '% de tarjetas con uso mayor al 75%' (66,7%), que son variables distintas. También introduce un umbral de ROI de 4% y nombres de herramientas que no aparecen en los datos.",
+   "explicacion_claro": "Es legible, pero la decisión resulta confusa: una contraoferta 'condicionada' con el mismo monto y tasa, que además contradice el rechazo registrado. Un analista no entendería rápidamente cuál es la decisión real ni su porqué."
+  },
+  "modelo": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 3211,
+   "output_tokens": 1236
+  }
+ }
+}

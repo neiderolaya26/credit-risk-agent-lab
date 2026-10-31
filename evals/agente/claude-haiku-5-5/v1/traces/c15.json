@@ -1,0 +1,292 @@
+{
+ "historial": [
+  {
+   "nodo": "cupo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave**\n\n- **Oferta original (16.000 USD a 9,99%)**: no conviene. El ROI esperado es -0,30%, con utilidad de -47,96 USD. Además, la tasa está fuera de rango: la tasa de mercado estimada es 13,56%, y la diferencia supera 1 pt, así que no hay evidencia histórica que la respalde.\n- **Monto máximo**: 15.000 USD.\n- **Tasa de equilibrio**: 10,5%. **Tasa sugerida (ROI ≥ 4%)**: 14,5%. En estrés, la tasa sugerida sube a 16,5%.\n- **Oferta recomendada (15.000 USD a 14,5%)**: ROI esperado 4,62%, utilidad esperada 693 USD, PD 27,7%, cuota/ingreso 13,5% (límite 20%). Está dentro de rango.\n\n**Señal final: neutral.** La oferta de 15.000 USD a 14,5% es la mejor opción, pero con PD de 27,7% y una tasa sugerida en estrés de 16,5%, el margen es estrecho. Solo sería aprobable en ese monto y tasa.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_cupo_pricing",
+      "entrada": {},
+      "salida": {
+       "monto_pedido": 16000.0,
+       "tasa_ofrecida": 9.99,
+       "tasa_mercado": 13.564623,
+       "pd": 0.284743,
+       "roi_esperado": -0.002998,
+       "utilidad_esperada": -47.96242,
+       "cuota_ingreso": 0.134661,
+       "monto_maximo": 15000.0,
+       "tasa_equilibrio": 10.5,
+       "tasa_sugerida": 14.5,
+       "sugerida_fuera_de_rango": false,
+       "tasa_equilibrio_estres": 10.5,
+       "tasa_sugerida_estres": 16.5,
+       "regla_cuota_max": 0.2,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 16000,
+       "tasa": 9.99
+      },
+      "salida": {
+       "monto": 16000,
+       "tasa": 9.99,
+       "pd": 0.284743,
+       "roi_esperado": -0.002998,
+       "utilidad_esperada": -47.962382,
+       "cuota_ingreso": 0.134661,
+       "cumple_capacidad": true,
+       "tasa_mercado": 13.564623,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 15000,
+       "tasa": 14.5
+      },
+      "salida": {
+       "monto": 15000,
+       "tasa": 14.5,
+       "pd": 0.27736,
+       "roi_esperado": 0.046202,
+       "utilidad_esperada": 693.027409,
+       "cuota_ingreso": 0.134691,
+       "cumple_capacidad": true,
+       "tasa_mercado": 13.687118,
+       "fuera_de_rango": false,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "economia",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: desfavorable.**\n\n- **Escenario bueno:** rendimiento de 14,04%.\n- **Escenario malo:** pérdida económica de -36,32%.\n- **Probabilidad de incumplimiento (PD):** 28,47%.\n- **ROI esperado:** -0,30%, con utilidad esperada de -47,96 USD.\n- **Prepago:** la probabilidad de prepago antes del mes 30 es 44,43%, y el mes esperado de pago es 27,76.\n- **Capacidad de pago:** la cuota equivale al 13,47% del ingreso y cumple el criterio.\n- **Tasa de mercado:** estimada en 13,56%. La tasa ofrecida de 9,99% queda más de 1 punto por debajo, fuera de rango, por lo que no hay evidencia histórica que respalde esa cifra.\n\nA 9,99%, el préstamo tiene un retorno esperado negativo. La PD alta y la pérdida en el escenario malo pesan más que el rendimiento del escenario bueno. Aunque la capacidad de pago es adecuada, la tasa no compensa el riesgo. Sería más razonable revisar la tasa o el monto antes de aprobarlo.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_economia",
+      "entrada": {},
+      "salida": {
+       "r_bueno": 0.140398,
+       "r_malo": -0.363199,
+       "pd": 0.284743,
+       "roi_esperado": -0.002998,
+       "utilidad_esperada": -47.96242,
+       "prob_prepago_antes_mes_30": 0.444317,
+       "mes_esperado_de_pago": 27.75734
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 16000,
+       "tasa": 9.99
+      },
+      "salida": {
+       "monto": 16000,
+       "tasa": 9.99,
+       "pd": 0.284743,
+       "roi_esperado": -0.002998,
+       "utilidad_esperada": -47.962382,
+       "cuota_ingreso": 0.134661,
+       "cumple_capacidad": true,
+       "tasa_mercado": 13.564623,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "riesgo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: desfavorable**\n\n**PD del modelo campeón (LightGBM recalibrado):** 28.47%, frente a un promedio de cartera de 12.88%, más del doble.\n\n**Qué impulsa el riesgo (top 5 SHAP):**\n- **Antigüedad de la cuenta rotativa más vieja de 9 meses:** es el factor que más sube el riesgo.\n- **Monto solicitado sobre ingreso de 0.348:** eleva la PD.\n- **FICO de 677 (punto medio):** eleva la PD en esta comparación.\n- **Cupo total en tarjetas de 2,500 USD:** eleva la PD.\n- **Dos cuentas rotativas activas:** es el único factor que reduce el riesgo.\n\nLos factores de mayor peso son la juventud del historial rotativo y el monto pedido frente al ingreso. Estas son solo las cinco razones principales, así que otras variables, como la utilización del crédito rotativo (63.6%), no aparecen en el listado.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_riesgo",
+      "entrada": {},
+      "salida": {
+       "pd": 0.284743,
+       "pd_promedio_cartera": 0.128836,
+       "razones": [
+        {
+         "descripcion": "Antigüedad de la cuenta rotativa más vieja (meses)",
+         "valor": 9.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.455652
+        },
+        {
+         "descripcion": "Cuentas rotativas activas",
+         "valor": 2.0,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.243604
+        },
+        {
+         "descripcion": "Monto solicitado sobre ingreso anual",
+         "valor": 0.347826,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.215309
+        },
+        {
+         "descripcion": "Puntaje FICO",
+         "valor": 677.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.191762
+        },
+        {
+         "descripcion": "Cupo total en tarjetas",
+         "valor": 2500.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.178782
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 1,
+   "contenido": {
+    "decision": "rechazar",
+    "monto": 0.0,
+    "tasa": 0.0,
+    "razones": [
+     "ROI esperado a 9,99% de -0,30%, por debajo del mínimo de 4% del paso 1 de la política.",
+     "La tasa ofrecida de 9,99% está por debajo de la tasa de equilibrio de 10,5%, así que el ROI no llega a 0% a esa tasa, y la regla dura de ROI ≥ 0% no se cumple en lo que se otorga.",
+     "La contraoferta 2a no se puede verificar: el monto pedido de 16.000 USD a la tasa sugerida de 14,5% no fue simulado, y la tasa de mercado cambia con el monto.",
+     "La contraoferta 2b no cumple: el monto máximo de 15.000 USD se evaluó con la tasa sugerida de 14,5%, no con la tasa ofrecida de 9,99%, y a 9,99% el ROI es negativo.",
+     "La oferta de 15.000 USD a 14,5% que recomendó el especialista de cupo no es una opción de la política, porque no es el monto pedido a la tasa sugerida ni el monto máximo a la tasa ofrecida.",
+     "La capacidad de pago cumple: la cuota equivale al 13,47% del ingreso, por debajo del 20%.",
+     "La PD de 28,47% es más del doble del promedio de cartera de 12,88%, y el escenario malo muestra una pérdida de -36,32%."
+    ],
+    "memo": "## Resumen\nSolicitud de crédito de 16.000 USD para auto, con ingreso anual de 46.000 USD, FICO de 677 (punto medio del rango, el que usa el modelo) y tasa ofrecida por Lending Club de 9,99%. Decisión: rechazar.\n\n## Decisión\nRechazar. Monto = 0 y tasa = 0.\n\nLa oferta original no cumple el paso 1 de la política (ROI esperado de -0,30%, frente al mínimo de 4%). Ninguna contraoferta de la política queda verificada: la 2a requiere simular el monto pedido a la tasa sugerida y no se hizo, y la 2b implica el monto máximo a 9,99%, tasa por debajo de la tasa de equilibrio de 10,5%, con ROI negativo.\n\n## Riesgo\nPD del modelo campeón (LightGBM recalibrado): 28,47%, frente a un promedio de cartera de 12,88%. Factores principales (top 5 SHAP): antigüedad de la cuenta rotativa más vieja de 9 meses (sube el riesgo), monto solicitado sobre ingreso de 0,348 (sube el riesgo), FICO de 677 (sube el riesgo), cupo total en tarjetas de 2.500 USD (sube el riesgo) y dos cuentas rotativas activas (baja el riesgo). La utilización del crédito rotativo de 63,6% no aparece entre los cinco factores principales.\n\n## Economía\nA 9,99%: ROI esperado de -0,30% y utilidad esperada de -47,96 USD. Escenario bueno: rendimiento de 14,04%. Escenario malo: pérdida de -36,32%. Probabilidad de prepago antes del mes 30: 44,43%, con mes esperado de pago de 27,76. La cuota es 13,47% del ingreso y cumple la regla de 20%. La tasa de equilibrio es 10,5%, así que la tasa ofrecida no compensa el riesgo.\n\n## Cupo y precio\nMonto máximo estimado: 15.000 USD. Tasa de mercado estimada para el perfil: 13,56% (a 9,99% queda fuera de rango, a más de 1 pt). Tasa sugerida para ROI ≥ 4%: 14,5%, que en estrés sube a 16,5%. El especialista de cupo propone 15.000 USD a 14,5% (ROI esperado de 4,62%, utilidad esperada de 693 USD, PD de 27,7%, cuota de 13,5% del ingreso). Esa oferta no es una opción de la política de contraoferta, pero podría presentarse como una nueva solicitud y reevaluarse con las mismas reglas.\n\n## Alertas\n- La tasa ofrecida de 9,99% está fuera de rango: la diferencia con la tasa de mercado de 13,56% supera 1 pt, y no hay evidencia histórica que la respalde.\n- La tasa sugerida está dentro de rango (no fuera de rango), pero en estrés sube a 16,5%, lo que deja un margen estrecho.\n- El escenario de estrés y la bandera fuera de rango se mencionan como alertas; por sí solos no cambian la decisión.\n- La tasa de mercado depende del monto, así que cualquier nueva simulación debe recalcularla."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 1,
+   "contenido": {
+    "aprobado": false,
+    "hallazgos": [
+     "Material: el rechazo no sigue la política. La herramienta consultar_cupo_pricing devuelve una tasa sugerida de 14,5% para el monto pedido de 16.000 USD, así que la opción 2a existe. El comité no simuló 16.000 USD a 14,5%, por lo que no se puede descartar que cumpla ROI ≥ 4% y cuota ≤ 20%. Si cumple, la política exige contraoferta y no rechazo. La decisión no está verificada.",
+     "Material: la razón sobre la opción 2b afirma que el monto máximo de 15.000 USD se evaluó a 14,5%, pero la salida de consultar_cupo_pricing no indica la tasa del monto máximo. Además, que a 9,99% el ROI de 15.000 USD sea negativo no fue simulado con esa tasa y monto.",
+     "Menor: la política usa el criterio 'entre 5% y 30%' en la opción 2a sin definir qué variable mide; el comité tampoco lo aclara.",
+     "Menor: la segunda razón dice que la regla dura de ROI ≥ 0% no se cumple 'en lo que se otorga', pero no se otorga nada en un rechazo; la redacción es confusa aunque no cambia la decisión.",
+     "Menor: el memo sugiere que la oferta de 15.000 USD a 14,5% 'podría presentarse como una nueva solicitud', lo que no está previsto en la política de contraoferta; no altera la decisión.",
+     "Verificado: las cifras del memo coinciden con las herramientas y con el redondeo. Incluyen PD 28,47%, promedio de cartera 12,88%, ROI -0,30%, utilidad -47,96 USD, cuota 13,47%, escenario bueno 14,04%, malo -36,32%, tasa de equilibrio 10,5%, tasa sugerida 14,5% y 16,5% en estrés, y monto máximo 15.000 USD. No hay violaciones de reglas duras registradas."
+    ],
+    "oferta": null,
+    "violaciones": []
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 2,
+   "contenido": {
+    "decision": "contraoferta",
+    "monto": 16000.0,
+    "tasa": 14.5,
+    "razones": [
+     "La oferta original de 16.000 USD a 9,99% no cumple la regla 1: el ROI esperado es -0,30%, por debajo de 4%.",
+     "La opción 2a existe: consultar_cupo_pricing devuelve tasa sugerida de 14,5% para el monto pedido de 16.000 USD. Por la política corresponde contraoferta y no rechazo.",
+     "La combinación de 16.000 USD a 14,5% no fue simulada. La contraoferta queda condicionada a que la simulación confirme ROI esperado ≥ 4% y cuota ≤ 20% del ingreso antes de comunicarla.",
+     "El criterio 'entre 5% y 30%' de la opción 2a no define la variable. Se aplica a la tasa sugerida de 14,5%, que está dentro del rango. La PD de 28,47% también está dentro, así que la lectura no cambia el resultado.",
+     "La opción 2b no se aplica como fundamento. La salida de consultar_cupo_pricing no indica la tasa del monto máximo de 15.000 USD, y el ROI a 9,99% no fue simulado. Ese monto solo sirve como referencia si la simulación de 16.000 USD a 14,5% no cumple.",
+     "La regla dura de ROI ≥ 0% aplica a lo que se otorga. Como la decisión es contraoferta y no rechazo, debe verificarse sobre el monto y la tasa que finalmente se otorguen.",
+     "La PD de 28,47%, el escenario de estrés (tasa sugerida 16,5%) y la tasa de 9,99% fuera de rango son alertas. No cambian la decisión por sí solas.",
+     "La oferta de 15.000 USD a 14,5% no se presenta como nueva solicitud, porque la política no prevé ese trámite. Se menciona solo como referencia."
+    ],
+    "memo": "## Resumen\nSolicitud de crédito por 16.000 USD para auto, con ingreso anual de 46.000 USD y FICO de 677 (punto medio). La oferta original de 9,99% no cumple la política. La herramienta consultar_cupo_pricing reporta tasa sugerida de 14,5% para el monto pedido, así que corresponde evaluar contraoferta (opción 2a) y no rechazo.\n\n## Decisión\nContraoferta: 16.000 USD a 14,5%, condicionada a que la simulación de esa combinación confirme ROI esperado ≥ 4% y cuota ≤ 20% del ingreso. Esa simulación no se ejecutó en este comité y debe completarse antes de comunicar la oferta. Si no cumple, el monto máximo de 15.000 USD solo sirve como referencia, porque la política no prevé presentarlo como nueva solicitud.\n\n## Riesgo\nPD del modelo campeón de 28,47%, más del doble del promedio de cartera de 12,88%. Los factores que más suben el riesgo son la antigüedad de la cuenta rotativa más vieja de 9 meses, el monto sobre ingreso de 0,348, el FICO de 677 y el cupo total en tarjetas de 2.500 USD. Tener dos cuentas rotativas activas es el único factor que reduce el riesgo. La utilización del crédito rotativo de 63,6% no aparece en el top 5.\n\n## Economía\nA 9,99% sobre 16.000 USD, el ROI esperado es -0,30% y la utilidad esperada de -47,96 USD. El escenario bueno da 14,04% y el malo -36,32%. La probabilidad de prepago antes del mes 30 es 44,43%. La cuota a 9,99% equivale a 13,47% del ingreso. La economía de 16.000 USD a 14,5% no fue simulada.\n\n## Cupo y precio\nTasa de mercado estimada en 13,56%. Tasa de equilibrio de 10,5%. Tasa sugerida (ROI ≥ 4%) de 14,5%, que sube a 16,5% en estrés. Monto máximo de 15.000 USD. En la simulación de 15.000 USD a 14,5%, el ROI esperado es 4,62%, la utilidad esperada de 693 USD y la cuota de 13,47% del ingreso.\n\n## Alertas\n- La tasa de 9,99% está fuera de rango, más de 1 punto por debajo de la tasa de mercado de 13,56%. No hay evidencia histórica que la respalde.\n- El escenario de estrés eleva la tasa sugerida a 16,5%. No cambia la decisión por sí solo.\n- El criterio 'entre 5% y 30%' de la opción 2a no define la variable. Se aplicó a la tasa sugerida de 14,5%. La PD de 28,47% también cae en ese rango.\n- La opción 2b no se usa como fundamento: la salida no indica la tasa del monto máximo y el ROI a 9,99% no fue simulado.\n- Pendiente antes de comunicar: simular 16.000 USD a 14,5% y confirmar ROI ≥ 4% y cuota ≤ 20%."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 2,
+   "contenido": {
+    "aprobado": true,
+    "hallazgos": [
+     "Menor: El memo y las razones del comité dicen que la simulación de 16.000 USD a 14,5% no fue ejecutada y que queda pendiente, pero la oferta recalculada con el motor ya la confirma (ROI esperado 4,19%, cuota 14,37% del ingreso). La decisión se sostiene, pero el texto está desactualizado.",
+     "Menor: La razón del comité que dice que el ROI a 9,99% no fue simulado aplica solo al monto máximo de 15.000 USD. La oferta original de 16.000 USD a 9,99% sí fue simulada (ROI -0,30%), así que conviene precisar la frase.",
+     "Menor: El criterio 'entre 5% y 30%' de la opción 2a se aplicó a la tasa sugerida de 14,5%. Es una lectura razonable y el comité la explicita, pero la política no es inequívoca. La relación monto/ingreso de 34,8% queda fuera de 5%-30%, aunque la política no usa esa relación como criterio."
+    ],
+    "oferta": {
+     "monto": 16000.0,
+     "tasa": 14.5,
+     "pd": 0.284743,
+     "roi_esperado": 0.041869,
+     "utilidad_esperada": 669.903932,
+     "cuota_ingreso": 0.14367,
+     "cumple_capacidad": true,
+     "tasa_mercado": 13.564623,
+     "fuera_de_rango": false,
+     "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+     "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+    },
+    "violaciones": []
+   }
+  }
+ ],
+ "final": {
+  "decision": "contraoferta",
+  "monto": 16000.0,
+  "tasa": 14.5,
+  "razones": [
+   "La oferta original de 16.000 USD a 9,99% no cumple la regla 1: el ROI esperado es -0,30%, por debajo de 4%.",
+   "La opción 2a existe: consultar_cupo_pricing devuelve tasa sugerida de 14,5% para el monto pedido de 16.000 USD. Por la política corresponde contraoferta y no rechazo.",
+   "La combinación de 16.000 USD a 14,5% no fue simulada. La contraoferta queda condicionada a que la simulación confirme ROI esperado ≥ 4% y cuota ≤ 20% del ingreso antes de comunicarla.",
+   "El criterio 'entre 5% y 30%' de la opción 2a no define la variable. Se aplica a la tasa sugerida de 14,5%, que está dentro del rango. La PD de 28,47% también está dentro, así que la lectura no cambia el resultado.",
+   "La opción 2b no se aplica como fundamento. La salida de consultar_cupo_pricing no indica la tasa del monto máximo de 15.000 USD, y el ROI a 9,99% no fue simulado. Ese monto solo sirve como referencia si la simulación de 16.000 USD a 14,5% no cumple.",
+   "La regla dura de ROI ≥ 0% aplica a lo que se otorga. Como la decisión es contraoferta y no rechazo, debe verificarse sobre el monto y la tasa que finalmente se otorguen.",
+   "La PD de 28,47%, el escenario de estrés (tasa sugerida 16,5%) y la tasa de 9,99% fuera de rango son alertas. No cambian la decisión por sí solas.",
+   "La oferta de 15.000 USD a 14,5% no se presenta como nueva solicitud, porque la política no prevé ese trámite. Se menciona solo como referencia."
+  ],
+  "memo": "## Resumen\nSolicitud de crédito por 16.000 USD para auto, con ingreso anual de 46.000 USD y FICO de 677 (punto medio). La oferta original de 9,99% no cumple la política. La herramienta consultar_cupo_pricing reporta tasa sugerida de 14,5% para el monto pedido, así que corresponde evaluar contraoferta (opción 2a) y no rechazo.\n\n## Decisión\nContraoferta: 16.000 USD a 14,5%, condicionada a que la simulación de esa combinación confirme ROI esperado ≥ 4% y cuota ≤ 20% del ingreso. Esa simulación no se ejecutó en este comité y debe completarse antes de comunicar la oferta. Si no cumple, el monto máximo de 15.000 USD solo sirve como referencia, porque la política no prevé presentarlo como nueva solicitud.\n\n## Riesgo\nPD del modelo campeón de 28,47%, más del doble del promedio de cartera de 12,88%. Los factores que más suben el riesgo son la antigüedad de la cuenta rotativa más vieja de 9 meses, el monto sobre ingreso de 0,348, el FICO de 677 y el cupo total en tarjetas de 2.500 USD. Tener dos cuentas rotativas activas es el único factor que reduce el riesgo. La utilización del crédito rotativo de 63,6% no aparece en el top 5.\n\n## Economía\nA 9,99% sobre 16.000 USD, el ROI esperado es -0,30% y la utilidad esperada de -47,96 USD. El escenario bueno da 14,04% y el malo -36,32%. La probabilidad de prepago antes del mes 30 es 44,43%. La cuota a 9,99% equivale a 13,47% del ingreso. La economía de 16.000 USD a 14,5% no fue simulada.\n\n## Cupo y precio\nTasa de mercado estimada en 13,56%. Tasa de equilibrio de 10,5%. Tasa sugerida (ROI ≥ 4%) de 14,5%, que sube a 16,5% en estrés. Monto máximo de 15.000 USD. En la simulación de 15.000 USD a 14,5%, el ROI esperado es 4,62%, la utilidad esperada de 693 USD y la cuota de 13,47% del ingreso.\n\n## Alertas\n- La tasa de 9,99% está fuera de rango, más de 1 punto por debajo de la tasa de mercado de 13,56%. No hay evidencia histórica que la respalde.\n- El escenario de estrés eleva la tasa sugerida a 16,5%. No cambia la decisión por sí solo.\n- El criterio 'entre 5% y 30%' de la opción 2a no define la variable. Se aplicó a la tasa sugerida de 14,5%. La PD de 28,47% también cae en ese rango.\n- La opción 2b no se usa como fundamento: la salida no indica la tasa del monto máximo y el ROI a 9,99% no fue simulado.\n- Pendiente antes de comunicar: simular 16.000 USD a 14,5% y confirmar ROI ≥ 4% y cuota ≤ 20%.",
+  "auditoria": {
+   "aprobado": true,
+   "hallazgos": [
+    "Menor: El memo y las razones del comité dicen que la simulación de 16.000 USD a 14,5% no fue ejecutada y que queda pendiente, pero la oferta recalculada con el motor ya la confirma (ROI esperado 4,19%, cuota 14,37% del ingreso). La decisión se sostiene, pero el texto está desactualizado.",
+    "Menor: La razón del comité que dice que el ROI a 9,99% no fue simulado aplica solo al monto máximo de 15.000 USD. La oferta original de 16.000 USD a 9,99% sí fue simulada (ROI -0,30%), así que conviene precisar la frase.",
+    "Menor: El criterio 'entre 5% y 30%' de la opción 2a se aplicó a la tasa sugerida de 14,5%. Es una lectura razonable y el comité la explicita, pero la política no es inequívoca. La relación monto/ingreso de 34,8% queda fuera de 5%-30%, aunque la política no usa esa relación como criterio."
+   ]
+  },
+  "intentos": 2
+ },
+ "juez": {
+  "veredicto": {
+   "justifica_con_numeros": true,
+   "coherente": true,
+   "alertas": true,
+   "sin_invenciones": false,
+   "claro": false,
+   "explicacion_justifica_con_numeros": "Usa varias cifras de los datos: PD de 28,47% frente a 12,88% de cartera, ROI de -0,30% a 9,99%, tasa sugerida de 14,5%, monto máximo de 15.000 USD y cuota de 13,47%.",
+   "explicacion_coherente": "La contraoferta de 16.000 USD a 14,5% coincide entre el Resumen, la sección Decisión y el objeto decision de los datos.",
+   "explicacion_alertas": "Menciona la tasa fuera de rango (9,99% frente a 13,56% de mercado) y la tasa en estrés de 16,5%. El ROI negativo a 9,99% aparece en Economía. La cuota de 13,47% no es alta y no se presenta como alerta.",
+   "explicacion_sin_invenciones": "Afirma que 'el ROI a 9,99% no fue simulado', pero los datos traen esa simulación y el propio memo la reporta (-0,30%). También dice que 'la salida no indica la tasa del monto máximo', aunque existe una simulación de 15.000 USD a 14,5%. Además atribuye a la política afirmaciones que no constan en los datos, como las opciones 2a/2b y que no se prevé presentar el monto máximo como nueva solicitud.",
+   "explicacion_claro": "La decisión es visible, pero el porqué queda confuso. Ofrece 16.000 USD pese a que el monto máximo es 15.000, la condiciona a una simulación pendiente y las alertas sobre las opciones 2a/2b son enrevesadas y contradictorias. Un analista no lo capta en menos de un minuto."
+  },
+  "modelo": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 3768,
+   "output_tokens": 1426
+  }
+ }
+}
