@@ -21,20 +21,78 @@
 
 ## Diagrama
 
+Cada capa nombra la técnica usada. El motor de decisión es la caja de herramientas de los especialistas del agente y del servidor MCP.
+
 ```mermaid
-flowchart LR
-    D[Lending Club<br/>datos públicos] --> M[6 modelos de riesgo<br/>campeón LightGBM]
-    D --> PP[Prepago<br/>supervivencia]
-    D --> L[Pérdida<br/>económica]
-    IC[Inferencia causal<br/>estrés de tasa] --> CU
-    M & PP & L --> CU[Motor de cupo<br/>y pricing]
-    CU --> ESP[Agente LangGraph<br/>3 especialistas Claude]
-    ESP --> CO[Comité IA]
-    CO --> RD[Reglas duras]
-    RD --> AU[Auditor IA]
-    AU --> DEC[Decisión + memo]
-    CU -. herramientas .-> MCP[Servidor MCP]
-    DEC --> REG[SQLite + LangSmith<br/>+ evals]
+flowchart TB
+    subgraph DATOS["1 · Datos y población"]
+        direction LR
+        K["Kaggle API<br/>Lending Club 2007–2018"] --> I["Ingesta a Parquet<br/>sin ids, texto libre ni ubicación fina"]
+        I --> P["Población: 36 meses, sep-2012 a 2015<br/>malo = Charged Off / Default"]
+        P --> S["Partición fuera de tiempo<br/>train 2012–2014 · OOT 2015"]
+    end
+
+    subgraph FEAT["2 · Features"]
+        direction LR
+        F1["Filtro de fuga<br/>variables posteriores a la originación"] --> F2["Limpieza y winsorización"]
+        F2 --> F3["WoE / IV ≥ 0,02<br/>13 variables con signo lógico"]
+        F2 --> F4["31 variables<br/>para árboles y redes"]
+    end
+
+    subgraph RIESGO["3 · Modelos de riesgo"]
+        direction LR
+        OPT["Optuna TPE<br/>2 cortes temporales"] --> MODS["Scorecard logístico · Random Forest<br/>XGBoost en GPU · LightGBM<br/>redes scikit-learn y PyTorch"]
+        MODS --> EV["AUC · KS · PSI · calibración<br/>bootstrap de la diferencia de AUC"]
+        EV --> CH["Campeón LightGBM<br/>recalibración logit"]
+        CH --> SH["TreeSHAP<br/>razones por préstamo"]
+    end
+
+    subgraph ECON["4 · Economía del préstamo"]
+        direction LR
+        PRE["Prepago: clasificación, regresión<br/>y supervivencia en tiempo discreto"]
+        SEV["Severidad: LGD clásica<br/>y pérdida económica"]
+    end
+
+    subgraph CAUSAL["5 · Inferencia causal"]
+        direction LR
+        C1["Efectos fijos de dos vías<br/>subgrado + mes"] --> C3["Placebo: tasa del mes siguiente<br/>efecto no identificado"]
+        C2["DML con LightGBM<br/>cross-fitting · interaction constraints"] --> C3
+        C3 --> C4["Escenario de estrés<br/>+1 pt de PD por punto de sobreprecio"]
+    end
+
+    subgraph MOTOR["6 · Motor de decisión"]
+        direction LR
+        U["Utilidad esperada<br/>(1 − PD) · r_bueno + PD · r_malo"] --> G["Grilla monto × tasa<br/>cuota ≤ 20% del ingreso"]
+        REF["Referencias: monto pedido<br/>y tasa de mercado recalibrada"] --> G
+        G --> T["Monto máximo · tasa de equilibrio (ROI ≥ 0%)<br/>tasa sugerida (ROI ≥ 4%) · contraofertas"]
+    end
+
+    subgraph AGENTE["7 · Agente LangGraph 100% IA (Claude Haiku 5.5)"]
+        direction LR
+        ESP["3 especialistas en paralelo<br/>riesgo · economía · cupo y pricing<br/>tool use con esquemas estrictos"] --> COM["Comité IA<br/>salida estructurada (Pydantic)"]
+        COM --> RD["Reglas duras en código<br/>cuota ≤ 20% · ROI ≥ 0%"]
+        RD --> AUD["Auditor IA<br/>por materialidad"]
+        AUD -. "observaciones (máx. 2)" .-> COM
+        AUD --> MEMO["Decisión + memo"]
+    end
+
+    subgraph OPS["8 · Operación y evaluación"]
+        direction LR
+        MCP["Servidor MCP<br/>5 herramientas + política"]
+        REG["SQLite<br/>ejecuciones, pasos y resultado real"] --> EVA["Evals: 30 casos estratificados<br/>reglas, fidelidad y juez Opus 5.5"]
+        LS["LangSmith<br/>trazas del grafo"]
+    end
+
+    DATOS --> FEAT --> RIESGO
+    DATOS --> ECON
+    DATOS --> CAUSAL
+    RIESGO --> MOTOR
+    ECON --> MOTOR
+    CAUSAL --> MOTOR
+    MOTOR -- "herramientas" --> AGENTE
+    MOTOR -.-> MCP
+    MEMO --> REG
+    MEMO --> LS
 ```
 
 ## Hoja de ruta
@@ -56,7 +114,6 @@ flowchart LR
 | 13 ✅ | Registro de ejecuciones en SQLite + trazas en LangSmith (desempeño agéntico) | Ejecuciones registradas con su resultado real y trazadas, decisión 018 |
 | 14 ✅ | **Evals del agente**: 30 casos con resultado real, calificación programada + juez Opus, versiones v0 → v2 con Haiku 5.5 | Concordancia 83%, fidelidad 94%, juez 97%, USD 0,007 por solicitud, decisión 019 |
 | 15 ✅ | Regla 2b con ROI ≥ 4%, contraofertas verificables (v3), demo y publicación | Notebook 11, página del proyecto y release v1.0.0, decisión 020 |
-| Próximo | Comparar Haiku y Sonnet 5.5 en los mismos 30 casos con la v3 | Tabla comparativa de calidad y costo |
 
 ## Decisiones y trade-offs
 
