@@ -88,8 +88,10 @@ class Motor:
         """Utilidad esperada de todas las combinaciones monto × tasa para un cliente (fila de 1)."""
         return self.evaluar(self._grilla(self._fila(cliente), montos, tasas))
 
-    def monto_maximo(self, sim: pd.DataFrame, tasa: float) -> float:
-        ok = sim[np.isclose(sim["tasa"], tasa) & (sim["utilidad_esperada"] > 0) & sim["cumple_capacidad"]]
+    def monto_maximo(self, sim: pd.DataFrame, tasa: float, roi_minimo: float | None = None) -> float:
+        """Mayor monto con capacidad de pago y utilidad > 0 (o ROI esperado ≥ roi_minimo, decisión 020)."""
+        rentable = sim["utilidad_esperada"] > 0 if roi_minimo is None else sim["roi_esperado"] >= roi_minimo
+        ok = sim[np.isclose(sim["tasa"], tasa) & rentable & sim["cumple_capacidad"]]
         return float(ok["monto"].max()) if len(ok) else 0.0
 
     def tasa_minima(self, sim: pd.DataFrame, monto: float, roi_objetivo: float = 0.0) -> float:
@@ -113,6 +115,7 @@ class Motor:
             "utilidad_esperada": float(actual["utilidad_esperada"]),
             "cuota_ingreso": float(actual["cuota_ingreso"]),
             "monto_maximo": self.monto_maximo(sim, tasa_ofrecida),
+            "monto_maximo_objetivo": self.monto_maximo(sim, tasa_ofrecida, roi_objetivo),
             "tasa_equilibrio": self.tasa_minima(sim, pedido, ROI_EQUILIBRIO),
             "tasa_sugerida": (sugerida := self.tasa_minima(sim, pedido, roi_objetivo)),
             "sugerida_fuera_de_rango": bool(np.isfinite(sugerida)
@@ -139,10 +142,12 @@ def tasa_minima_lote(motor: Motor, df: pd.DataFrame, roi_objetivo: float = 0.0, 
     return np.where(np.isinf(minimo), np.nan, minimo)
 
 
-def monto_maximo_lote(motor: Motor, df: pd.DataFrame, montos=MONTOS) -> np.ndarray:
-    """Para cada préstamo, a su tasa de Lending Club: mayor monto con utilidad > 0 y capacidad de pago."""
+def monto_maximo_lote(motor: Motor, df: pd.DataFrame, montos=MONTOS, roi_minimo: float | None = None) -> np.ndarray:
+    """Para cada préstamo, a su tasa de Lending Club: mayor monto con capacidad de pago y utilidad > 0
+    (o ROI esperado ≥ roi_minimo)."""
     g = _expandir(df, "loan_amnt", montos)
     ev = motor.evaluar(g.drop(columns="_prestamo"))
-    ok = (ev["utilidad_esperada"].to_numpy() > 0) & ev["cumple_capacidad"].to_numpy()
+    rentable = ev["utilidad_esperada"].to_numpy() > 0 if roi_minimo is None else ev["roi_esperado"].to_numpy() >= roi_minimo
+    ok = rentable & ev["cumple_capacidad"].to_numpy()
     monto = np.where(ok, g["loan_amnt"].to_numpy(), 0.0)
     return pd.Series(monto).groupby(g["_prestamo"].to_numpy()).max().to_numpy()

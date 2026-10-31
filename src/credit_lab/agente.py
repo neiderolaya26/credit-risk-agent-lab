@@ -45,7 +45,7 @@ from credit_lab.motor import CUOTA_MAX, ROI_EQUILIBRIO, ROI_OBJETIVO, Motor, cuo
 from credit_lab.poblacion import RAIZ
 
 MODELO = "claude-sonnet-5-5"
-VERSION = "v2"  # v0: piloto inicial; v1: política compartida, FICO del modelo, criterios explícitos, auditor por materialidad; v2: memo sin invenciones
+VERSION = "v3"  # v0: piloto inicial; v1: política compartida, FICO del modelo, criterios explícitos, auditor por materialidad; v2: memo sin invenciones; v3: regla 2b con ROI ≥ 4% (decisión 020)
 # USD por millón de tokens (entrada, salida)
 PRECIOS = {"claude-sonnet-5-5": (2.0, 10.0), "claude-haiku-5-5": (0.10, 0.50), "claude-opus-5-5": (4.0, 20.0)}
 BETAS = ["server-side-fallback-2026-07-01"]
@@ -132,7 +132,13 @@ class Herramientas:
 
     def cupo_pricing(self, sol: pd.DataFrame) -> dict:
         base, estres = self.motor.recomendar(sol), self.motor_estres.recomendar(sol)
-        return limpio(base | {"tasa_equilibrio_estres": estres["tasa_equilibrio"],
+        # las dos contraofertas de la política ya simuladas, para que se puedan verificar (v3)
+        contraofertas = {}
+        if pd.notna(base["tasa_sugerida"]):
+            contraofertas["contraoferta_a_tasa_sugerida"] = self.simular_oferta(sol, base["monto_pedido"], base["tasa_sugerida"])
+        if 0 < base["monto_maximo_objetivo"] < base["monto_pedido"]:
+            contraofertas["contraoferta_b_monto_objetivo"] = self.simular_oferta(sol, base["monto_maximo_objetivo"], base["tasa_ofrecida"])
+        return limpio(base | contraofertas | {"tasa_equilibrio_estres": estres["tasa_equilibrio"],
                               "tasa_sugerida_estres": estres["tasa_sugerida"],
                               "regla_cuota_max": CUOTA_MAX} | CRITERIOS)
 
@@ -170,7 +176,8 @@ ESPECIALISTAS = {
                          SIMULAR],
     },
     "cupo": {
-        "sistema": "Eres el especialista de cupo y pricing. Usa las herramientas para obtener el monto máximo, "
+        "sistema": "Eres el especialista de cupo y pricing. Usa las herramientas para obtener el monto máximo "
+                   "(utilidad > 0) y el monto máximo objetivo (ROI ≥ 4%), "
                    "la tasa de equilibrio (ROI ≥ 0%), la tasa sugerida (ROI ≥ 4%), el escenario de estrés "
                    "(la PD sube 1 pt por punto de sobreprecio) y la bandera fuera de rango (> 1 pt de la tasa "
                    "de mercado: sin evidencia). Puedes simular ofertas alternativas. Propón la mejor oferta.",
@@ -204,10 +211,12 @@ POLITICA = f"""Política del banco (en este orden):
 1. Aprobar si, al monto y la tasa ofrecidos, el ROI esperado es ≥ {ROI_OBJETIVO:.0%} y la cuota es ≤ {CUOTA_MAX:.0%} del ingreso.
 2. Si no, contraoferta con la primera opción que cumpla:
    a. el monto pedido a la tasa sugerida (ROI ≥ {ROI_OBJETIVO:.0%}), si existe, está entre {TASA_MIN:g}% y {TASA_MAX:g}% y la cuota sigue ≤ {CUOTA_MAX:.0%};
-   b. el monto máximo (a la tasa ofrecida) si es menor que el pedido.
+   b. el monto máximo objetivo (el mayor monto con ROI ≥ {ROI_OBJETIVO:.0%} a la tasa ofrecida) si es menor que el pedido.
 3. Si no, rechazar (monto = 0, tasa = 0).
 Reglas duras que verifica el código: cuota ≤ {CUOTA_MAX:.0%} del ingreso y ROI esperado ≥ {ROI_EQUILIBRIO:.0%} en lo que se otorga.
-El escenario de estrés y la bandera fuera de rango son alertas que se mencionan; por sí solas no cambian la decisión.
+El escenario de estrés y la bandera fuera de rango son alertas que se mencionan; por sí solas no cambian la decisión
+(una tasa sugerida fuera de rango sigue siendo una contraoferta válida). Las contraofertas a y b vienen ya simuladas
+en la herramienta de cupo.
 El FICO de la solicitud es el punto medio del rango, el mismo que usa el modelo."""
 
 SISTEMA_COMITE = f"""Eres el comité de crédito. Decides con base en el análisis de tres especialistas y los

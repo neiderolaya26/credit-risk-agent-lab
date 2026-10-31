@@ -286,6 +286,24 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
   | Costo por solicitud | USD 0,007 (juez aparte: USD 0,04) |
   | Latencia | 51 s |
 
-  - Todos los desacuerdos van en una sola dirección: 5 de 13 contraofertas del motor el agente las rechazó. La causa es la ambigüedad de la regla 2b (el monto máximo solo garantiza ROI > 0%, no ≥ 4%). Esos 5 préstamos rindieron +11,1% en la realidad: el conservadurismo deja plata sobre la mesa. Con 5 casos es una señal para investigar, no una conclusión.
+  - Todos los desacuerdos van en una sola dirección: 5 de 13 contraofertas del motor el agente las rechazó. *Corrección (decisión 020): la causa no era la regla 2b sino la 2a; ver la decisión 020.* Esos 5 préstamos rindieron +11,1% en la realidad: el conservadurismo deja plata sobre la mesa. Con 5 casos es una señal para investigar, no una conclusión.
   - La mora de la muestra (40%) es alta por diseño: la muestra está estratificada para incluir malos. No es comparable con la cartera.
 - **Pendiente:** correr Sonnet 5.5 en los mismos 30 casos (≈ USD 3, incluido el juez) y aclarar la regla 2b de la política.
+
+---
+
+## 020 — Cierre: regla 2b con ROI ≥ 4%, contraofertas verificables, demo y release
+
+- **Fecha:** 2026-10-31
+- **Contexto:** en la eval de la sesión 14, el agente rechazó 5 de 13 contraofertas del motor. Se atribuyó a la regla 2b, pero al revisarlo la causa era la **regla 2a**:
+  - la herramienta de cupo informaba la tasa sugerida sin su ROI ni su cuota, así que el agente no podía verificarla;
+  - el agente trataba la bandera "fuera de rango" como descalificadora.
+
+  Aparte, la regla 2b ofrecía el monto máximo con solo utilidad > 0, lo que choca con el 4% de la decisión 013.
+- **Decisión:**
+  - **Regla 2b:** la contraoferta por monto exige **ROI esperado ≥ 4%** (`monto_maximo_objetivo`; `Motor.monto_maximo(..., roi_minimo)`). Con la regla nueva solo cambia c20 (de rechazar a contraoferta) en los 30 casos.
+  - **v3 del agente:** la herramienta de cupo devuelve las dos contraofertas ya simuladas, y la política aclara que una tasa fuera de rango sigue siendo una contraoferta válida.
+  - **Pregunta de negocio**, en palabras de Neider: mostrar que, con un dataset público, todo lo construido toma mejores decisiones de aprobación, cupo y precio, automatizando la decisión de punta a punta con modelamiento avanzado, LLM y agentes.
+  - **Demo:** notebook 11 (recorrido de un préstamo con una traza guardada, sin costo) y una página web para compartir.
+  - **Release v1.0.0** con Haiku 5.5 como modelo por defecto del agente. Sonnet en los mismos 30 casos queda para después de la release.
+- **Por qué (en mis palabras):** ROI ≥ 4%; Sonnet después de la release; ambas demos; quiero mostrar que con un dataset público todo lo que construimos toma mejores decisiones de aprobación, cupo y precio, automatizando la toma de decisiones end to end con modelamiento avanzado, LLM y agéntica.
