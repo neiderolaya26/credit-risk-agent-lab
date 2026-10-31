@@ -120,9 +120,9 @@ footer { border-top: 1px solid var(--regla); padding-top: 1.5rem; display: flex;
   <header class="encabezado">
     <span class="etiqueta">Portafolio de IA · repo 1 de 6 · v1.0.0</span>
     <h1>Credit Risk Agent Lab</h1>
-    <p class="lead">Un sistema de decisión de crédito construido de punta a punta con datos públicos de Lending Club: modelos de riesgo, prepago y pérdida, un motor de cupo y precio validado con inferencia causal, y un agente de IA que decide, se audita y redacta el memo sin intervención humana.</p>
+    <p class="lead">Un sistema de decisión de crédito construido de punta a punta con datos públicos de Lending Club: modelos de riesgo, prepago y pérdida, un motor de cupo y precio validado con inferencia causal, y un agente de IA que analiza, decide y se audita; aprueba los casos claros y deja los rechazos y contraofertas para la firma de un analista.</p>
     <div class="pila" aria-label="Tecnologías">
-      <span>LightGBM · XGBoost · PyTorch</span><span>Supervivencia</span><span>Efectos fijos · DML</span><span>LangGraph</span><span>Claude Haiku 5.5</span><span>MCP</span><span>LangSmith</span><span>Evals</span>
+      <span>LightGBM · XGBoost · PyTorch</span><span>Supervivencia</span><span>Efectos fijos · DML</span><span>LangGraph</span><span>Claude Haiku 5.5</span><span>Firma humana</span><span>MCP</span><span>LangSmith</span><span>Evals</span>
     </div>
     <div class="enlaces">
       <a href="https://github.com/neiderolaya26/credit-risk-agent-lab">Repositorio en GitHub</a>
@@ -157,6 +157,7 @@ footer { border-top: 1px solid var(--regla); padding-top: 1.5rem; display: flex;
         <li><span class="quien">Cupo y precio</span><p>Tasa de equilibrio <span class="cifra">7,5%</span>, tasa sugerida <span class="cifra">11,5%</span> (mercado: 11,6%). Simulada a 11,5%: ROI <span class="cifra">4,35%</span> y cuota de <span class="cifra">9,9%</span> del ingreso.</p></li>
         <li><span class="quien">Comité IA</span><p>No aprueba al 9,17%; contraoferta el mismo monto a la tasa sugerida, como manda la regla 2a de la política.</p></li>
         <li><span class="quien">Auditor IA</span><p>Aprueba al primer intento: los números coinciden con las herramientas. Deja dos observaciones menores de redacción.</p></li>
+        <li><span class="quien">Analista</span><p>Como es una contraoferta, la propuesta queda pendiente hasta que un analista la firma o la devuelve.</p></li>
       </ol>
       <div class="resultado">
         <span class="etiqueta">Lo que pasó en la realidad</span>
@@ -180,7 +181,8 @@ footer { border-top: 1px solid var(--regla); padding-top: 1.5rem; display: flex;
           <tr><td>Prepago y pérdida</td><td>Supervivencia en tiempo discreto, la mejor en todas las métricas (RMSE 0,0497); la LGD clásica no tiene señal</td><td>011</td></tr>
           <tr><td>Cupo y precio</td><td>Lo que Lending Club cobró por debajo de la tasa sugerida rindió 2,8% frente a 6,7%; lo que pidió más del monto máximo, 1,8% con 30% de mora</td><td>012–013</td></tr>
           <tr><td>Inferencia causal</td><td>La relación tasa–mora es selección; el placebo falla y el efecto no se identifica. El escenario de estrés aísla un 4,9% sin tasa viable que rindió −1,3% con 31,5% de mora</td><td>014–015</td></tr>
-          <tr><td>Agente 100% IA</td><td>En 30 casos con resultado real: 100% de reglas duras, 94% de números respaldados y 97% en el juez, a USD 0,007 por solicitud</td><td>016–020</td></tr>
+          <tr><td>Valor del modelo</td><td>Con la misma tasa de rechazo (20%), ordenar por el campeón y no por la tasa de Lending Club suma +USD 337 mil de utilidad real por cada 10.000 solicitudes (IC 95% [272; 408] mil)</td><td>021</td></tr>
+          <tr><td>Agente</td><td>En 30 casos con resultado real: coincide con la política en el 83%, 100% de reglas duras, 94% de números respaldados y 97% en el juez, a USD 0,007 por solicitud. Rechazos y contraofertas esperan la firma de un analista</td><td>016–021</td></tr>
         </tbody>
       </table>
     </div>
@@ -246,13 +248,14 @@ flowchart TB
         G --> T["Monto máximo · tasa de equilibrio (ROI ≥ 0%)&lt;br/&gt;tasa sugerida (ROI ≥ 4%) · contraofertas"]
     end
 
-    subgraph AGENTE["7 · Agente LangGraph 100% IA (Claude Haiku 5.5)"]
+    subgraph AGENTE["7 · Agente LangGraph (Claude Haiku 5.5)"]
         direction LR
         ESP["3 especialistas en paralelo&lt;br/&gt;riesgo · economía · cupo y pricing&lt;br/&gt;tool use con esquemas estrictos"] --> COM["Comité IA&lt;br/&gt;salida estructurada (Pydantic)"]
         COM --> RD["Reglas duras en código&lt;br/&gt;cuota ≤ 20% · ROI ≥ 0%"]
         RD --> AUD["Auditor IA&lt;br/&gt;por materialidad"]
         AUD -. "observaciones (máx. 2)" .-> COM
-        AUD --> MEMO["Decisión + memo"]
+        AUD --> FIR["Firma: aprobación automática&lt;br/&gt;rechazo o contraoferta → analista"]
+        FIR --> MEMO["Decisión + memo"]
     end
 
     subgraph OPS["8 · Operación y evaluación"]
@@ -260,6 +263,7 @@ flowchart TB
         MCP["Servidor MCP&lt;br/&gt;5 herramientas + política"]
         REG["SQLite&lt;br/&gt;ejecuciones, pasos y resultado real"] --> EVA["Evals: 30 casos estratificados&lt;br/&gt;reglas, fidelidad y juez Opus 5.5"]
         LS["LangSmith&lt;br/&gt;trazas del grafo"]
+        CI["GitHub Actions&lt;br/&gt;63 tests"]
     end
 
     DATOS --> FEAT --> RIESGO

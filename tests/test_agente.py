@@ -77,3 +77,27 @@ def test_violacion_de_regla_impide_aprobar_aunque_el_auditor_apruebe():
     final = evaluar_solicitud(construir(cliente, HerramientasFalsas()), SOLICITUD)["final"]
     assert final["decision"] == "rechazar" and final["intentos"] == 2
     assert any("tasa fuera de la grilla" in h for h in final["auditoria"]["hallazgos"])
+
+
+def test_aprobacion_no_espera_firma():
+    cliente = ClienteFalso([_decision()], [Auditoria(aprobado=True, hallazgos=[])])
+    estado = evaluar_solicitud(construir(cliente, HerramientasFalsas()), SOLICITUD, hilo="a")
+    assert "__interrupt__" not in estado and estado["final"]["estado"] == "aprobada automáticamente"
+
+
+def test_contraoferta_espera_firma_y_el_analista_la_confirma():
+    from credit_lab.agente import firmar
+
+    cliente = ClienteFalso([_decision("contraoferta", 8_000.0)], [Auditoria(aprobado=True, hallazgos=[])])
+    grafo = construir(cliente, HerramientasFalsas())
+    estado = evaluar_solicitud(grafo, SOLICITUD, hilo="b")
+    assert estado["final"]["estado"] == "pendiente de firma"
+    assert estado["__interrupt__"][0].value["propuesta"]["monto"] == 8_000.0
+    estado = firmar(grafo, confirma=True, analista="ana", comentario="ok", hilo="b")
+    assert estado["final"]["estado"] == "firmada por analista" and estado["final"]["firma"]["analista"] == "ana"
+
+
+def test_modo_eval_registra_la_propuesta_sin_firma():
+    cliente = ClienteFalso([_decision("contraoferta", 8_000.0)], [Auditoria(aprobado=True, hallazgos=[])])
+    estado = evaluar_solicitud(construir(cliente, HerramientasFalsas(), firma_humana=False), SOLICITUD)
+    assert "__interrupt__" not in estado and estado["final"]["estado"] == "propuesta sin firma (eval)"

@@ -1,16 +1,24 @@
-pandas
-pyarrow
-numpy
-scikit-learn
-xgboost
-lightgbm
-matplotlib
-jupyterlab
-kaggle
-pytest
-optuna
-torch  # con GPU NVIDIA: pip install torch --index-url https://download.pytorch.org/whl/cu128
-anthropic
-langgraph
-mcp
-langsmith
+# Versiones exactas con las que se construyó y probó el proyecto (Python 3.14).
+# Datos y modelos
+pandas==3.1.0
+pyarrow==26.0.0
+numpy==2.5.4
+scipy==1.18.1
+scikit-learn==1.9.1
+joblib==1.6.0
+xgboost==3.4.1
+lightgbm==4.7.0
+optuna==5.0.0
+# Con GPU NVIDIA: pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cu128
+torch==2.11.0
+matplotlib==3.11.2
+# Agente, servidor MCP y observabilidad
+anthropic==2.3.0
+langgraph==1.2.19
+langsmith==0.14.16
+mcp==2.3.0
+pydantic==2.14.2
+# Entorno
+jupyterlab==4.6.5
+kaggle==2.2.5
+pytest==9.2.0

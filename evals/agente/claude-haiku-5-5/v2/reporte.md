@@ -35,9 +35,9 @@ Latencia media 51 s · 9.0 llamadas por caso
 
 |  | préstamos | mora real | ROI real |
 |---|---|---|---|
-| Agente | 24.000 | 0.375 | -0.051 |
-| Motor | 29.000 | 0.379 | -0.023 |
-| Lending Club (todos) | 30.000 | 0.400 | -0.045 |
+| Agente | 24 | 37.5% | -5.1% |
+| Motor | 29 | 37.9% | -2.3% |
+| Lending Club (todos) | 30 | 40.0% | -4.5% |
 
 Con 30 casos estas diferencias son ruidosas: sirven para detectar errores grandes, no para declarar un ganador.
 La contraoferta cambia monto o tasa; se usa el resultado real del préstamo original como aproximación.

@@ -34,7 +34,9 @@ def main(n_trials: int = 25, modelos: list[str] = MODELOS) -> None:
     SALIDA.mkdir(exist_ok=True)
     df = derivar(cargar_poblacion())
     tr, oot = df[df["muestra"].eq("train")], df[df["muestra"].eq("oot")]
-    pred = pd.read_parquet(SALIDA / "predicciones_oot.parquet")
+    ruta_pred = SALIDA / "predicciones_oot.parquet"
+    # el notebook 04 agrega pd_logistica; si no se corrió, se parte del benchmark de Lending Club
+    pred = pd.read_parquet(ruta_pred) if ruta_pred.exists() else oot[["anio", "malo", "int_rate"]].copy()
     ruta_json = SALIDA / "ajuste.json"
     resumen_ajuste = json.loads(ruta_json.read_text()) if ruta_json.exists() else {}
     print(f"XGBoost usa: {DISPOSITIVO_XGB} · PyTorch usa: {DISPOSITIVO_TORCH}", flush=True)

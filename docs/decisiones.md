@@ -307,3 +307,31 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
   - **Demo:** notebook 11 (recorrido de un préstamo con una traza guardada, sin costo) y una página web para compartir.
   - **Release v1.0.0** con Haiku 5.5 como modelo por defecto del agente. Sonnet en los mismos 30 casos queda para después de la release.
 - **Por qué (en mis palabras):** ROI ≥ 4%; Sonnet después de la release; ambas demos; quiero mostrar que con un dataset público todo lo que construimos toma mejores decisiones de aprobación, cupo y precio, automatizando la toma de decisiones end to end con modelamiento avanzado, LLM y agéntica.
+
+---
+
+## 021 — Revisión de cierre: firma humana, valor en dinero, equidad y reproducibilidad
+
+- **Fecha:** 2026-10-31
+- **Contexto:** una revisión estricta del repo, hecha como la haría un hiring manager de riesgo de crédito, encontró cinco problemas:
+  - "100% IA, sin intervención humana" es una señal de alarma en crédito (gobierno de modelos, explicación de rechazos, crédito justo), y no había análisis de equidad;
+  - el repo no se podía reproducir (sin pipeline documentado, versiones sin fijar, sin CI);
+  - la mejora del AUC (+0,0039) no estaba traducida a dinero;
+  - el README omitía la concordancia con la política, y la v3 no tenía eval;
+  - el resumen era denso y estaba solo en español.
+- **Decisión:**
+  - **Firma humana (cambia la decisión 016):** el agente aprueba automáticamente solo lo que cumple la política. Los rechazos y las contraofertas se pausan con `interrupt` de LangGraph hasta que un analista los firma o los devuelve. El registro guarda el estado de firma; las evals miden la propuesta sin firma.
+  - **Valor en dinero (`credit_lab.valor`):** con la misma tasa de rechazo, ordenar por el campeón en vez de por la tasa de Lending Club suma +USD 195 mil (10%), +337 mil (20%) y +447 mil (30%) de utilidad real por cada 10.000 solicitudes de 2015, con IC 95% por bootstrap que no cruza cero. La mora baja poco; el valor viene de no rechazar préstamos caros pero buenos.
+  - **Equidad por proxies**, porque no hay atributos protegidos en los datos:
+    - la calibración queda a ±0,5 pts en cada grupo de vivienda y región;
+    - el rechazo es parejo por región;
+    - hay impacto dispar por vivienda (29% de rechazo a quienes arriendan frente a 11% con hipoteca), en línea con su mora real; queda documentado como algo a monitorear.
+  - **Reproducibilidad:**
+    - pipeline completo en el README;
+    - `requirements.txt` con versiones exactas y Python 3.14;
+    - metadatos en `pyproject.toml`;
+    - GitHub Actions corre los tests, que no necesitan datos ni modelos;
+    - `ajustar` ya no depende de un archivo que solo creaba el notebook 04.
+  - **Presentación:** resumen de 30 segundos con un gráfico arriba, `README.en.md`, la concordancia (83%) en los resultados, la aclaración de que la v3 no tiene eval propia y el formato corregido de los reportes de evals.
+- **Alternativas consideradas:** solo cambiar el mensaje y dejar el agente sin firma; mantener 100% IA.
+- **Por qué (en mis palabras):** humano en rechazos.
