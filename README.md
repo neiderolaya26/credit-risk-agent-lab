@@ -34,7 +34,7 @@ flowchart LR
 | 3 ✅ | Features: WoE, IV, partición fuera de tiempo | Pipeline de features + tests, decisión 003 |
 | 4 ✅ | Línea base: regresión logística / scorecard | Modelo 1 + métricas, decisión 004 |
 | 5 ✅ | Random Forest, XGBoost, LightGBM, red neuronal (scikit-learn y PyTorch) | Retadores con ajuste bayesiano, decisión 005 |
-| 6 | Comparación: AUC, KS, Gini, Brier, PSI, utilidad por punto de corte | Elección del campeón (decisión mía) |
+| 6 ✅ | Comparación: significancia (bootstrap), calibración, utilidad por punto de corte | Campeón LightGBM recalibrado, decisiones 006-007 |
 | 7 | Explicabilidad (SHAP) y política de corte | Reporte de drivers |
 | 8 | Agente: herramientas + memo de crédito | Agente funcionando |
 | 9 | Servidor MCP, evals, demo y publicación | Release v1.0.0 |

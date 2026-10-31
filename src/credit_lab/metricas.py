@@ -63,6 +63,41 @@ def resumen_orden(t: pd.DataFrame) -> dict:
     }
 
 
+def bootstrap_auc(y, scores: dict, referencia: str, n: int = 300, semilla: int = 0) -> pd.DataFrame:
+    """Diferencia de AUC de cada score contra `referencia`, con IC del 95% por bootstrap pareado.
+
+    Pareado = en cada réplica se remuestrean los mismos préstamos para todos los
+    modelos, así la comparación no se contamina por la suerte de la muestra.
+    """
+    y = np.asarray(y)
+    scores = {k: np.asarray(v, dtype=float) for k, v in scores.items()}
+    rng = np.random.default_rng(semilla)
+    difs = {k: [] for k in scores if k != referencia}
+    for _ in range(n):
+        i = rng.integers(0, len(y), len(y))
+        base = roc_auc_score(y[i], scores[referencia][i])
+        for k in difs:
+            difs[k].append(roc_auc_score(y[i], scores[k][i]) - base)
+    filas = []
+    for k, d in difs.items():
+        d = np.array(d)
+        filas.append({"modelo": k, "dif_auc": roc_auc_score(y, scores[k]) - roc_auc_score(y, scores[referencia]),
+                      "ic95_inf": np.percentile(d, 2.5), "ic95_sup": np.percentile(d, 97.5),
+                      "prob_no_mejora": float((d <= 0).mean())})
+    return pd.DataFrame(filas).set_index("modelo")
+
+
+def tabla_calibracion(y, pd_estimada, n: int = 10) -> pd.DataFrame:
+    """PD promedio estimada vs. tasa de malos observada, por decil de PD."""
+    y, p = pd.Series(np.asarray(y)), pd.Series(np.asarray(pd_estimada, dtype=float))
+    decil = pd.qcut(p.rank(method="first"), n, labels=range(1, n + 1))
+    t = pd.DataFrame({"pd_estimada": p.groupby(decil.values).mean(),
+                      "tasa_real": y.groupby(decil.values).mean()})
+    t["diferencia"] = t["tasa_real"] - t["pd_estimada"]
+    t.index.name = "decil_pd"
+    return t
+
+
 def psi(esperado: pd.Series, actual: pd.Series, n_tramos: int = 10) -> float:
     """Population Stability Index entre dos muestras de una variable.
 
