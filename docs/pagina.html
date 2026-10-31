@@ -1,0 +1,261 @@
+<title>Credit Risk Agent Lab</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Literata:opsz,wght@7..72,400;7..72,600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: una sola columna tipo expediente de comité de crédito; el caso c10 como pieza central, con sello de decisión. */
+:root {
+  --papel: #f4f6f3;
+  --hoja: #fbfcfa;
+  --tinta: #16201d;
+  --tinta-2: #4d5a55;
+  --regla: #d6dbd5;
+  --acento: #0f6b55;
+  --ambar: #a85f0c;
+  --rojo: #ad3329;
+  --s1: #c9e3da;
+  --s2: #79b8a3;
+  --s3: #0f6b55;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --texto: "Literata", Georgia, "Times New Roman", serif;
+  --cifra: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papel: #101715; --hoja: #16201d; --tinta: #e5ece8; --tinta-2: #a2b2ab; --regla: #2b3833;
+    --acento: #57c3a0; --ambar: #e3a14d; --rojo: #e47d73; --s1: #24453b; --s2: #2f7f66; --s3: #57c3a0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --papel: #101715; --hoja: #16201d; --tinta: #e5ece8; --tinta-2: #a2b2ab; --regla: #2b3833;
+  --acento: #57c3a0; --ambar: #e3a14d; --rojo: #e47d73; --s1: #24453b; --s2: #2f7f66; --s3: #57c3a0;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--papel); color: var(--tinta); font: 400 1rem/1.65 var(--texto);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 2.5rem 4rem;
+}
+.hoja-ancha { max-width: 68rem; margin: 0 auto; display: grid; gap: 4rem; }
+h1, h2, h3 { font-family: var(--display); line-height: 1.12; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.4rem, 2.6vw, 1.9rem); font-weight: 700; }
+h3 { font-size: 1.05rem; font-weight: 500; }
+p { margin: 0; max-width: 65ch; }
+a { color: var(--acento); text-underline-offset: 3px; }
+a:focus-visible { outline: 2px solid var(--acento); outline-offset: 3px; border-radius: 2px; }
+.etiqueta { font: 600 0.72rem/1 var(--cifra); letter-spacing: 0.12em; text-transform: uppercase; color: var(--tinta-2); }
+.cifra { font-family: var(--cifra); font-variant-numeric: tabular-nums; }
+
+/* Encabezado */
+.encabezado { display: grid; gap: 1.25rem; }
+.encabezado .lead { font-size: 1.15rem; color: var(--tinta-2); }
+.pila { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.pila span { font: 400 0.8rem/1 var(--cifra); border: 1px solid var(--regla); padding: 0.45rem 0.6rem; border-radius: 3px; color: var(--tinta-2); }
+.enlaces { display: flex; flex-wrap: wrap; gap: 1.25rem; font-family: var(--display); font-weight: 500; }
+
+/* Expediente c10 */
+.expediente { background: var(--hoja); border: 1px solid var(--regla); border-radius: 6px; padding: clamp(1.25rem, 3vw, 2.25rem); display: grid; gap: 1.75rem; position: relative; }
+.expediente-cab { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--regla); padding-bottom: 1.25rem; }
+.sello { font: 700 0.85rem/1.2 var(--cifra); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ambar); border: 2px solid var(--ambar); padding: 0.55rem 0.8rem; border-radius: 4px; transform: rotate(-2deg); text-align: center; }
+.sello small { display: block; font-weight: 400; letter-spacing: 0.04em; text-transform: none; }
+.datos { display: grid; grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr)); gap: 1rem 1.5rem; margin: 0; }
+.datos div { display: grid; gap: 0.2rem; min-width: 0; }
+.datos dt { font: 400 0.75rem/1.3 var(--cifra); color: var(--tinta-2); }
+.datos dd { margin: 0; font: 600 1.05rem/1.2 var(--cifra); font-variant-numeric: tabular-nums; }
+.pasos { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.1rem; }
+.pasos li { display: grid; grid-template-columns: 7.5rem 1fr; gap: 1rem; align-items: start; }
+.pasos li > * { min-width: 0; }
+.pasos .quien { font: 600 0.78rem/1.4 var(--cifra); text-transform: uppercase; letter-spacing: 0.08em; color: var(--acento); padding-top: 0.15rem; }
+.pasos p { font-size: 0.97rem; }
+.resultado { display: flex; flex-wrap: wrap; gap: 0.75rem 2rem; border-top: 1px solid var(--regla); padding-top: 1.25rem; align-items: baseline; }
+.resultado strong { font-family: var(--cifra); color: var(--acento); }
+
+/* Tabla de resultados */
+.envoltura-tabla { overflow-x: auto; border-top: 2px solid var(--tinta); }
+table { width: 100%; border-collapse: collapse; min-width: 36rem; }
+th, td { text-align: left; vertical-align: top; padding: 0.85rem 0.75rem 0.85rem 0; border-bottom: 1px solid var(--regla); font-size: 0.95rem; }
+th { font: 600 0.72rem/1.2 var(--cifra); letter-spacing: 0.1em; text-transform: uppercase; color: var(--tinta-2); }
+td:first-child { font-family: var(--display); font-weight: 500; white-space: nowrap; }
+td:last-child { font-family: var(--cifra); color: var(--tinta-2); white-space: nowrap; }
+
+/* Evals */
+.evals { display: grid; gap: 1.5rem; }
+.leyenda { display: flex; flex-wrap: wrap; gap: 1.25rem; font: 400 0.8rem/1 var(--cifra); color: var(--tinta-2); }
+.leyenda i { display: inline-block; width: 0.8rem; height: 0.8rem; border-radius: 2px; margin-right: 0.4rem; vertical-align: -0.1rem; }
+.metricas { display: grid; gap: 1.1rem; }
+.metrica { display: grid; grid-template-columns: 11rem 1fr; gap: 1rem; align-items: center; }
+.metrica > * { min-width: 0; }
+.metrica .nombre { font-family: var(--display); font-weight: 500; font-size: 0.95rem; }
+.barras { display: grid; gap: 3px; }
+.barra { display: grid; grid-template-columns: 1fr 3.2rem; gap: 0.5rem; align-items: center; }
+.pista { height: 0.7rem; background: transparent; border-radius: 0 3px 3px 0; }
+.relleno { height: 100%; border-radius: 0 3px 3px 0; }
+.barra .valor { font: 400 0.75rem/1 var(--cifra); color: var(--tinta-2); text-align: right; font-variant-numeric: tabular-nums; }
+.barra.v2 .valor { color: var(--tinta); font-weight: 600; }
+.nota { font-size: 0.9rem; color: var(--tinta-2); }
+
+/* Arquitectura */
+.diagrama { overflow-x: auto; background: var(--hoja); border: 1px solid var(--regla); border-radius: 6px; padding: 1rem; }
+.columnas { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 2rem; }
+.columnas > div { display: grid; gap: 0.6rem; align-content: start; min-width: 0; }
+.seccion { display: grid; gap: 1.5rem; }
+footer { border-top: 1px solid var(--regla); padding-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem 2rem; justify-content: space-between; font-size: 0.9rem; color: var(--tinta-2); }
+
+@media (max-width: 34rem) {
+  .pasos li, .metrica { grid-template-columns: 1fr; gap: 0.35rem; }
+  .sello { transform: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .relleno { transform-origin: left; animation: crecer 700ms ease-out both; }
+  @keyframes crecer { from { transform: scaleX(0.2); } to { transform: scaleX(1); } }
+}
+</style>
+
+<main class="hoja-ancha">
+  <header class="encabezado">
+    <span class="etiqueta">Portafolio de IA · repo 1 de 6 · v1.0.0</span>
+    <h1>Credit Risk Agent Lab</h1>
+    <p class="lead">Un sistema de decisión de crédito construido de punta a punta con datos públicos de Lending Club: modelos de riesgo, prepago y pérdida, un motor de cupo y precio validado con inferencia causal, y un agente de IA que decide, se audita y redacta el memo sin intervención humana.</p>
+    <div class="pila" aria-label="Tecnologías">
+      <span>LightGBM · XGBoost · PyTorch</span><span>Supervivencia</span><span>Efectos fijos · DML</span><span>LangGraph</span><span>Claude Haiku 5.5</span><span>MCP</span><span>LangSmith</span><span>Evals</span>
+    </div>
+    <div class="enlaces">
+      <a href="https://github.com/neiderolaya26/credit-risk-agent-lab">Repositorio en GitHub</a>
+      <a href="https://github.com/neiderolaya26/credit-risk-agent-lab/blob/main/docs/decisiones.md">20 decisiones registradas</a>
+      <a href="https://github.com/neiderolaya26/credit-risk-agent-lab/blob/main/notebooks/11_demo_agente.ipynb">Demo en notebook</a>
+    </div>
+  </header>
+
+  <section class="seccion" aria-labelledby="t-caso">
+    <div style="display:grid;gap:.6rem">
+      <span class="etiqueta">Un caso real, de la solicitud a la decisión</span>
+      <h2 id="t-caso">Solicitud c10: Lending Club la cobró barata</h2>
+    </div>
+    <article class="expediente">
+      <div class="expediente-cab">
+        <div style="display:grid;gap:.35rem">
+          <span class="etiqueta">Expediente · jul–dic 2015 · subgrado B2</span>
+          <h3>Consolidación de deudas · arrienda · 3 años de antigüedad laboral</h3>
+        </div>
+        <div class="sello" aria-label="Decisión del agente: contraoferta a 11,5%">Contraoferta<small>USD 15.000 al 11,5%</small></div>
+      </div>
+      <dl class="datos">
+        <div><dt>Monto pedido</dt><dd>USD 15.000</dd></div>
+        <div><dt>Tasa de Lending Club</dt><dd>9,17%</dd></div>
+        <div><dt>Ingreso anual</dt><dd>USD 60.000</dd></div>
+        <div><dt>FICO (punto medio)</dt><dd>662</dd></div>
+        <div><dt>Deuda / ingreso</dt><dd>18,3%</dd></div>
+      </dl>
+      <ol class="pasos">
+        <li><span class="quien">Riesgo</span><p>PD de <span class="cifra">22,8%</span> frente a <span class="cifra">12,9%</span> de la cartera. El FICO de 662 y arrendar suben el riesgo; una cuenta rotativa de 248 meses lo baja.</p></li>
+        <li><span class="quien">Economía</span><p>Si paga, rinde <span class="cifra">12,1%</span>; si cae, pierde <span class="cifra">32,5%</span>. A 9,17% el ROI esperado es <span class="cifra">1,9%</span>, por debajo del 4% que exige la política.</p></li>
+        <li><span class="quien">Cupo y precio</span><p>Tasa de equilibrio <span class="cifra">7,5%</span>, tasa sugerida <span class="cifra">11,5%</span> (mercado: 11,6%). Simulada a 11,5%: ROI <span class="cifra">4,35%</span> y cuota de <span class="cifra">9,9%</span> del ingreso.</p></li>
+        <li><span class="quien">Comité IA</span><p>No aprueba al 9,17%; contraoferta el mismo monto a la tasa sugerida, como manda la regla 2a de la política.</p></li>
+        <li><span class="quien">Auditor IA</span><p>Aprueba al primer intento: los números coinciden con las herramientas. Deja dos observaciones menores de redacción.</p></li>
+      </ol>
+      <div class="resultado">
+        <span class="etiqueta">Lo que pasó en la realidad</span>
+        <span>El préstamo se pagó completo: ROI real <strong>13,2%</strong></span>
+        <span class="cifra" style="color:var(--tinta-2)">Costo del agente: USD 0,007 · 57 s</span>
+      </div>
+    </article>
+  </section>
+
+  <section class="seccion" aria-labelledby="t-res">
+    <div style="display:grid;gap:.6rem">
+      <span class="etiqueta">Fuera de tiempo: entrenado hasta 2014, evaluado en 2015</span>
+      <h2 id="t-res">Qué se logró en cada pieza</h2>
+    </div>
+    <div class="envoltura-tabla">
+      <table>
+        <thead><tr><th>Pieza</th><th>Resultado</th><th>Decisión</th></tr></thead>
+        <tbody>
+          <tr><td>Riesgo</td><td>LightGBM (AUC 0,6823) le gana al score de Lending Club (0,6784) solo con variables públicas; IC 95% de la diferencia [+0,0016; +0,0063]</td><td>006–007</td></tr>
+          <tr><td>Aprobación</td><td>Política por utilidad esperada: la misma utilidad que un corte por PD, con mejor ROI (6,30%) y menos mora</td><td>008</td></tr>
+          <tr><td>Prepago y pérdida</td><td>Supervivencia en tiempo discreto, la mejor en todas las métricas (RMSE 0,0497); la LGD clásica no tiene señal</td><td>011</td></tr>
+          <tr><td>Cupo y precio</td><td>Lo que Lending Club cobró por debajo de la tasa sugerida rindió 2,8% frente a 6,7%; lo que pidió más del monto máximo, 1,8% con 30% de mora</td><td>012–013</td></tr>
+          <tr><td>Inferencia causal</td><td>La relación tasa–mora es selección; el placebo falla y el efecto no se identifica. El escenario de estrés aísla un 4,9% sin tasa viable que rindió −1,3% con 31,5% de mora</td><td>014–015</td></tr>
+          <tr><td>Agente 100% IA</td><td>En 30 casos con resultado real: 100% de reglas duras, 94% de números respaldados y 97% en el juez, a USD 0,007 por solicitud</td><td>016–020</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="seccion evals" aria-labelledby="t-evals">
+    <div style="display:grid;gap:.6rem">
+      <span class="etiqueta">Evals del agente · Claude Haiku 5.5 · juez Claude Opus 5.5</span>
+      <h2 id="t-evals">La mejora vino de corregir el diseño, no de cambiar de modelo</h2>
+      <p class="nota">El mismo modelo en tres versiones. v0 y v1 son pilotos de 5 casos; v2 corrió los 30. De v0 a v1 se le dio al comité y al auditor la misma política y los mismos datos.</p>
+    </div>
+    <div class="leyenda" aria-hidden="true"><span><i style="background:var(--s1)"></i>v0 · 5 casos</span><span><i style="background:var(--s2)"></i>v1 · 5 casos</span><span><i style="background:var(--s3)"></i>v2 · 30 casos</span></div>
+    <div class="metricas" id="metricas" role="list"></div>
+  </section>
+
+  <section class="seccion" aria-labelledby="t-arq">
+    <div style="display:grid;gap:.6rem">
+      <span class="etiqueta">Arquitectura</span>
+      <h2 id="t-arq">Los números salen del código; los LLM deciden y explican</h2>
+    </div>
+    <div class="diagrama">
+<pre class="mermaid">
+flowchart LR
+    D[Lending Club<br/>datos públicos] --> M[6 modelos de riesgo<br/>campeón LightGBM]
+    D --> PP[Prepago<br/>supervivencia]
+    D --> L[Pérdida<br/>económica]
+    IC[Inferencia causal<br/>estrés de tasa] --> CU
+    M & PP & L --> CU[Motor de cupo<br/>y pricing]
+    CU --> ESP[3 especialistas<br/>Claude en paralelo]
+    ESP --> CO[Comité IA]
+    CO --> RD[Reglas duras]
+    RD --> AU[Auditor IA]
+    AU --> DEC[Decisión + memo]
+    CU -. herramientas .-> MCP[Servidor MCP]
+    DEC --> REG[SQLite · LangSmith · evals]
+</pre>
+    </div>
+    <div class="columnas">
+      <div><h3>Sin números inventados</h3><p>Cada cifra del memo sale de una herramienta que es código sobre los modelos. Un auditor de IA lo verifica y unas reglas duras en código no se pueden saltar.</p></div>
+      <div><h3>Validado con el resultado real</h3><p>Las evals comparan cada decisión con la política del motor y con lo que de verdad pasó con el préstamo en 2015.</p></div>
+      <div><h3>Construido con criterio humano</h3><p>Quince sesiones guiadas y 20 decisiones registradas con el porqué de cada una, desde la población hasta el modelo del agente.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Neider Olaya · Economista y Data Scientist de riesgo de crédito</span>
+    <span>Datos públicos de Lending Club (2012–2015) · Licencia MIT</span>
+  </footer>
+</main>
+
+<script>
+const metricas = [
+  ["Decide como la política", [20, 100, 83]],
+  ["Reglas duras", [100, 100, 100]],
+  ["Números respaldados", [93, 93, 94]],
+  ["Auditoría al 1er intento", [0, 80, 93]],
+  ["Juez Opus 5.5", [56, 76, 97]],
+];
+const versiones = ["v0", "v1", "v2"];
+const colores = ["var(--s1)", "var(--s2)", "var(--s3)"];
+const cont = document.getElementById("metricas");
+for (const [nombre, valores] of metricas) {
+  const fila = document.createElement("div");
+  fila.className = "metrica"; fila.setAttribute("role", "listitem");
+  const etiqueta = document.createElement("span");
+  etiqueta.className = "nombre"; etiqueta.textContent = nombre;
+  const barras = document.createElement("div");
+  barras.className = "barras";
+  valores.forEach((v, i) => {
+    const b = document.createElement("div");
+    b.className = "barra " + versiones[i];
+    b.setAttribute("aria-label", `${nombre}, ${versiones[i]}: ${v}%`);
+    b.innerHTML = `<div class="pista"><div class="relleno" style="width:${Math.max(v, 0.6)}%;background:${colores[i]}"></div></div><span class="valor">${v}%</span>`;
+    barras.appendChild(b);
+  });
+  fila.append(etiqueta, barras);
+  cont.appendChild(fila);
+}
+</script>

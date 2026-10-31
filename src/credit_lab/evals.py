@@ -41,12 +41,12 @@ def politica_motor(motor: Motor, df: pd.DataFrame) -> pd.DataFrame:
     """Decisión de la política sin LLM para cada préstamo, con la oferta que haría."""
     ev = motor.evaluar(df)
     t_sug = tasa_minima_lote(motor, df, ROI_OBJETIVO)
-    m_max = monto_maximo_lote(motor, df)
+    m_max = monto_maximo_lote(motor, df, roi_minimo=ROI_OBJETIVO)  # regla 2b (decisión 020)
     pedido, tasa, ingreso = df["loan_amnt"].to_numpy(), df["int_rate"].to_numpy(), df["annual_inc"].to_numpy()
     aprueba = (ev["roi_esperado"].to_numpy() >= ROI_OBJETIVO) & ev["cumple_capacidad"].to_numpy()
     # contraoferta por tasa: el monto pedido a la tasa sugerida, si cabe en la cuota
     por_tasa = ~np.isnan(t_sug) & (t_sug <= TASAS.max()) & (cuota(pedido, np.nan_to_num(t_sug, nan=TASAS.max())) / (ingreso / 12) <= CUOTA_MAX)
-    # contraoferta por monto: el monto máximo a la tasa ofrecida
+    # contraoferta por monto: el mayor monto con ROI ≥ 4% a la tasa ofrecida
     por_monto = (m_max > 0) & (m_max < pedido)
     decision = np.where(aprueba, "aprobar", np.where(por_tasa | por_monto, "contraoferta", "rechazar"))
     return pd.DataFrame({"decision_motor": decision, "roi_esperado": ev["roi_esperado"].to_numpy(),

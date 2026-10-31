@@ -17,7 +17,8 @@
    "vivienda": "MORTGAGE",
    "uso de tarjetas (%)": 65.0,
    "consultas últimos 6 meses": 0.0
-  }
+  },
+  "decision_motor_v2": "aprobar"
  },
  {
   "id": "c01",
@@ -37,7 +38,8 @@
    "vivienda": "MORTGAGE",
    "uso de tarjetas (%)": 2.8,
    "consultas últimos 6 meses": 0.0
-  }
+  },
+  "decision_motor_v2": "aprobar"
  },
  {
   "id": "c02",
@@ -57,7 +59,8 @@
    "vivienda": "RENT",
    "uso de tarjetas (%)": 29.0,
    "consultas últimos 6 meses": 1.0
-  }
+  },
+  "decision_motor_v2": "aprobar"
  },
  {
   "id": "c03",
@@ -77,7 +80,8 @@
    "vivienda": "MORTGAGE",
    "uso de tarjetas (%)": 98.0,
    "consultas últimos 6 meses": 0.0
-  }
+  },
+  "decision_motor_v2": "aprobar"
  },
  {
   "id": "c04",
@@ -97,7 +101,8 @@
    "vivienda": "MORTGAGE",
    "uso de tarjetas (%)": 43.099998,
    "consultas últimos 6 meses": 0.0
-  }
+  },
+  "decision_motor_v2": "aprobar"
  },
  {
   "id": "c05",
@@ -117,7 +122,8 @@
    "vivienda": "RENT",
    "uso de tarjetas (%)": 62.400002,
    "consultas últimos 6 meses": 0.0
-  }
+  },
+  "decision_motor_v2": "aprobar"
  },
  {
   "id": "c06",
@@ -137,7 +143,8 @@
    "vivienda": "RENT",
    "uso de tarjetas (%)": 24.200001,
    "consultas últimos 6 meses": 0.0
-  }
+  },
+  "decision_motor_v2": "aprobar"
  },
  {
   "id": "c07",
@@ -157,7 +164,8 @@
    "vivienda": "RENT",
    "uso de tarjetas (%)": 26.9,
    "consultas últimos 6 meses": 0.0
-  }
+  },
+  "decision_motor_v2": "aprobar"
  },
  {
   "id": "c08",
@@ -177,7 +185,8 @@
    "vivienda": "OWN",
    "uso de tarjetas (%)": 53.599998,
    "consultas últimos 6 meses": 0.0
-  }
+  },
+  "decision_motor_v2": "aprobar"
  },
  {
   "id": "c09",
@@ -197,7 +206,8 @@
    "vivienda": "RENT",
    "uso de tarjetas (%)": 33.099998,
    "consultas últimos 6 meses": 3.0
-  }
+  },
+  "decision_motor_v2": "aprobar"
  },
  {
   "id": "c10",
@@ -217,7 +227,8 @@
    "vivienda": "RENT",
    "uso de tarjetas (%)": 29.4,
    "consultas últimos 6 meses": 1.0
-  }
+  },
+  "decision_motor_v2": "contraoferta"
  },
  {
   "id": "c11",
@@ -237,7 +248,8 @@
    "vivienda": "RENT",
    "uso de tarjetas (%)": 29.299999,
    "consultas últimos 6 meses": 1.0
-  }
+  },
+  "decision_motor_v2": "contraoferta"
  },
  {
   "id": "c12",
@@ -257,7 +269,8 @@
    "vivienda": "MORTGAGE",
    "uso de tarjetas (%)": 91.5,
    "consultas últimos 6 meses": 1.0
-  }
+  },
+  "decision_motor_v2": "contraoferta"
  },
  {
   "id": "c13",
@@ -277,7 +290,8 @@
    "vivienda": "OWN",
    "uso de tarjetas (%)": 89.099998,
    "consultas últimos 6 meses": 0.0
-  }
+  },
+  "decision_motor_v2": "contraoferta"
  },
  {
   "id": "c14",
@@ -297,7 +311,8 @@
    "vivienda": "RENT",
    "uso de tarjetas (%)": 25.6,
    "consultas últimos 6 meses": 0.0
-  }
+  },
+  "decision_motor_v2": "contraoferta"
  },
  {
   "id": "c15",
@@ -317,7 +332,8 @@
    "vivienda": "RENT",
    "uso de tarjetas (%)": 63.599998,
    "consultas últimos 6 meses": 0.0
-  }
+  },
+  "decision_motor_v2": "contraoferta"
  },
  {
   "id": "c16",
@@ -337,7 +353,8 @@
    "vivienda": "RENT",
    "uso de tarjetas (%)": 58.400002,
    "consultas últimos 6 meses": 0.0
-  }
+  },
+  "decision_motor_v2": "contraoferta"
  },
  {
   "id": "c17",
@@ -357,7 +374,8 @@
    "vivienda": "MORTGAGE",
    "uso de tarjetas (%)": 23.9,
    "consultas últimos 6 meses": 1.0
-  }
+  },
+  "decision_motor_v2": "contraoferta"
  },
  {
   "id": "c18",
@@ -377,7 +395,8 @@
    "vivienda": "MORTGAGE",
    "uso de tarjetas (%)": 73.400002,
    "consultas últimos 6 meses": 0.0
-  }
+  },
+  "decision_motor_v2": "contraoferta"
  },
  {
   "id": "c19",
@@ -397,12 +416,13 @@
    "vivienda": "OWN",
    "uso de tarjetas (%)": 54.400002,
    "consultas últimos 6 meses": 2.0
-  }
+  },
+  "decision_motor_v2": "contraoferta"
  },
  {
   "id": "c20",
   "posicion": 110102,
-  "decision_motor": "rechazar",
+  "decision_motor": "contraoferta",
   "malo_real": 1,
   "subgrado": "E3",
   "roi_esperado_motor": 0.0081,
@@ -417,7 +437,8 @@
    "vivienda": "RENT",
    "uso de tarjetas (%)": 42.900002,
    "consultas últimos 6 meses": 1.0
-  }
+  },
+  "decision_motor_v2": "rechazar"
  },
  {
   "id": "c21",
@@ -437,7 +458,8 @@
    "vivienda": "MORTGAGE",
    "uso de tarjetas (%)": 44.200001,
    "consultas últimos 6 meses": 2.0
-  }
+  },
+  "decision_motor_v2": "aprobar"
  },
  {
   "id": "c22",
@@ -457,7 +479,8 @@
    "vivienda": "RENT",
    "uso de tarjetas (%)": 14.7,
    "consultas últimos 6 meses": 1.0
-  }
+  },
+  "decision_motor_v2": "contraoferta"
  },
  {
   "id": "c23",
@@ -477,7 +500,8 @@
    "vivienda": "MORTGAGE",
    "uso de tarjetas (%)": 60.5,
    "consultas últimos 6 meses": 0.0
-  }
+  },
+  "decision_motor_v2": "aprobar"
  },
  {
   "id": "c24",
@@ -497,7 +521,8 @@
    "vivienda": "MORTGAGE",
    "uso de tarjetas (%)": 62.700001,
    "consultas últimos 6 meses": 0.0
-  }
+  },
+  "decision_motor_v2": "aprobar"
  },
  {
   "id": "c25",
@@ -517,7 +542,8 @@
    "vivienda": "MORTGAGE",
    "uso de tarjetas (%)": 81.5,
    "consultas últimos 6 meses": 0.0
-  }
+  },
+  "decision_motor_v2": "aprobar"
  },
  {
   "id": "c26",
@@ -537,7 +563,8 @@
    "vivienda": "MORTGAGE",
    "uso de tarjetas (%)": 93.300003,
    "consultas últimos 6 meses": 0.0
-  }
+  },
+  "decision_motor_v2": "aprobar"
  },
  {
   "id": "c27",
@@ -557,7 +584,8 @@
    "vivienda": "OWN",
    "uso de tarjetas (%)": 78.699997,
    "consultas últimos 6 meses": 1.0
-  }
+  },
+  "decision_motor_v2": "aprobar"
  },
  {
   "id": "c28",
@@ -577,7 +605,8 @@
    "vivienda": "RENT",
    "uso de tarjetas (%)": 50.400002,
    "consultas últimos 6 meses": 2.0
-  }
+  },
+  "decision_motor_v2": "contraoferta"
  },
  {
   "id": "c29",
@@ -597,6 +626,7 @@
    "vivienda": "RENT",
    "uso de tarjetas (%)": 58.5,
    "consultas últimos 6 meses": 1.0
-  }
+  },
+  "decision_motor_v2": "contraoferta"
  }
 ]
