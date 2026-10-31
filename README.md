@@ -2,7 +2,7 @@
 
 > 🚧 En construcción. Proyecto de aprendizaje construido sesión a sesión.
 
-**Motor de decisión de crédito** de punta a punta con datos públicos de **Lending Club**: se entrenan y comparan **6 modelos de riesgo** (regresión logística, Random Forest, XGBoost, LightGBM y dos redes neuronales) contra el score de Lending Club; el campeón se combina con modelos de **prepago** y **severidad (LGD)**, un **motor de cupo** y **pricing**, y todo se orquesta con un **agente de IA en LangGraph** (especialistas en paralelo) que explica cada decisión y redacta el memo de crédito para un analista humano.
+**Motor de decisión de crédito** de punta a punta con datos públicos de **Lending Club**: se entrenan y comparan **6 modelos de riesgo** (regresión logística, Random Forest, XGBoost, LightGBM y dos redes neuronales) contra el score de Lending Club; el campeón se combina con modelos de **prepago** y **severidad (LGD)**, un **motor de cupo** y **pricing** validado con **inferencia causal** (efectos fijos, placebo y DML sobre el efecto de la tasa en la mora), y todo se orquesta con un **agente de IA en LangGraph** (especialistas en paralelo) que explica cada decisión, la audita y redacta el memo de crédito sin intervención humana.
 
 ## Pregunta de negocio
 
@@ -24,7 +24,8 @@ flowchart LR
     PP[Prepago] --> A
     L[Severidad LGD] --> A
     A --> CU[Cupo + pricing]
-    CU --> H[Memo para<br/>analista humano]
+    IC[Inferencia causal<br/>efecto de la tasa] --> CU
+    CU --> H[Comité IA + auditor IA<br/>decisión y memo]
 ```
 
 ## Hoja de ruta
@@ -40,8 +41,8 @@ flowchart LR
 | 7 ✅ | Explicabilidad (SHAP) y política de aprobación por utilidad esperada | Razones por préstamo, decisión 008 |
 | 8 ✅ | Modelo de prepago (el "churn" del crédito) y severidad (LGD) | Supervivencia + pérdida económica, decisiones 009-011 |
 | 9 ✅ | Motor de cupo óptimo y pricing (tasa mínima rentable) | Monto máximo y tasas de equilibrio y sugerida, decisiones 012-013 |
-| 10 ✅ | Inferencia causal: efecto de la tasa en la mora (efectos fijos, placebo, DML) | Resultado negativo + escenario de estrés, decisiones 014-015 |
-| 11 | Agente LangGraph: especialistas en paralelo + memo + aprobación humana | Agente funcionando |
+| 10 ✅ | **Inferencia causal**: efecto de la tasa en la mora (efectos fijos, placebo, DML) | Resultado negativo + escenario de estrés, decisiones 014-015 |
+| 11 🟡 | Agente LangGraph 100% IA: especialistas Claude en paralelo + comité + auditor | Agente construido y probado con un cliente simulado; prueba con Claude real pendiente (sin saldo en la API), decisión 016 |
 | 12 | Servidor MCP, evals, demo y publicación | Release v1.0.0 |
 
 ## Decisiones y trade-offs
