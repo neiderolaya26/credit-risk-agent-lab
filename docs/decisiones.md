@@ -85,3 +85,14 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
 - **Decisión:** recalibrar con un **desplazamiento del intercepto en escala logit** (+0,1432, que equivale a odds ×1,15), aprendido con el **1er semestre de 2015** y evaluado en el **2º semestre**. Resultado en el 2º semestre: PD media de 12,9% a 14,5% (real 14,7%), Brier de 0,1189 a 0,1185, AUC sin cambio (0,6852). Código: `src/credit_lab/campeon.py`.
 - **Alternativas consideradas:** no recalibrar y documentar la subestimación; recalibración isotónica o de Platt (cambian la forma de la curva y piden más datos).
 - **Por qué (en mis palabras):** recalibra el campeón.
+
+---
+
+## 008 — Política de aprobación por utilidad esperada
+
+- **Fecha:** 2026-10-30
+- **Contexto:** con flujos reales del entrenamiento, un préstamo bueno rinde entre +8% (A1) y +31% (F/G) del monto, y uno malo pierde ~36% en cualquier subgrado; la PD tolerable sube con el precio (~18% en A1, ~48% en G2). En una comparación justa (elegir con ene–jun 2015, evaluar en jul–dic 2015), un corte único de PD (≤ 42,4%) y la utilidad esperada suman lo mismo (+USD 0,66 M y +USD 0,65 M sobre aprobar todo). Ver `notebooks/07_explicabilidad_politica.ipynb`.
+- **Decisión:** aprobar si `monto × [(1 − PD) × r_bueno + PD × r_malo] > 0`, con la PD recalibrada del campeón y los rendimientos por subgrado del entrenamiento (`data/processed/rendimientos_subgrado.csv`). Es la regla que usará el agente.
+- **Resultado (jul–dic 2015):** 98,2% de aprobación, ROI de 6,30% (vs 6,22% del corte de PD) y 14,4% de mora en los aprobados (vs 14,6%).
+- **Alternativas consideradas:** B) corte único de PD (umbral extremo encontrado por búsqueda, frágil); C) utilidad esperada con margen de seguridad (aprueba menos).
+- **Por qué (en mis palabras):** A, misma utilidad con mejor ROI y menos mora.
