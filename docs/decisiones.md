@@ -225,3 +225,16 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
 - **Alternativas consideradas:** A (números por código) y C (un solo agente ReAct).
 - **Por qué (en mis palabras):** B, especialistas con LLM; quiero que todo sea full IA, sin una persona al final del flujo.
 - **Pendiente (2026-10-31):** la prueba con Claude real queda pendiente porque no se pudo cargar saldo a la API. El flujo está probado con un cliente simulado (4 tests) y las herramientas con los modelos reales.
+
+---
+
+## 017 — Sesión 12: servidor MCP del motor
+
+- **Fecha:** 2026-10-31
+- **Contexto:** la prueba del agente con Claude real quedó pendiente (sin saldo en la API). Se evaluó qué avanzar sin necesitarla: servidor MCP, evals, README final con release y demo con el cliente simulado.
+- **Decisión:** la sesión 12 es el **servidor MCP** (`src/credit_lab/servidor_mcp.py`, SDK `mcp` 2.x).
+  - **Herramientas:** `buscar_solicitud`, `consultar_riesgo`, `consultar_economia`, `consultar_cupo_pricing` y `simular_oferta`, con salida estructurada. Más un recurso `credito://politica` con las reglas del motor.
+  - **Las mismas herramientas que usan los especialistas del agente:** son código puro y no necesitan API key.
+  - **Datos:** préstamos de la muestra pública de jul–dic 2015, identificados por su posición en esa muestra, nunca por un id de Lending Club.
+- **Alternativas consideradas:** evals, README final + release, demo sin API. Quedan para la sesión 13.
+- **Por qué (en mis palabras):** servidor MCP.
