@@ -39,7 +39,7 @@ flowchart LR
 | 6 ✅ | Comparación: significancia (bootstrap), calibración, utilidad por punto de corte | Campeón LightGBM recalibrado, decisiones 006-007 |
 | 7 ✅ | Explicabilidad (SHAP) y política de aprobación por utilidad esperada | Razones por préstamo, decisión 008 |
 | 8 ✅ | Modelo de prepago (el "churn" del crédito) y severidad (LGD) | Supervivencia + pérdida económica, decisiones 009-011 |
-| 9 | Motor de cupo óptimo y pricing (tasa mínima rentable) | Monto y tasa recomendados por cliente |
+| 9 ✅ | Motor de cupo óptimo y pricing (tasa mínima rentable) | Monto máximo y tasas de equilibrio y sugerida, decisiones 012-013 |
 | 10 | Agente LangGraph: especialistas en paralelo + memo + aprobación humana | Agente funcionando |
 | 11 | Servidor MCP, evals, demo y publicación | Release v1.0.0 |
 

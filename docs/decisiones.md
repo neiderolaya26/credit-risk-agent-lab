@@ -133,3 +133,34 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
 - **Decisión:** el motor usa **prepago por supervivencia (C)** y **severidad por pérdida económica (B)**. Ver `notebooks/08_prepago_severidad.ipynb`.
 - **Alternativas consideradas:** mantener los promedios de la decisión 008; solo supervivencia con severidad promedio.
 - **Por qué (en mis palabras):** A, la mejor en todas las métricas y sirve para pricing. Además pedí incluir el RMSE junto al MAE en las evaluaciones.
+
+---
+
+## 012 — Motor de cupo y pricing: simulador + regresiones de referencia
+
+- **Fecha:** 2026-10-30
+- **Contexto:** Neider propuso modelar con regresiones el monto a prestar y la tasa. Con los datos: una regresión del monto aprende la **demanda** (lo que pide el cliente; monto financiado = pedido en el 100%) y una de la tasa aprende **el precio de Lending Club** (145 tasas salidas de 35 subgrados; ±0,6 puntos dentro de cada subgrado). Ninguna dice cuánto es seguro prestar ni cuál es el precio correcto según el riesgo propio.
+- **Decisión:**
+  - **Simulador monto × tasa** por cliente: la PD del campeón cambia con el monto (`monto_ingreso`), la supervivencia y la pérdida económica cambian con la tasa → utilidad esperada de cada combinación.
+  - **Capacidad de pago:** cuota mensual ≤ **20%** del ingreso mensual.
+  - **Salidas:** monto máximo con utilidad positiva que cumple la capacidad de pago, y tasa mínima rentable para el monto pedido.
+  - **Regresiones de referencia:** monto que pediría el cliente (demanda) y tasa que cobraría Lending Club (precio de mercado), para comparar con lo recomendado.
+- **Supuestos documentados:** la PD no reacciona a la tasa (el modelo de riesgo excluye `int_rate` por diseño, decisión 001); no hay datos de aceptación, así que el precio se calcula sin la elasticidad del cliente.
+- **Alternativas consideradas:** solo las regresiones (replican demanda y precio de Lending Club); solo el optimizador.
+- **Por qué (en mis palabras):** A, con límite de cuota sobre ingreso del 20%.
+
+---
+
+## 013 — Umbrales de pricing: equilibrio (0%) y objetivo (4%)
+
+- **Fecha:** 2026-10-30
+- **Contexto:** la utilidad del motor es **bruta**: no descuenta fondeo ni costos operativos (no están en los datos). Con ROI objetivo de 0%, la tasa mínima cae en el piso de la grilla (5%) en el 66% de los casos. Backtest en 10.000 préstamos de jul–dic 2015:
+
+  | ROI objetivo | Tasa mínima mediana | En el piso de 5% | LC cobró por debajo | ROI real de esos | ROI real del resto |
+  |---|---|---|---|---|---|
+  | 0% | 5,0% | 66% | 3,2% | −0,6% | 6,1% |
+  | 4% | 7,5% | 18% | 16,3% | 2,8% | 6,5% |
+
+- **Decisión:** dos umbrales. **Tasa de equilibrio** (ROI esperado ≥ 0%) como piso de rechazo: por debajo, el préstamo pierde dinero esperado. **Tasa sugerida** (ROI esperado ≥ **4%**) como precio: cubre lo que la utilidad bruta no descuenta.
+- **Alternativas consideradas:** objetivo de 3% (31% de clientes en el piso) o de 5% (marca a 1 de cada 4 préstamos).
+- **Por qué (en mis palabras):** B, ROI objetivo del 4%.
