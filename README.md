@@ -40,8 +40,9 @@ flowchart LR
 | 7 ✅ | Explicabilidad (SHAP) y política de aprobación por utilidad esperada | Razones por préstamo, decisión 008 |
 | 8 ✅ | Modelo de prepago (el "churn" del crédito) y severidad (LGD) | Supervivencia + pérdida económica, decisiones 009-011 |
 | 9 ✅ | Motor de cupo óptimo y pricing (tasa mínima rentable) | Monto máximo y tasas de equilibrio y sugerida, decisiones 012-013 |
-| 10 | Agente LangGraph: especialistas en paralelo + memo + aprobación humana | Agente funcionando |
-| 11 | Servidor MCP, evals, demo y publicación | Release v1.0.0 |
+| 10 ✅ | Inferencia causal: efecto de la tasa en la mora (efectos fijos, placebo, DML) | Resultado negativo + escenario de estrés, decisiones 014-015 |
+| 11 | Agente LangGraph: especialistas en paralelo + memo + aprobación humana | Agente funcionando |
+| 12 | Servidor MCP, evals, demo y publicación | Release v1.0.0 |
 
 ## Decisiones y trade-offs
 
