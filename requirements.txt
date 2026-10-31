@@ -8,3 +8,5 @@ matplotlib
 jupyterlab
 kaggle
 pytest
+optuna
+torch  # con GPU NVIDIA: pip install torch --index-url https://download.pytorch.org/whl/cu128

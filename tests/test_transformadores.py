@@ -43,3 +43,16 @@ def test_psi_cero_si_misma_distribucion_y_alto_si_cambia():
     a = pd.Series(rng.normal(size=10_000))
     assert psi(a, a) < 0.001
     assert psi(a, a + 1) > 0.25
+
+
+def test_tabla_eficiencia_ordena_de_mayor_a_menor_riesgo():
+    from credit_lab.metricas import resumen_orden, tabla_eficiencia
+    rng = np.random.default_rng(2)
+    score = rng.uniform(size=20_000)
+    y = (rng.uniform(size=20_000) < score * 0.4).astype(int)  # más score, más riesgo
+    t = tabla_eficiencia(y, score)
+    assert t["prestamos"].sum() == 20_000
+    assert t["tasa_malo"].iloc[0] > t["tasa_malo"].iloc[-1]
+    assert np.isclose(t["%_malos_acum"].iloc[-1], 1)
+    r = resumen_orden(t)
+    assert r["inversiones"] <= 1 and r["veces_d1_vs_d10"] > 5
