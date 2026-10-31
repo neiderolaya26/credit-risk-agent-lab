@@ -65,3 +65,23 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
   - Código: `src/credit_lab/retadores.py` y `src/credit_lab/ajustar.py`.
 - **Alternativas consideradas:** búsqueda aleatoria; dejar los parámetros por defecto; ajustar solo XGBoost y LightGBM (comparación sesgada).
 - **Por qué (en mis palabras):** para el ajuste de hiperparámetros usa la optimización bayesiana. El problema de ajustar mucho sobre un solo periodo es que puede causar overfitting, haciendo que en general se pierda poder de predicción.
+
+---
+
+## 006 — Modelo campeón: LightGBM
+
+- **Fecha:** 2026-10-30
+- **Contexto:** en 2015, con bootstrap pareado de 300 réplicas, LightGBM (+0,0039 de AUC, IC 95% [+0,0016; +0,0063]) y XGBoost (+0,0038, [+0,0015; +0,0063]) le ganan al benchmark `int_rate` con significancia. Entre ellos es un empate (+0,0001, [−0,0003; +0,0005]). LightGBM captura 21,1% de los malos en el peor decil frente a 21,0% de XGBoost. Ver `notebooks/06_campeon.ipynb`.
+- **Decisión:** el campeón es **LightGBM**.
+- **Alternativas consideradas:** XGBoost (empate estadístico, entrena en GPU); ensamble LightGBM + XGBoost (más complejo de explicar).
+- **Por qué (en mis palabras):** A, por su rapidez en CPU, que generará menos latencia en producción, además de capturar más malos en el peor decil.
+
+---
+
+## 007 — Recalibración del campeón
+
+- **Fecha:** 2026-10-30
+- **Contexto:** el campeón ordena bien, pero su PD media en 2015 fue 13,1% frente a 14,9% real (−1,75 puntos), de forma pareja en todos los deciles y en ambos semestres. Aprendió con 2012–2014 (13,2% de mora) y 2015 fue un año más riesgoso.
+- **Decisión:** recalibrar con un **desplazamiento del intercepto en escala logit** (+0,1432, que equivale a odds ×1,15), aprendido con el **1er semestre de 2015** y evaluado en el **2º semestre**. Resultado en el 2º semestre: PD media de 12,9% a 14,5% (real 14,7%), Brier de 0,1189 a 0,1185, AUC sin cambio (0,6852). Código: `src/credit_lab/campeon.py`.
+- **Alternativas consideradas:** no recalibrar y documentar la subestimación; recalibración isotónica o de Platt (cambian la forma de la curva y piden más datos).
+- **Por qué (en mis palabras):** recalibra el campeón.

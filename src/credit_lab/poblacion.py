@@ -22,7 +22,7 @@ ANIO_OOT = 2015
 # Variables que no pueden ser features: ocurren después de la originación
 # o son la decisión de riesgo de Lending Club (benchmark).
 FUGA = [
-    "total_pymnt", "recoveries", "out_prncp", "last_pymnt_d",
+    "total_pymnt", "recoveries", "collection_recovery_fee", "out_prncp", "last_pymnt_d",
     "last_fico_range_high", "hardship_flag", "debt_settlement_flag",
 ]
 BENCHMARK = ["int_rate", "grade", "sub_grade"]
