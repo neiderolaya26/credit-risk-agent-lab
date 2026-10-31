@@ -2,11 +2,11 @@
 
 > 🚧 En construcción. Proyecto de aprendizaje construido sesión a sesión.
 
-Laboratorio de riesgo de crédito de punta a punta con datos públicos de **Lending Club**: se entrenan y comparan **5 familias de modelos** (regresión logística, Random Forest, XGBoost, LightGBM y una red neuronal), se elige un campeón con métricas de riesgo y de negocio, y se pone detrás de un **agente de IA** que explica cada decisión y redacta el memo de crédito.
+**Motor de decisión de crédito** de punta a punta con datos públicos de **Lending Club**: se entrenan y comparan **6 modelos de riesgo** (regresión logística, Random Forest, XGBoost, LightGBM y dos redes neuronales) contra el score de Lending Club; el campeón se combina con modelos de **prepago** y **severidad (LGD)**, un **motor de cupo** y **pricing**, y todo se orquesta con un **agente de IA en LangGraph** (especialistas en paralelo) que explica cada decisión y redacta el memo de crédito para un analista humano.
 
 ## Pregunta de negocio
 
-_(Pendiente: la escribe Neider en la sesión 1. Ver [docs/decisiones.md](docs/decisiones.md).)_
+_🟡 Borrador por validar con Neider:_ ¿Puede un modelo entrenado solo con datos públicos de la solicitud **ordenar el riesgo mejor que el score de Lending Club**, y convertir esa ventaja en **mejores decisiones de aprobación, cupo y precio**?
 
 ## Diagrama
 
@@ -19,10 +19,12 @@ flowchart LR
     F --> M4[LightGBM]
     F --> M5[Red neuronal]
     M1 & M2 & M3 & M4 & M5 --> E[Evaluación<br/>AUC · KS · PSI · calibración · utilidad]
-    E --> C[Modelo campeón]
-    C --> A[Agente IA<br/>explica + memo]
-    P[Política de crédito] --> A
-    A --> H[Analista humano<br/>aprueba]
+    E --> C[Campeón<br/>LightGBM recalibrado]
+    C --> A[Agente LangGraph<br/>especialistas en paralelo]
+    PP[Prepago] --> A
+    L[Severidad LGD] --> A
+    A --> CU[Cupo + pricing]
+    CU --> H[Memo para<br/>analista humano]
 ```
 
 ## Hoja de ruta
@@ -36,8 +38,10 @@ flowchart LR
 | 5 ✅ | Random Forest, XGBoost, LightGBM, red neuronal (scikit-learn y PyTorch) | Retadores con ajuste bayesiano, decisión 005 |
 | 6 ✅ | Comparación: significancia (bootstrap), calibración, utilidad por punto de corte | Campeón LightGBM recalibrado, decisiones 006-007 |
 | 7 ✅ | Explicabilidad (SHAP) y política de aprobación por utilidad esperada | Razones por préstamo, decisión 008 |
-| 8 | Agente: herramientas + memo de crédito | Agente funcionando |
-| 9 | Servidor MCP, evals, demo y publicación | Release v1.0.0 |
+| 8 ✅ | Modelo de prepago (el "churn" del crédito) y severidad (LGD) | Supervivencia + pérdida económica, decisiones 009-011 |
+| 9 | Motor de cupo óptimo y pricing (tasa mínima rentable) | Monto y tasa recomendados por cliente |
+| 10 | Agente LangGraph: especialistas en paralelo + memo + aprobación humana | Agente funcionando |
+| 11 | Servidor MCP, evals, demo y publicación | Release v1.0.0 |
 
 ## Decisiones y trade-offs
 
