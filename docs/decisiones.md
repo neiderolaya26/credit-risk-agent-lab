@@ -224,7 +224,7 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
 - **Trade-offs aceptados:** unas 5 llamadas por solicitud (≈3× costo y latencia frente a A) y más puntos donde pueden aparecer números inventados; se mitigan con el auditor, las reglas duras y las evals de la sesión 12.
 - **Alternativas consideradas:** A (números por código) y C (un solo agente ReAct).
 - **Por qué (en mis palabras):** B, especialistas con LLM; quiero que todo sea full IA, sin una persona al final del flujo.
-- **Pendiente (2026-10-31):** la prueba con Claude real queda pendiente porque no se pudo cargar saldo a la API. El flujo está probado con un cliente simulado (4 tests) y las herramientas con los modelos reales.
+- **Pendiente resuelto (2026-10-31):** la prueba con Claude real queda pendiente porque no se pudo cargar saldo a la API. El flujo está probado con un cliente simulado (4 tests) y las herramientas con los modelos reales. Ese mismo día se cargó saldo y el agente corrió con Claude real; ver la decisión 018.
 
 ---
 
@@ -238,3 +238,20 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
   - **Datos:** préstamos de la muestra pública de jul–dic 2015, identificados por su posición en esa muestra, nunca por un id de Lending Club.
 - **Alternativas consideradas:** evals, README final + release, demo sin API. Quedan para la sesión 13.
 - **Por qué (en mis palabras):** servidor MCP.
+
+---
+
+## 018 — Registro de ejecuciones en SQLite + trazas en LangSmith
+
+- **Fecha:** 2026-10-31
+- **Contexto:** Neider propuso guardar en una base las respuestas de los modelos, para evaluar después su desempeño, y sumar LangSmith para medir el desempeño agéntico. Ventaja de este proyecto: en 2015 se conoce el resultado real de cada préstamo, así que se puede medir si las decisiones del agente rinden, no solo si redacta bien.
+- **Decisión:**
+  - **SQLite** (`src/credit_lab/registro.py`, base en `data/agente/ejecuciones.db`):
+    - Tabla `ejecuciones`: decisión, monto, tasa, auditoría, intentos, hallazgos, memo, llamadas, tokens, costo, latencia y **resultado real** (malo y ROI), que el agente nunca ve.
+    - Tabla `pasos`: cada respuesta de los especialistas (con sus llamadas a herramientas), del comité y del auditor, por intento.
+    - `resumen()` reporta mora y ROI real por decisión, tasa de aprobación de la auditoría, costo y latencia.
+  - **LangSmith:** se activa solo si existe `LANGSMITH_API_KEY` (proyecto `credit-risk-agent-lab`). Traza el grafo de LangGraph y cada llamada a Claude (`wrap_anthropic`); sin la key, el agente corre igual.
+  - **La base no se sube a git;** más adelante se puede publicar un resumen agregado de las evals.
+- **Alternativas consideradas:** solo SQLite; solo LangSmith; publicar la base.
+- **Por qué (en mis palabras):** SQLite + LangSmith, fuera de git y en una sesión aparte.
+- **Prueba real (2026-10-31):** 3 préstamos de jul–dic 2015 registrados en SQLite y trazados en LangSmith (región US). Cada solicitud usa 8 llamadas, cuesta ~USD 0,07 y tarda ~30 s. En un caso el auditor rechazó el primer memo por inconsistencias de argumentación (no de números) y el comité lo corrigió.

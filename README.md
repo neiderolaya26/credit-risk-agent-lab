@@ -42,9 +42,10 @@ flowchart LR
 | 8 ✅ | Modelo de prepago (el "churn" del crédito) y severidad (LGD) | Supervivencia + pérdida económica, decisiones 009-011 |
 | 9 ✅ | Motor de cupo óptimo y pricing (tasa mínima rentable) | Monto máximo y tasas de equilibrio y sugerida, decisiones 012-013 |
 | 10 ✅ | **Inferencia causal**: efecto de la tasa en la mora (efectos fijos, placebo, DML) | Resultado negativo + escenario de estrés, decisiones 014-015 |
-| 11 🟡 | Agente LangGraph 100% IA: especialistas Claude en paralelo + comité + auditor | Agente construido y probado con un cliente simulado; prueba con Claude real pendiente (sin saldo en la API), decisión 016 |
+| 11 ✅ | Agente LangGraph 100% IA: especialistas Claude en paralelo + comité + auditor | Agente funcionando con Claude Sonnet 5.5 (~USD 0,07 y ~30 s por solicitud), decisión 016 |
 | 12 ✅ | Servidor MCP con las herramientas del motor (riesgo, economía, cupo/pricing, simulación) | Servidor `credit-lab`, decisión 017 |
-| 13 | Evals, demo, prueba del agente con Claude real y publicación | Release v1.0.0 |
+| 13 ✅ | Registro de ejecuciones en SQLite + trazas en LangSmith (desempeño agéntico) | Ejecuciones registradas con su resultado real y trazadas, decisión 018 |
+| 14 | Evals del agente, demo y publicación | Release v1.0.0 |
 
 ## Decisiones y trade-offs
 
@@ -80,6 +81,16 @@ claude mcp add credit-lab --env PYTHONPATH=<ruta-del-repo>/src -- <ruta-del-repo
 ```bash
 python -m credit_lab.agente --semilla 0    # requiere ANTHROPIC_API_KEY en .env (no se sube a git)
 ```
+
+Cada ejecución queda registrada en `data/agente/ejecuciones.db` (SQLite, fuera de git), con el resultado real del préstamo para evaluar las decisiones:
+
+```python
+from credit_lab import registro
+with registro.conectar() as con:
+    print(registro.resumen(con))   # mora y ROI real por decisión, auditoría, costo y latencia
+```
+
+Para ver las trazas del grafo en LangSmith, agrega `LANGSMITH_API_KEY` al `.env`; el proyecto se llama `credit-risk-agent-lab`.
 
 ## Licencia
 
