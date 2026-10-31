@@ -20,5 +20,5 @@ jobs:
           pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu
           grep -v '^torch==' requirements.txt > requirements-ci.txt
           pip install -r requirements-ci.txt
-      - name: Tests (sin datos ni modelos: usan casos sintéticos y clientes simulados)
+      - name: Tests (sin datos ni modelos, con casos sintéticos y clientes simulados)
         run: pytest -q
