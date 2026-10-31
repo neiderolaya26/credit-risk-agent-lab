@@ -50,3 +50,18 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
 - **Decisión:** quitar las 3 de la **regresión logística**; queda con 13 variables, todas con signo lógico. Los modelos de árboles las conservan. El AUC fuera de tiempo pasa de 0,6534 a 0,6526 (−0,0008).
 - **Alternativas consideradas:** B) dejarlas para ganar una milésima de AUC; C) quitar la otra variable de cada par correlacionado.
 - **Por qué (en mis palabras):** A, para que todos los signos sean lógicos y explicables. Sobre la antigüedad crediticia, no creo que sea una variable aceptada ya que va en contra de la lógica.
+
+---
+
+## 005 — Ajuste de hiperparámetros con optimización bayesiana
+
+- **Fecha:** 2026-10-30
+- **Contexto:** con los parámetros por defecto, en OOT 2015, XGBoost (AUC 0,6792) y LightGBM (0,6788) empatan con el benchmark `int_rate` (0,6784); la red neuronal obtiene 0,6737 y Random Forest 0,6649. Para que la comparación sea justa, todos los retadores deben recibir el mismo esfuerzo de ajuste.
+- **Decisión:**
+  - **Optimización bayesiana** con Optuna (muestreador TPE), **25 ensayos por modelo**, mismo presupuesto para los 4 retadores.
+  - **Para mitigar el sobreajuste a la validación:** el objetivo es el AUC **promedio de 2 cortes temporales** (validar jul–sep 2014 ajustando hasta jun-2014, y validar oct–dic 2014 ajustando hasta sep-2014). Un hiperparámetro tiene que funcionar en dos periodos distintos.
+  - **2015 (OOT) no se usa en el ajuste**; es el examen final. La brecha entre el AUC de validación y el de OOT de cada modelo mide si hubo sobreajuste.
+  - Modelo final: se reentrena con todo el entrenamiento; en los boosting se usa el número promedio de árboles de los cortes, +10% por tener más datos.
+  - Código: `src/credit_lab/retadores.py` y `src/credit_lab/ajustar.py`.
+- **Alternativas consideradas:** búsqueda aleatoria; dejar los parámetros por defecto; ajustar solo XGBoost y LightGBM (comparación sesgada).
+- **Por qué (en mis palabras):** para el ajuste de hiperparámetros usa la optimización bayesiana. El problema de ajustar mucho sobre un solo periodo es que puede causar overfitting, haciendo que en general se pierda poder de predicción.

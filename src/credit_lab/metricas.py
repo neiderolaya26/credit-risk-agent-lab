@@ -25,6 +25,44 @@ def resumen(y, pd_estimada) -> dict:
     }
 
 
+def tabla_eficiencia(y, score, n: int = 10) -> pd.DataFrame:
+    """Tabla de eficiencia (ganancias) por decil. Decil 1 = MAYOR riesgo.
+
+    `score` debe crecer con el riesgo. Los acumulados van del decil más
+    riesgoso al menos riesgoso: "% malos acum." responde "si rechazo los
+    primeros k deciles, ¿qué parte de los malos evito?".
+    """
+    y = pd.Series(np.asarray(y), name="malo")
+    rango = pd.Series(np.asarray(score, dtype=float)).rank(method="first", ascending=False)
+    decil = pd.qcut(rango, n, labels=range(1, n + 1))
+    t = y.groupby(decil.values).agg(prestamos="size", malos="sum")
+    t["buenos"] = t["prestamos"] - t["malos"]
+    t["tasa_malo"] = t["malos"] / t["prestamos"]
+    t["%_malos"] = t["malos"] / t["malos"].sum()
+    t["%_malos_acum"] = t["%_malos"].cumsum()
+    t["%_buenos_acum"] = (t["buenos"] / t["buenos"].sum()).cumsum()
+    t["ks"] = t["%_malos_acum"] - t["%_buenos_acum"]
+    t["lift"] = t["tasa_malo"] / y.mean()
+    t.index.name = "decil"
+    return t
+
+
+def resumen_orden(t: pd.DataFrame) -> dict:
+    """Qué tan bien ordena un modelo, a partir de su tabla de eficiencia."""
+    tasas = t["tasa_malo"].to_numpy()
+    return {
+        "inversiones": int((np.diff(tasas) > 0).sum()),  # decil menos riesgoso con MÁS mora
+        "tasa_decil_1": tasas[0],
+        "tasa_decil_10": tasas[-1],
+        "veces_d1_vs_d10": tasas[0] / tasas[-1],
+        "malos_capturados_top10%": t["%_malos_acum"].iloc[0],
+        "malos_capturados_top20%": t["%_malos_acum"].iloc[1],
+        "malos_capturados_top30%": t["%_malos_acum"].iloc[2],
+        "ks_max": t["ks"].max(),
+        "decil_ks_max": int(t["ks"].idxmax()),
+    }
+
+
 def psi(esperado: pd.Series, actual: pd.Series, n_tramos: int = 10) -> float:
     """Population Stability Index entre dos muestras de una variable.
 
