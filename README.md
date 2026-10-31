@@ -43,7 +43,8 @@ flowchart LR
 | 9 ✅ | Motor de cupo óptimo y pricing (tasa mínima rentable) | Monto máximo y tasas de equilibrio y sugerida, decisiones 012-013 |
 | 10 ✅ | **Inferencia causal**: efecto de la tasa en la mora (efectos fijos, placebo, DML) | Resultado negativo + escenario de estrés, decisiones 014-015 |
 | 11 🟡 | Agente LangGraph 100% IA: especialistas Claude en paralelo + comité + auditor | Agente construido y probado con un cliente simulado; prueba con Claude real pendiente (sin saldo en la API), decisión 016 |
-| 12 | Servidor MCP, evals, demo y publicación | Release v1.0.0 |
+| 12 ✅ | Servidor MCP con las herramientas del motor (riesgo, economía, cupo/pricing, simulación) | Servidor `credit-lab`, decisión 017 |
+| 13 | Evals, demo, prueba del agente con Claude real y publicación | Release v1.0.0 |
 
 ## Decisiones y trade-offs
 
@@ -51,7 +52,34 @@ Ver [docs/decisiones.md](docs/decisiones.md).
 
 ## Cómo correrlo
 
-_(Se completa al final.)_
+```bash
+python -m venv .venv && .venv\Scripts\activate      # Windows
+pip install -r requirements.txt
+python -m credit_lab.ingest                          # descarga Lending Club (requiere token de Kaggle)
+pytest                                               # tests
+```
+
+### Servidor MCP
+
+Expone las herramientas del motor a cualquier cliente MCP. No necesita API key. Por ejemplo, en Claude Code:
+
+```bash
+claude mcp add credit-lab --env PYTHONPATH=<ruta-del-repo>/src -- <ruta-del-repo>/.venv/Scripts/python -m credit_lab.servidor_mcp
+```
+
+| Herramienta | Qué devuelve |
+|---|---|
+| `buscar_solicitud` | Índice y resumen de un préstamo de jul–dic 2015 |
+| `consultar_riesgo` | PD del campeón y razones SHAP |
+| `consultar_economia` | Rendimiento si sale bueno o malo, prepago y ROI esperado |
+| `consultar_cupo_pricing` | Monto máximo, tasas de equilibrio y sugerida, estrés y capacidad de pago |
+| `simular_oferta` | Métricas para otro monto y tasa |
+
+### Agente
+
+```bash
+python -m credit_lab.agente --semilla 0    # requiere ANTHROPIC_API_KEY en .env (no se sube a git)
+```
 
 ## Licencia
 
