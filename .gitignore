@@ -2,6 +2,8 @@
 # Sí se suben data/sample/ y data/processed/ ya anonimizados (ver política de datos del portafolio).
 data/raw/
 data/interim/
+# Registro de ejecuciones del agente (decisión 018)
+data/agente/
 *.zip
 *.gz
 

@@ -13,3 +13,4 @@ torch  # con GPU NVIDIA: pip install torch --index-url https://download.pytorch.
 anthropic
 langgraph
 mcp
+langsmith

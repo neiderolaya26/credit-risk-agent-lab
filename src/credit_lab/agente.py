@@ -16,6 +16,10 @@ Los números salen siempre de las herramientas (código sobre los modelos del
 repo); los LLM interpretan, deciden y redactan. Si el auditor no aprueba tras
 INTENTOS rondas, la decisión final es rechazar (conservador).
 
+Registro y observabilidad (decisión 018): cada ejecución se guarda en SQLite
+(credit_lab.registro) con el resultado real del préstamo, y si existe
+LANGSMITH_API_KEY el grafo y cada llamada a Claude se trazan en LangSmith.
+
 Uso:
     python -m credit_lab.agente               # un préstamo de jul–dic 2015
     python -m credit_lab.agente --semilla 7   # otro préstamo
@@ -28,6 +32,8 @@ import json
 import math
 import operator
 import os
+import threading
+import time
 from typing import Annotated, Literal, TypedDict
 
 import numpy as np
@@ -38,6 +44,7 @@ from credit_lab.motor import CUOTA_MAX, ROI_EQUILIBRIO, Motor, cuota
 from credit_lab.poblacion import RAIZ
 
 MODELO = "claude-sonnet-5-5"
+PRECIO_ENTRADA, PRECIO_SALIDA = 2.0, 10.0  # USD por millón de tokens (Claude Sonnet 5.5)
 BETAS = ["server-side-fallback-2026-07-01"]
 INTENTOS = 2
 MAX_TURNOS = 6
@@ -221,6 +228,36 @@ def reglas_duras(decision: dict, oferta: dict | None) -> list[str]:
 
 # ---------- llamadas a Claude ----------
 
+class Medidor:
+    """Envuelve el cliente y suma tokens y llamadas de cada respuesta (seguro con nodos en paralelo)."""
+
+    def __init__(self, cliente):
+        self._cliente, self._lock = cliente, threading.Lock()
+        self.llamadas = self.tokens_entrada = self.tokens_salida = 0
+        self.beta = type("Beta", (), {})()
+        self.beta.messages = type("Mensajes", (), {})()
+        self.beta.messages.create = self._medir(cliente.beta.messages.create)
+        self.beta.messages.parse = self._medir(cliente.beta.messages.parse)
+
+    def _medir(self, metodo):
+        def envuelto(**kw):
+            r = metodo(**kw)
+            uso = getattr(r, "usage", None)
+            with self._lock:
+                self.llamadas += 1
+                self.tokens_entrada += getattr(uso, "input_tokens", 0) or 0
+                self.tokens_salida += getattr(uso, "output_tokens", 0) or 0
+            return r
+        return envuelto
+
+    def reiniciar(self):
+        with self._lock:
+            self.llamadas = self.tokens_entrada = self.tokens_salida = 0
+
+    def costo_usd(self, precio_entrada=PRECIO_ENTRADA, precio_salida=PRECIO_SALIDA) -> float:
+        return (self.tokens_entrada * precio_entrada + self.tokens_salida * precio_salida) / 1e6
+
+
 def _llamar(cliente, **kw):
     """Todas las llamadas usan el modelo elegido y la red de seguridad de fallback del servidor."""
     return kw.pop("_metodo")(model=MODELO, betas=BETAS, fallbacks="default", **kw)
@@ -309,23 +346,39 @@ class Estado(TypedDict, total=False):
     auditoria: dict
     intentos: int
     final: dict
+    historial: Annotated[list, operator.add]  # cada respuesta de cada nodo, para el registro
+
+
+def cliente_anthropic():
+    """Cliente real. Si hay LANGSMITH_API_KEY, cada llamada se traza en LangSmith (decisión 018)."""
+    import anthropic
+
+    cargar_env()
+    cliente = anthropic.Anthropic()
+    if os.environ.get("LANGSMITH_API_KEY"):
+        from langsmith.wrappers import wrap_anthropic
+
+        os.environ.setdefault("LANGSMITH_TRACING", "true")
+        os.environ.setdefault("LANGSMITH_PROJECT", "credit-risk-agent-lab")
+        cliente = wrap_anthropic(cliente)
+    return cliente
 
 
 def construir(cliente=None, herr: Herramientas | None = None):
     from langgraph.graph import END, START, StateGraph
 
-    if cliente is None:
-        import anthropic
-
-        cargar_env()
-        cliente = anthropic.Anthropic()
+    cliente = cliente or cliente_anthropic()
     herr = herr or Herramientas()
 
     def especialista(nombre):
-        return lambda estado: {"especialistas": {nombre: correr_especialista(cliente, herr, nombre, estado["solicitud"])}}
+        def nodo(estado):
+            r = correr_especialista(cliente, herr, nombre, estado["solicitud"])
+            return {"especialistas": {nombre: r}, "historial": [{"nodo": nombre, "intento": 1, "contenido": r}]}
+        return nodo
 
     def comite(estado):
-        return {"decision": decidir(cliente, estado), "intentos": estado.get("intentos", 0) + 1}
+        d, n = decidir(cliente, estado), estado.get("intentos", 0) + 1
+        return {"decision": d, "intentos": n, "historial": [{"nodo": "comite", "intento": n, "contenido": d}]}
 
     def reglas(estado):
         d = estado["decision"]
@@ -336,7 +389,8 @@ def construir(cliente=None, herr: Herramientas | None = None):
         a = auditar(cliente, estado)
         if estado["violaciones"]:  # el código manda: con violaciones no hay aprobación
             a = {"aprobado": False, "hallazgos": a["hallazgos"] + estado["violaciones"]}
-        return {"auditoria": a}
+        contenido = a | {"oferta": estado["oferta"], "violaciones": estado["violaciones"]}
+        return {"auditoria": a, "historial": [{"nodo": "auditor", "intento": estado["intentos"], "contenido": contenido}]}
 
     def siguiente(estado):
         if estado["auditoria"]["aprobado"] or estado["intentos"] >= INTENTOS:
@@ -368,20 +422,30 @@ def construir(cliente=None, herr: Herramientas | None = None):
     return g.compile()
 
 
-def evaluar_solicitud(grafo, solicitud: pd.DataFrame) -> dict:
-    return grafo.invoke({"solicitud": solicitud, "especialistas": {}})
+def evaluar_solicitud(grafo, solicitud: pd.DataFrame, metadatos: dict | None = None) -> dict:
+    config = {"run_name": "evaluar_solicitud", "metadata": metadatos or {}, "tags": [MODELO]}
+    return grafo.invoke({"solicitud": solicitud, "especialistas": {}, "historial": []}, config=config)
 
 
 def main() -> None:
+    from credit_lab import registro
     from credit_lab.poblacion import cargar_poblacion
 
     p = argparse.ArgumentParser(description="Evalúa una solicitud de jul–dic 2015 con el agente 100% IA.")
     p.add_argument("--semilla", type=int, default=0)
+    p.add_argument("--no-guardar", action="store_true", help="no registrar la ejecución en SQLite")
     args = p.parse_args()
     df = cargar_poblacion()
     s2 = df[df["issue_d"] >= "2015-07-01"]
     sol = s2.sample(1, random_state=args.semilla)
-    estado = evaluar_solicitud(construir(), sol)
+    medidor = Medidor(cliente_anthropic())
+    inicio = time.perf_counter()
+    estado = evaluar_solicitud(construir(medidor), sol, {"semilla": args.semilla})
+    segundos = time.perf_counter() - inicio
+    if not args.no_guardar:
+        with registro.conectar() as con:
+            n = registro.guardar(con, estado, medidor, segundos, semilla=args.semilla)
+        print(f"Ejecución {n} registrada en {registro.RUTA}")
     final = estado["final"]
     print(final["memo"])
     print(f"\nDecisión: {final['decision']} · monto {final['monto']:,.0f} · tasa {final['tasa']:.2f}% · "
