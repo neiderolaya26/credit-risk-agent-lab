@@ -164,3 +164,47 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
 - **Decisión:** dos umbrales. **Tasa de equilibrio** (ROI esperado ≥ 0%) como piso de rechazo: por debajo, el préstamo pierde dinero esperado. **Tasa sugerida** (ROI esperado ≥ **4%**) como precio: cubre lo que la utilidad bruta no descuenta.
 - **Alternativas consideradas:** objetivo de 3% (31% de clientes en el piso) o de 5% (marca a 1 de cada 4 préstamos).
 - **Por qué (en mis palabras):** B, ROI objetivo del 4%.
+
+---
+
+## 014 — Efecto causal de la tasa: sesión 10 completa
+
+- **Fecha:** 2026-10-30
+- **Contexto:** el motor supone que la PD no reacciona a la tasa (decisión 012), pero el backtest lo contradice: con más de 6 puntos de sobreprecio la mora sube a 18,6%. Si la tasa empuja la mora (el cliente paga una cuota más pesada) o atrae a peores clientes (selección adversa), la tasa sugerida subestima el riesgo. Experimento natural: dentro de un mismo subgrado, el **96,3%** de la variación de la tasa la explica el mes de originación, porque Lending Club cambiaba sus tablas de tasas en meses distintos para cada subgrado.
+- **Decisión:** sesión 10 completa.
+  - Efectos fijos de dos vías (subgrado + mes), que equivale a un diff-in-diff con los cambios de tabla.
+  - DML manual con LightGBM y cross-fitting.
+  - Heterogeneidad del efecto por segmento.
+  - Integración al motor: PD(tasa) → tasa que maximiza el ROI.
+  - El agente LangGraph pasa a la sesión 11 y la publicación a la 12.
+- **Limitaciones documentadas:** no hay datos de aceptación (no se observa a quien rechazó la oferta), así que el efecto mezcla el impacto directo de la cuota con la selección adversa; para el motor ambos importan igual. EconML y DoubleML no están instalados: el DML se programa a mano.
+- **Alternativas consideradas:** solo DML (B); dejarlo para después (C).
+- **Por qué (en mis palabras):** A, sesión 10 completa.
+
+---
+
+## 015 — El efecto de la tasa no se identifica: PD fija + escenario de estrés
+
+- **Fecha:** 2026-10-30
+- **Contexto (entrenamiento sep-2012–2014, IC 95% agrupado por subgrado):**
+
+  | Especificación | Mora por +1 pt de tasa | Placebo: tasa del mes siguiente |
+  |---|---|---|
+  | Correlación simple | +1,51 pts | — |
+  | Dos vías (subgrado + mes) | −0,22 | — |
+  | Dos vías + perfil | −0,45 (con placebo: +0,95) | −1,98 [−2,57; −1,39] |
+  | DML con LightGBM | −0,06 [−0,61; +0,48] | −1,46 [−2,07; −0,84] |
+
+  Muestra: 276.342 préstamos con dato del mes siguiente.
+
+  - La correlación tasa–mora es selección: desaparece al comparar dentro del subgrado.
+  - El placebo falla con todos los métodos. Un mes antes de cada subida de tasa el subgrado ya traía ~6,7 pts menos de FICO por punto de tasa: Lending Club cambiaba sus tablas reaccionando a cómo se movía cada subgrado. Los efectos ≈ 0 no son causales.
+  - La pendiente del motor (+1,0% de ROI por punto de tasa) es más conservadora que las estimaciones (+1,3% a +1,4%).
+  - Backtest jul–dic 2015: donde Lending Club cobró más que la tasa de mercado del perfil, la mora real supera a la PD del campeón. Es información de Lending Club, no un efecto causal demostrado.
+- **Decisión:** reportar el resultado negativo y mantener la PD fija ante la tasa. El motor agrega:
+  - **Tasa de mercado** recalibrada en nivel con ene–jun 2015 (−1,51 pts, igual que la decisión 007).
+  - **Escenario de estrés** opcional: la PD sube +1 pt por cada punto que la tasa supera la de mercado (la mayor estimación puntual, +0,95). Backtest jul–dic 2015: el 4,9% de los clientes no llega al ROI de 4% con ninguna tasa bajo estrés; su ROI real fue −1,3% y su mora 31,5% (contra 5,9% y 14,5% del total).
+  - **Bandera "fuera de rango"**: la tasa se aleja más de 1 pt de la de mercado; las tablas solo movieron la tasa ±0,74 pts.
+  - No se estima heterogeneidad (sin identificación no tiene sentido) ni la "tasa que maximiza el ROI" (requiere datos de aceptación). Ver `notebooks/10_inferencia_causal.ipynb`.
+- **Alternativas consideradas:** buscar otro diseño (event study, B); integrar igual la estimación del DML (C).
+- **Por qué (en mis palabras):** A, resultado negativo + estrés.
