@@ -35,7 +35,8 @@ COLS_NUM = [
     "percent_bc_gt_75", "avg_cur_bal", "num_tl_90g_dpd_24m", "pct_tl_nvr_dlq",
     "mo_sin_old_rev_tl_op", "total_bc_limit",
     # Resultado (no se usan como features: fuga de información)
-    "total_pymnt", "recoveries", "collection_recovery_fee", "out_prncp",
+    "total_pymnt", "total_rec_prncp", "total_rec_int", "recoveries",
+    "collection_recovery_fee", "out_prncp",
     "last_fico_range_high",
 ]
 

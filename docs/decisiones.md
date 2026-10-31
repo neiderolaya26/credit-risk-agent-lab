@@ -96,3 +96,40 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
 - **Resultado (jul–dic 2015):** 98,2% de aprobación, ROI de 6,30% (vs 6,22% del corte de PD) y 14,4% de mora en los aprobados (vs 14,6%).
 - **Alternativas consideradas:** B) corte único de PD (umbral extremo encontrado por búsqueda, frágil); C) utilidad esperada con margen de seguridad (aprueba menos).
 - **Por qué (en mis palabras):** A, misma utilidad con mejor ROI y menos mora.
+
+---
+
+## 009 — Alcance: motor de decisión de crédito completo
+
+- **Fecha:** 2026-10-30
+- **Contexto:** Neider propuso sumar un modelo de cupo y uno de churn, orquestados por un agente de LangGraph en paralelo junto al riesgo y el pricing. Revisión con los datos:
+  - **Cupo:** el monto financiado es igual al pedido en el 100% de los préstamos (Lending Club nunca recortó el cupo), así que una regresión del monto modelaría la demanda, no el riesgo. En su lugar: **motor de cupo óptimo** que simula la PD con distintos montos (el campeón usa `monto_ingreso`) y elige el mayor monto con utilidad esperada positiva.
+  - **Churn:** sin `member_id` no se puede saber si un cliente vuelve. El equivalente en crédito es el **prepago**: el 51,5% de los buenos prepaga antes del mes 30, y un bueno que prepaga rinde 13,1% del monto contra 20,5% si llega al final.
+  - **Severidad:** el 82,6% de los malos tiene alguna recuperación (7,4% del monto en promedio) → modelo de **LGD**.
+- **Decisión:** construir todo. Sesión 8: prepago + LGD; sesión 9: cupo óptimo + pricing; sesión 10: agente LangGraph con especialistas en paralelo (riesgo, prepago, cupo) y un consolidador que redacta el memo, con aprobación humana; sesión 11: MCP, evals y publicación.
+- **Alternativas consideradas:** B) sin LGD; C) solo cupo y pricing, sin prepago.
+- **Por qué (en mis palabras):** A, para tener un motor de decisión completo.
+
+---
+
+## 010 — Prepago y severidad: construir todas las opciones y elegir con evidencia
+
+- **Fecha:** 2026-10-30
+- **Contexto:** solo el 35% de los buenos llega al final del plazo; el que prepaga antes del mes 30 rinde 13,1% del monto contra 20,5%. La LGD clásica es ~89% en todos los grados (poca señal esperada); la pérdida económica varía según cuándo cae el préstamo.
+- **Decisión:** construir las **3 opciones de prepago** (A: clasificación del prepago antes del mes 30; B: regresión del rendimiento del préstamo bueno; C: supervivencia en tiempo discreto del mes de pago total) y las **2 de severidad** (A: LGD clásica de Basilea; B: pérdida económica por cliente), y elegir la mejor de cada familia.
+- **Criterio fijado antes de entrenar:** todas terminan en un `r_bueno` o `r_malo` por cliente y se comparan en 2015 con (1) MAE contra el valor real, (2) correlación de Spearman y (3) utilidad de la política en jul–dic 2015 (elegir con ene–jun). Línea base a vencer: el promedio por subgrado actual.
+- **Variables:** las 31 de los árboles **más `int_rate`**. No contradice la decisión 001: aquí no se predice riesgo sino comportamiento dado el precio, y la tasa es el incentivo a refinanciar.
+- **Por qué (en mis palabras):** hacer las 3 de prepago y las 2 de severidad; hacemos todos los modelos y después, con una evaluación pertinente, nos quedamos con la mejor opción para este business case, porque me interesa aprender de todos.
+
+---
+
+## 011 — Prepago por supervivencia y severidad por pérdida económica
+
+- **Fecha:** 2026-10-30
+- **Contexto (2015, fuera de tiempo):**
+  - **Prepago (buenos):** supervivencia con el mejor RMSE (0,0497 vs 0,0540–0,0558), el mejor Spearman (0,667) y el nivel más cercano al real (14,7% vs 14,2%; la línea base asumía 16,1%). La regresión gana en MAE por poco, pero tiene el peor RMSE (objetivo L1). AUC del clasificador de prepago: 0,633.
+  - **Severidad (malos):** la LGD clásica no mejora al promedio (R² ≈ 0; el 92% de las LGD está entre 80% y 100%) y en la política **empeora la utilidad de forma significativa** (−USD 0,20 M, IC 95% [−0,36; −0,04]). La pérdida económica tiene algo de señal (Spearman 0,12 vs 0,03).
+  - **Política jul–dic 2015:** supervivencia + pérdida económica es la mejor en utilidad (+USD 0,25 M vs decisión 008), ROI (6,37%) y mora (14,3%), aunque la ventaja no es significativa (IC 95% [−0,12; +0,69]).
+- **Decisión:** el motor usa **prepago por supervivencia (C)** y **severidad por pérdida económica (B)**. Ver `notebooks/08_prepago_severidad.ipynb`.
+- **Alternativas consideradas:** mantener los promedios de la decisión 008; solo supervivencia con severidad promedio.
+- **Por qué (en mis palabras):** A, la mejor en todas las métricas y sirve para pricing. Además pedí incluir el RMSE junto al MAE en las evaluaciones.
