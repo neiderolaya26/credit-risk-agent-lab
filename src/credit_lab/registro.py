@@ -46,7 +46,8 @@ CREATE TABLE IF NOT EXISTS ejecuciones (
     costo_usd REAL,
     segundos REAL,
     malo_real INTEGER,
-    roi_real REAL
+    roi_real REAL,
+    estado TEXT
 );
 CREATE TABLE IF NOT EXISTS pasos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -67,6 +68,9 @@ def conectar(ruta: Path = RUTA) -> Iterator[sqlite3.Connection]:
     con = sqlite3.connect(ruta)
     try:
         con.executescript(ESQUEMA)
+        columnas = {c[1] for c in con.execute("PRAGMA table_info(ejecuciones)")}
+        if "estado" not in columnas:  # bases creadas antes de la decisión 021
+            con.execute("ALTER TABLE ejecuciones ADD COLUMN estado TEXT")
         yield con
     finally:
         con.close()
@@ -86,7 +90,7 @@ def guardar(con: sqlite3.Connection, estado: dict, medidor=None, segundos: float
         cur = con.execute(
             "INSERT INTO ejecuciones (fecha, modelo, semilla, solicitud, decision, monto, tasa, auditoria_aprobada,"
             " intentos, hallazgos, memo, llamadas_llm, tokens_entrada, tokens_salida, costo_usd, segundos,"
-            " malo_real, roi_real) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            " malo_real, roi_real, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (datetime.now(timezone.utc).isoformat(timespec="seconds"),
              modelo or getattr(medidor, "modelo", None) or MODELO, semilla,
              _json(resumen_solicitud(sol)), final["decision"], final["monto"], final["tasa"],
@@ -94,7 +98,7 @@ def guardar(con: sqlite3.Connection, estado: dict, medidor=None, segundos: float
              final.get("memo", ""),
              getattr(medidor, "llamadas", None), getattr(medidor, "tokens_entrada", None),
              getattr(medidor, "tokens_salida", None), medidor.costo_usd() if medidor else None,
-             segundos, malo, roi))
+             segundos, malo, roi, final.get("estado")))
         ejecucion = cur.lastrowid
         con.executemany(
             "INSERT INTO pasos (ejecucion_id, orden, nodo, intento, contenido) VALUES (?, ?, ?, ?, ?)",

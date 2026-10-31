@@ -23,3 +23,9 @@ def test_fidelidad_ignora_conteos_pequenos_y_constantes_de_politica():
 def test_tabla_md():
     t = tabla_md(pd.DataFrame({"a": [0.5]}, index=pd.Index(["x"], name="k")), "{:.1f}")
     assert t.splitlines() == ["| k | a |", "|---|---|", "| x | 0.5 |"]
+
+
+def test_tabla_md_formatea_por_columna():
+    t = tabla_md(pd.DataFrame({"préstamos": [24.0], "mora real": [0.375]}, index=["Agente"]),
+                 {"préstamos": "{:,.0f}", "mora real": "{:.1%}"})
+    assert t.splitlines()[-1] == "| Agente | 24 | 37.5% |"

@@ -63,7 +63,8 @@ def correr_caso(caso: dict, s2: pd.DataFrame, herr, cliente, modelo: str, carpet
     sol = s2.iloc[[caso["posicion"]]]
     medidor = Medidor(cliente, modelo)
     inicio = time.perf_counter()
-    estado = evaluar_solicitud(construir(medidor, herr, modelo), sol, {"eval": VERSION, "caso": caso["id"]})
+    estado = evaluar_solicitud(construir(medidor, herr, modelo, firma_humana=False), sol,
+                               {"eval": VERSION, "caso": caso["id"]})
     segundos = time.perf_counter() - inicio
     nota, sin_respaldo = calificar(estado, caso, herr)
     final = estado["final"]
@@ -114,12 +115,15 @@ def correr(limite: int | None = None, modelo: str = "claude-haiku-5-5", hilos: i
     reporte(modelo)
 
 
-def tabla_md(df: pd.DataFrame, formato: str = "{}") -> str:
-    """Tabla markdown sin dependencias (índice como primera columna)."""
-    fmt = lambda v: formato.format(v) if isinstance(v, (float, np.floating)) else str(v)
+def tabla_md(df: pd.DataFrame, formato: str | dict = "{}") -> str:
+    """Tabla markdown sin dependencias (índice como primera columna). `formato` puede ir por columna."""
+    def fmt(v, col):
+        f = formato.get(col, "{}") if isinstance(formato, dict) else formato
+        return f.format(v) if isinstance(v, (int, float, np.integer, np.floating)) and not isinstance(v, bool) else str(v)
     filas = [f"| {df.index.name or ''} | " + " | ".join(map(str, df.columns)) + " |",
              "|" + "---|" * (len(df.columns) + 1)]
-    filas += [f"| {i} | " + " | ".join(fmt(v) for v in fila) + " |" for i, fila in zip(df.index, df.to_numpy())]
+    filas += [f"| {i} | " + " | ".join(fmt(v, c) for v, c in zip(fila, df.columns)) + " |"
+              for i, fila in zip(df.index, df.to_numpy(dtype=object))]
     return "\n".join(filas)
 
 
@@ -202,7 +206,7 @@ def reporte(modelo: str = "claude-haiku-5-5", version: str = VERSION) -> pd.Data
     lineas += [f"| {k} | {v:.0%} |" for k, v in criterios.items()]
     lineas += ["", "## Decisión del agente frente a la política del motor", "", tabla_md(confusion), "",
                "## Resultado real de lo que se otorga (aprobar o contraoferta)", "",
-               tabla_md(negocio_tabla, "{:.3f}"), "",
+               tabla_md(negocio_tabla, {"préstamos": "{:,.0f}", "mora real": "{:.1%}", "ROI real": "{:.1%}"}), "",
                "Con 30 casos estas diferencias son ruidosas: sirven para detectar errores grandes, no para declarar un ganador.",
                "La contraoferta cambia monto o tasa; se usa el resultado real del préstamo original como aproximación."]
     texto = "\n".join(lineas) + "\n"

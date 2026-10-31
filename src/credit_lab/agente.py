@@ -1,4 +1,5 @@
-"""Agente de crédito 100% IA en LangGraph (decisión 016).
+"""Agente de crédito en LangGraph: la IA analiza y propone; un humano firma rechazos y contraofertas
+(decisiones 016 y 021).
 
     solicitud ─┬─ especialista de riesgo      (Claude + PD y razones SHAP)
                ├─ especialista de economía    (Claude + prepago y pérdida)
@@ -10,7 +11,8 @@
                       ↓
                auditor (Claude: verifica números y reglas) ── observaciones → comité
                       ↓
-               decisión final
+               firma (aprobaciones: automáticas · rechazos y contraofertas: un analista
+                      confirma o devuelve la propuesta, con interrupt de LangGraph)
 
 Los números salen siempre de las herramientas (código sobre los modelos del
 repo); los LLM interpretan, deciden y redactan. Si el auditor no aprueba tras
@@ -19,6 +21,10 @@ INTENTOS rondas, la decisión final es rechazar (conservador).
 Registro y observabilidad (decisión 018): cada ejecución se guarda en SQLite
 (credit_lab.registro) con el resultado real del préstamo, y si existe
 LANGSMITH_API_KEY el grafo y cada llamada a Claude se trazan en LangSmith.
+
+Decisión 021: en crédito, rechazar o cambiar las condiciones exige poder explicar y
+responder por la decisión, así que esos casos quedan como propuesta hasta que un
+analista los firma. Las evals corren sin firma (firma_humana=False) para medir la propuesta.
 
 Uso:
     python -m credit_lab.agente               # un préstamo de jul–dic 2015
@@ -387,6 +393,8 @@ class Estado(TypedDict, total=False):
     final: dict
     historial: Annotated[list, operator.add]  # cada respuesta de cada nodo, para el registro
 
+FIRMA_AUTOMATICA = {"aprobar"}  # lo demás espera la firma de un analista (decisión 021)
+
 
 def cliente_anthropic():
     """Cliente real. Si hay LANGSMITH_API_KEY, cada llamada se traza en LangSmith (decisión 018)."""
@@ -403,7 +411,8 @@ def cliente_anthropic():
     return cliente
 
 
-def construir(cliente=None, herr: Herramientas | None = None, modelo: str = MODELO):
+def construir(cliente=None, herr: Herramientas | None = None, modelo: str = MODELO, firma_humana: bool = True):
+    """firma_humana=True agrega el nodo de firma y un checkpointer en memoria para pausar el grafo."""
     from langgraph.graph import END, START, StateGraph
 
     cliente = cliente or cliente_anthropic()
@@ -443,7 +452,23 @@ def construir(cliente=None, herr: Herramientas | None = None, modelo: str = MODE
                  "razones": ["La decisión no pasó la auditoría tras {} intentos.".format(estado["intentos"])]
                             + estado["auditoria"]["hallazgos"],
                  "memo": d.get("memo", "")}
-        return {"final": d | {"auditoria": estado["auditoria"], "intentos": estado["intentos"]}}
+        estado_final = "aprobada automáticamente" if d["decision"] in FIRMA_AUTOMATICA else "pendiente de firma"
+        if not firma_humana:
+            estado_final = "propuesta sin firma (eval)"
+        return {"final": d | {"auditoria": estado["auditoria"], "intentos": estado["intentos"], "estado": estado_final}}
+
+    def firma(estado):
+        from langgraph.types import interrupt
+
+        final = estado["final"]
+        if final["decision"] in FIRMA_AUTOMATICA:
+            return {}
+        respuesta = interrupt({"propuesta": {k: final[k] for k in ("decision", "monto", "tasa", "razones")},
+                               "memo": final.get("memo", "")})
+        confirma = bool(respuesta.get("confirma"))
+        return {"final": final | {"estado": "firmada por analista" if confirma else "devuelta por analista",
+                                  "firma": respuesta},
+                "historial": [{"nodo": "firma", "intento": 1, "contenido": respuesta}]}
 
     g = StateGraph(Estado)
     for nombre in ESPECIALISTAS:
@@ -457,20 +482,43 @@ def construir(cliente=None, herr: Herramientas | None = None, modelo: str = MODE
     g.add_edge("comite", "reglas")
     g.add_edge("reglas", "auditor")
     g.add_conditional_edges("auditor", siguiente, {"comite": "comite", "finalizar": "finalizar"})
-    g.add_edge("finalizar", END)
-    return g.compile()
+    if not firma_humana:
+        g.add_edge("finalizar", END)
+        return g.compile()
+    from langgraph.checkpoint.memory import InMemorySaver
+    from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
+
+    g.add_node("firma", firma)
+    g.add_edge("finalizar", "firma")
+    g.add_edge("firma", END)
+    # el estado lleva un DataFrame: el checkpointer vive en memoria del mismo proceso, así que el respaldo en pickle es seguro
+    return g.compile(checkpointer=InMemorySaver(serde=JsonPlusSerializer(pickle_fallback=True)))
 
 
-def evaluar_solicitud(grafo, solicitud: pd.DataFrame, metadatos: dict | None = None) -> dict:
-    config = {"run_name": "evaluar_solicitud", "metadata": metadatos or {}, "tags": [MODELO]}
-    return grafo.invoke({"solicitud": solicitud, "especialistas": {}, "historial": []}, config=config)
+def _config(metadatos: dict | None, hilo: str) -> dict:
+    return {"run_name": "evaluar_solicitud", "metadata": metadatos or {}, "tags": [MODELO],
+            "configurable": {"thread_id": hilo}}
+
+
+def evaluar_solicitud(grafo, solicitud: pd.DataFrame, metadatos: dict | None = None, hilo: str = "solicitud") -> dict:
+    """Corre el grafo. Si un rechazo o una contraoferta espera firma, devuelve el estado con final['estado'] =
+    'pendiente de firma' y la propuesta en estado['__interrupt__']; se completa con firmar()."""
+    return grafo.invoke({"solicitud": solicitud, "especialistas": {}, "historial": []}, config=_config(metadatos, hilo))
+
+
+def firmar(grafo, confirma: bool, analista: str, comentario: str = "", hilo: str = "solicitud") -> dict:
+    """Retoma el grafo pausado con la firma del analista."""
+    from langgraph.types import Command
+
+    respuesta = {"confirma": confirma, "analista": analista, "comentario": comentario}
+    return grafo.invoke(Command(resume=respuesta), config={"configurable": {"thread_id": hilo}})
 
 
 def main() -> None:
     from credit_lab import registro
     from credit_lab.poblacion import cargar_poblacion
 
-    p = argparse.ArgumentParser(description="Evalúa una solicitud de jul–dic 2015 con el agente 100% IA.")
+    p = argparse.ArgumentParser(description="Evalúa una solicitud de jul–dic 2015 con el agente de crédito.")
     p.add_argument("--semilla", type=int, default=0)
     p.add_argument("--no-guardar", action="store_true", help="no registrar la ejecución en SQLite")
     p.add_argument("--modelo", default=MODELO, choices=sorted(PRECIOS))
@@ -480,8 +528,16 @@ def main() -> None:
     sol = s2.sample(1, random_state=args.semilla)
     medidor = Medidor(cliente_anthropic(), args.modelo)
     inicio = time.perf_counter()
-    estado = evaluar_solicitud(construir(medidor, modelo=args.modelo), sol, {"semilla": args.semilla})
+    grafo = construir(medidor, modelo=args.modelo)
+    estado = evaluar_solicitud(grafo, sol, {"semilla": args.semilla})
     segundos = time.perf_counter() - inicio
+    if estado["final"]["estado"] == "pendiente de firma":
+        f = estado["final"]
+        print(f["memo"])
+        print(f"\nPropuesta: {f['decision']} · monto {f['monto']:,.0f} · tasa {f['tasa']:.2f}%")
+        confirma = input("¿Firma la propuesta? [s/n]: ").strip().lower().startswith("s")
+        comentario = input("Comentario del analista (opcional): ").strip()
+        estado = firmar(grafo, confirma, analista="analista", comentario=comentario)
     if not args.no_guardar:
         with registro.conectar() as con:
             n = registro.guardar(con, estado, medidor, segundos, semilla=args.semilla)
@@ -489,7 +545,8 @@ def main() -> None:
     final = estado["final"]
     print(final["memo"])
     print(f"\nDecisión: {final['decision']} · monto {final['monto']:,.0f} · tasa {final['tasa']:.2f}% · "
-          f"auditoría {'aprobada' if final['auditoria']['aprobado'] else 'rechazada'} en {final['intentos']} intento(s)")
+          f"auditoría {'aprobada' if final['auditoria']['aprobado'] else 'rechazada'} en {final['intentos']} intento(s) · "
+          f"{final['estado']}")
     print(f"Resultado real (no visto por el agente): {'malo' if sol['malo'].iloc[0] else 'bueno'}")
 
 

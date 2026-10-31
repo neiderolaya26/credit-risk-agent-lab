@@ -1,2 +1,11 @@
+[project]
+name = "credit-risk-agent-lab"
+version = "1.0.0"
+description = "Sistema de decisión de crédito de punta a punta con datos públicos de Lending Club: modelos de riesgo, inferencia causal y un agente de IA auditado."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.14"
+authors = [{ name = "Neider Olaya" }]
+
 [tool.pytest.ini_options]
 pythonpath = ["src"]
