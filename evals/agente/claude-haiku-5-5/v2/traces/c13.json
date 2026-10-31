@@ -1,0 +1,254 @@
+{
+ "historial": [
+  {
+   "nodo": "cupo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave**\n\n- **Oferta actual (7,89%):** ROI esperado de 0,84% y utilidad de USD 83,95, por debajo del objetivo de 4%. La PD es 20,69%. Está por encima de la tasa de equilibrio (7,5%), pero no cubre el margen objetivo.\n- **Fuera de rango:** la tasa de mercado es 11,09%, así que 7,89% se aleja más de 1 pt. Esa oferta no tiene evidencia histórica que la respalde.\n- **Oferta sugerida (11%):** ROI esperado de 4,19% y utilidad de USD 419,17. Está dentro de rango, con una cuota/ingreso de 5,61%, que cumple la regla máxima de 20%.\n- **Cupo:** el monto máximo es USD 30.000, así que los USD 10.000 pedidos están dentro de capacidad.\n- **Estrés:** la tasa de equilibrio y la sugerida en estrés coinciden con las base (7,5% y 11%). No pude confirmar el ROI de 11% bajo estrés con las herramientas disponibles.\n\n**Mejor oferta:** USD 10.000 a 11%.\n\n**Señal final: neutral.** El perfil es aprobable, pero solo con una tasa de 11%. La oferta de 7,89% no cumple el objetivo ni tiene respaldo de evidencia.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_cupo_pricing",
+      "entrada": {},
+      "salida": {
+       "monto_pedido": 10000.0,
+       "tasa_ofrecida": 7.89,
+       "tasa_mercado": 11.08812,
+       "pd": 0.206908,
+       "roi_esperado": 0.008395,
+       "utilidad_esperada": 83.947117,
+       "cuota_ingreso": 0.053633,
+       "monto_maximo": 30000.0,
+       "tasa_equilibrio": 7.5,
+       "tasa_sugerida": 11.0,
+       "sugerida_fuera_de_rango": false,
+       "tasa_equilibrio_estres": 7.5,
+       "tasa_sugerida_estres": 11.0,
+       "regla_cuota_max": 0.2,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 10000,
+       "tasa": 7.89
+      },
+      "salida": {
+       "monto": 10000,
+       "tasa": 7.89,
+       "pd": 0.206908,
+       "roi_esperado": 0.008395,
+       "utilidad_esperada": 83.947133,
+       "cuota_ingreso": 0.053633,
+       "cumple_capacidad": true,
+       "tasa_mercado": 11.08812,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 10000,
+       "tasa": 11
+      },
+      "salida": {
+       "monto": 10000,
+       "tasa": 11,
+       "pd": 0.206908,
+       "roi_esperado": 0.041917,
+       "utilidad_esperada": 419.170583,
+       "cuota_ingreso": 0.056124,
+       "cumple_capacidad": true,
+       "tasa_mercado": 11.08812,
+       "fuera_de_rango": false,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "economia",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave (tasa 7,89 %, USD 10.000)**\n\n- **Escenario bueno:** rendimiento de 11,41 %.\n- **Escenario malo:** pérdida de 39,67 %.\n- **Probabilidad de incumplimiento (PD):** 20,69 %.\n- **ROI esperado:** 0,84 %, equivalente a una utilidad esperada de USD 83,95.\n- **Prepago:** 33,15 % de probabilidad de pagar antes del mes 30; el mes esperado de pago es 29,8.\n- **Capacidad de pago:** la cuota equivale al 5,36 % del ingreso y cumple el criterio.\n- **Tasa de mercado estimada:** 11,09 %. La tasa ofrecida está más de 1 punto por debajo, por lo que la oferta queda fuera de rango y no hay evidencia histórica que la respalde.\n\n**Lectura:** el margen esperado es muy estrecho frente a una PD de 20,69 % y una pérdida severa en el escenario malo. Además, la tasa está por debajo del nivel de mercado estimado.\n\n**Señal final: desfavorable.**",
+    "herramientas": [
+     {
+      "herramienta": "consultar_economia",
+      "entrada": {},
+      "salida": {
+       "r_bueno": 0.114067,
+       "r_malo": -0.396655,
+       "pd": 0.206908,
+       "roi_esperado": 0.008395,
+       "utilidad_esperada": 83.947117,
+       "prob_prepago_antes_mes_30": 0.331515,
+       "mes_esperado_de_pago": 29.806225
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 10000,
+       "tasa": 7.89
+      },
+      "salida": {
+       "monto": 10000,
+       "tasa": 7.89,
+       "pd": 0.206908,
+       "roi_esperado": 0.008395,
+       "utilidad_esperada": 83.947133,
+       "cuota_ingreso": 0.053633,
+       "cumple_capacidad": true,
+       "tasa_mercado": 11.08812,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "riesgo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave**\n\n- **PD del modelo: 20.7%**, frente a un promedio de cartera de 12.9%, es decir, por encima del promedio.\n- **DTI de 29.85%** es el principal impulsor del riesgo.\n- **Antigüedad laboral menor a 1 año** aumenta el riesgo.\n- **Antigüedad crediticia de unos 546 meses** también suma riesgo, aunque en menor medida.\n- **Uso de tarjetas** suma riesgo. La herramienta reporta 96%, pero la solicitud indica 89.1%. Conviene verificar este dato antes de decidir.\n- **0 consultas en 6 meses** es el único factor que reduce el riesgo.\n\n**Señal final: desfavorable.** El perfil queda por encima del promedio de la cartera, sobre todo por endeudamiento y estabilidad laboral.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_riesgo",
+      "entrada": {},
+      "salida": {
+       "pd": 0.206908,
+       "pd_promedio_cartera": 0.128836,
+       "razones": [
+        {
+         "descripcion": "Endeudamiento sobre ingreso (DTI)",
+         "valor": 29.85,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.286774
+        },
+        {
+         "descripcion": "Consultas de crédito en los últimos 6 meses",
+         "valor": 0.0,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.128306
+        },
+        {
+         "descripcion": "Antigüedad crediticia (meses)",
+         "valor": 545.592105,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.109273
+        },
+        {
+         "descripcion": "Antigüedad laboral",
+         "valor": "< 1 year",
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.10638
+        },
+        {
+         "descripcion": "Uso de tarjetas (%)",
+         "valor": 96.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.086383
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 1,
+   "contenido": {
+    "decision": "contraoferta",
+    "monto": 10000.0,
+    "tasa": 11.0,
+    "razones": [
+     "La tasa ofrecida de 7,89% da un ROI esperado de 0,84%, por debajo del 4% que exige la política, así que no se aprueba al monto y la tasa ofrecidos.",
+     "A la tasa sugerida de 11% el ROI esperado es de 4,19%, que cumple el mínimo de 4%.",
+     "A 11% la cuota es 5,61% del ingreso, dentro del tope de 20%.",
+     "El monto pedido de USD 10.000 está dentro de la capacidad máxima de USD 30.000 y cumple la condición de la opción a de la política.",
+     "La tasa sugerida no está fuera de rango y la tasa de mercado es 11,09%."
+    ],
+    "memo": "## Resumen\nSe propone contraoferta: USD 10.000 a una tasa de 11%, en lugar de la tasa ofrecida de 7,89%.\n\n## Decisión\nCon la tasa ofrecida de 7,89% el ROI esperado es de 0,84%, por debajo del 4% que exige la política, así que no se aprueba al monto y la tasa ofrecidos. Con la tasa sugerida de 11% el ROI esperado es de 4,19%, la cuota es de 5,61% del ingreso (tope de 20%) y el monto pedido se mantiene. Por eso se aplica la primera opción de contraoferta. Monto: USD 10.000. Tasa: 11%.\n\n## Riesgo\nLa PD del modelo es de 20,69%, frente a un promedio de cartera de 12,88%. Según la herramienta de riesgo, el DTI de 29,85% es el factor que más sube el riesgo, seguido de la antigüedad crediticia de 545,59 meses y de la antigüedad laboral menor a 1 año. El uso de tarjetas de 96% también sube el riesgo y las 0 consultas en 6 meses lo reducen. El especialista de riesgo calificó la señal como desfavorable. El FICO usado por el modelo es 692.\n\n## Economía\nCon la tasa de 7,89%, la herramienta económica reporta un rendimiento en escenario bueno de 11,41%, una pérdida en escenario malo de 39,67%, un ROI esperado de 0,84% y una utilidad esperada de USD 83,95. La probabilidad de prepago antes del mes 30 es de 33,15%, con un mes esperado de pago de 29,8. El especialista de economía calificó la señal como desfavorable. Con la tasa de 11%, la simulación reporta un ROI esperado de 4,19% y una utilidad esperada de USD 419,17.\n\n## Cupo y precio\nEl monto máximo es de USD 30.000, así que los USD 10.000 pedidos están dentro de capacidad. La tasa de equilibrio es 7,5% y la tasa sugerida es 11%, dentro de rango respecto a la tasa de mercado de 11,09%. El especialista de cupo calificó la señal como neutral e indicó 11% como mejor oferta.\n\n## Alertas\n- La tasa ofrecida de 7,89% está fuera de rango, ya que se aleja más de 1 pt de la tasa de mercado de 11,09%. La herramienta indica que no hay evidencia histórica que la respalde.\n- Hay una discrepancia en el uso de tarjetas: la solicitud indica 89,1%, mientras que la herramienta de riesgo usa 96%.\n- En estrés, la tasa de equilibrio (7,5%) y la tasa sugerida (11%) coinciden con las base. El especialista de cupo indicó que no pudo confirmar el ROI de 11% bajo estrés con las herramientas disponibles; las herramientas no reportan ese ROI bajo estrés.\n- La tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto.\n- Según la política, estas alertas no cambian la decisión."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 1,
+   "contenido": {
+    "aprobado": true,
+    "hallazgos": [
+     "Menor: el memo y las razones afirman que el monto pedido cumple la condición de la opción a (entre 5% y 30%), pero no indican sobre qué base se mide ese porcentaje. Si la base es el monto máximo de USD 30.000, la proporción es 33,3% y no cumpliría, así que conviene aclarar la base en el memo.",
+     "Menor: la solicitud indica uso de crédito rotativo de 89,1%, mientras que la herramienta de riesgo usa 96%. El memo lo señala como alerta, pero no cambia la decisión porque la PD y las razones provienen del modelo; conviene verificar el dato de entrada.",
+     "Verificado: ROI de 7,89% = 0,84% (<4%), así que no se aprueba al monto y tasa ofrecidos; a 11% el ROI es 4,19%, la cuota 5,61% del ingreso y el monto de USD 10.000 está dentro del máximo de USD 30.000. La contraoferta de USD 10.000 a 11% es coherente con la oferta recalculada y no hay violaciones de reglas duras.",
+     "Verificado: PD 20,69%, promedio de cartera 12,88%, utilidad de USD 83,95 y USD 419,17, escenario bueno 11,41%, escenario malo -39,67%, prepago 33,15% y mes esperado 29,8 coinciden con las herramientas y el memo.",
+     "Las alertas (tasa fuera de rango, escenario de estrés y la discrepancia de tarjetas) se mencionan correctamente y no cambian la decisión, según la política."
+    ],
+    "oferta": {
+     "monto": 10000.0,
+     "tasa": 11.0,
+     "pd": 0.206908,
+     "roi_esperado": 0.041917,
+     "utilidad_esperada": 419.170583,
+     "cuota_ingreso": 0.056124,
+     "cumple_capacidad": true,
+     "tasa_mercado": 11.08812,
+     "fuera_de_rango": false,
+     "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+     "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+    },
+    "violaciones": []
+   }
+  }
+ ],
+ "final": {
+  "decision": "contraoferta",
+  "monto": 10000.0,
+  "tasa": 11.0,
+  "razones": [
+   "La tasa ofrecida de 7,89% da un ROI esperado de 0,84%, por debajo del 4% que exige la política, así que no se aprueba al monto y la tasa ofrecidos.",
+   "A la tasa sugerida de 11% el ROI esperado es de 4,19%, que cumple el mínimo de 4%.",
+   "A 11% la cuota es 5,61% del ingreso, dentro del tope de 20%.",
+   "El monto pedido de USD 10.000 está dentro de la capacidad máxima de USD 30.000 y cumple la condición de la opción a de la política.",
+   "La tasa sugerida no está fuera de rango y la tasa de mercado es 11,09%."
+  ],
+  "memo": "## Resumen\nSe propone contraoferta: USD 10.000 a una tasa de 11%, en lugar de la tasa ofrecida de 7,89%.\n\n## Decisión\nCon la tasa ofrecida de 7,89% el ROI esperado es de 0,84%, por debajo del 4% que exige la política, así que no se aprueba al monto y la tasa ofrecidos. Con la tasa sugerida de 11% el ROI esperado es de 4,19%, la cuota es de 5,61% del ingreso (tope de 20%) y el monto pedido se mantiene. Por eso se aplica la primera opción de contraoferta. Monto: USD 10.000. Tasa: 11%.\n\n## Riesgo\nLa PD del modelo es de 20,69%, frente a un promedio de cartera de 12,88%. Según la herramienta de riesgo, el DTI de 29,85% es el factor que más sube el riesgo, seguido de la antigüedad crediticia de 545,59 meses y de la antigüedad laboral menor a 1 año. El uso de tarjetas de 96% también sube el riesgo y las 0 consultas en 6 meses lo reducen. El especialista de riesgo calificó la señal como desfavorable. El FICO usado por el modelo es 692.\n\n## Economía\nCon la tasa de 7,89%, la herramienta económica reporta un rendimiento en escenario bueno de 11,41%, una pérdida en escenario malo de 39,67%, un ROI esperado de 0,84% y una utilidad esperada de USD 83,95. La probabilidad de prepago antes del mes 30 es de 33,15%, con un mes esperado de pago de 29,8. El especialista de economía calificó la señal como desfavorable. Con la tasa de 11%, la simulación reporta un ROI esperado de 4,19% y una utilidad esperada de USD 419,17.\n\n## Cupo y precio\nEl monto máximo es de USD 30.000, así que los USD 10.000 pedidos están dentro de capacidad. La tasa de equilibrio es 7,5% y la tasa sugerida es 11%, dentro de rango respecto a la tasa de mercado de 11,09%. El especialista de cupo calificó la señal como neutral e indicó 11% como mejor oferta.\n\n## Alertas\n- La tasa ofrecida de 7,89% está fuera de rango, ya que se aleja más de 1 pt de la tasa de mercado de 11,09%. La herramienta indica que no hay evidencia histórica que la respalde.\n- Hay una discrepancia en el uso de tarjetas: la solicitud indica 89,1%, mientras que la herramienta de riesgo usa 96%.\n- En estrés, la tasa de equilibrio (7,5%) y la tasa sugerida (11%) coinciden con las base. El especialista de cupo indicó que no pudo confirmar el ROI de 11% bajo estrés con las herramientas disponibles; las herramientas no reportan ese ROI bajo estrés.\n- La tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto.\n- Según la política, estas alertas no cambian la decisión.",
+  "auditoria": {
+   "aprobado": true,
+   "hallazgos": [
+    "Menor: el memo y las razones afirman que el monto pedido cumple la condición de la opción a (entre 5% y 30%), pero no indican sobre qué base se mide ese porcentaje. Si la base es el monto máximo de USD 30.000, la proporción es 33,3% y no cumpliría, así que conviene aclarar la base en el memo.",
+    "Menor: la solicitud indica uso de crédito rotativo de 89,1%, mientras que la herramienta de riesgo usa 96%. El memo lo señala como alerta, pero no cambia la decisión porque la PD y las razones provienen del modelo; conviene verificar el dato de entrada.",
+    "Verificado: ROI de 7,89% = 0,84% (<4%), así que no se aprueba al monto y tasa ofrecidos; a 11% el ROI es 4,19%, la cuota 5,61% del ingreso y el monto de USD 10.000 está dentro del máximo de USD 30.000. La contraoferta de USD 10.000 a 11% es coherente con la oferta recalculada y no hay violaciones de reglas duras.",
+    "Verificado: PD 20,69%, promedio de cartera 12,88%, utilidad de USD 83,95 y USD 419,17, escenario bueno 11,41%, escenario malo -39,67%, prepago 33,15% y mes esperado 29,8 coinciden con las herramientas y el memo.",
+    "Las alertas (tasa fuera de rango, escenario de estrés y la discrepancia de tarjetas) se mencionan correctamente y no cambian la decisión, según la política."
+   ]
+  },
+  "intentos": 1
+ },
+ "juez": {
+  "veredicto": {
+   "justifica_con_numeros": true,
+   "coherente": true,
+   "alertas": true,
+   "sin_invenciones": true,
+   "claro": true,
+   "explicacion_justifica_con_numeros": "La decisión se apoya en varias cifras: un ROI de 0,84% a 7,89% frente al objetivo de 4%, un ROI de 4,19% a 11%, una cuota/ingreso de 5,61% frente al tope de 20% y un monto máximo de USD 30.000.",
+   "explicacion_coherente": "El Resumen y la sección Decisión indican contraoferta de USD 10.000 al 11%, lo que coincide con la decisión de los datos.",
+   "explicacion_alertas": "Menciona las señales de cautela presentes: la tasa ofrecida fuera de rango y sin evidencia histórica, el ROI estrecho a 7,89%, la discrepancia en el uso de tarjetas y la falta de confirmación del ROI bajo estrés. No inventa alertas inexistentes.",
+   "explicacion_sin_invenciones": "Todas las cifras coinciden con las herramientas, incluido el orden de los factores de riesgo según su contribución. Las referencias a la política (objetivo de 4%, tope de cuota y prioridad de la contraoferta) son coherentes con los datos del especialista. No hay causas ni recomendaciones inventadas.",
+   "explicacion_claro": "El memo está bien estructurado y el Resumen deja clara la decisión y su motivo principal (ROI insuficiente a 7,89% y suficiente a 11%) en pocas líneas."
+  },
+  "modelo": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 5044,
+   "output_tokens": 859
+  }
+ }
+}

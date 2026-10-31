@@ -40,12 +40,16 @@ import numpy as np
 import pandas as pd
 from pydantic import BaseModel
 
-from credit_lab.motor import CUOTA_MAX, ROI_EQUILIBRIO, Motor, cuota
+from credit_lab.causal import RANGO_OBSERVADO
+from credit_lab.motor import CUOTA_MAX, ROI_EQUILIBRIO, ROI_OBJETIVO, Motor, cuota
 from credit_lab.poblacion import RAIZ
 
 MODELO = "claude-sonnet-5-5"
-PRECIO_ENTRADA, PRECIO_SALIDA = 2.0, 10.0  # USD por millón de tokens (Claude Sonnet 5.5)
+VERSION = "v2"  # v0: piloto inicial; v1: política compartida, FICO del modelo, criterios explícitos, auditor por materialidad; v2: memo sin invenciones
+# USD por millón de tokens (entrada, salida)
+PRECIOS = {"claude-sonnet-5-5": (2.0, 10.0), "claude-haiku-5-5": (0.10, 0.50), "claude-opus-5-5": (4.0, 20.0)}
 BETAS = ["server-side-fallback-2026-07-01"]
+CON_FALLBACK = {"claude-sonnet-5-5", "claude-opus-5-5"}  # Haiku 5.5 no tiene fallback del servidor
 INTENTOS = 2
 MAX_TURNOS = 6
 MONTO_MAX = 35_000
@@ -54,8 +58,13 @@ TASA_MIN, TASA_MAX = 5.0, 30.0
 CAMPOS_SOLICITUD = {
     "loan_amnt": "monto pedido (USD)", "int_rate": "tasa ofrecida por Lending Club (%)",
     "annual_inc": "ingreso anual (USD)", "purpose": "propósito", "dti": "deuda / ingreso (%)",
-    "fico_range_low": "FICO", "emp_length": "antigüedad laboral", "home_ownership": "vivienda",
-    "revol_util": "uso de tarjetas (%)", "inq_last_6mths": "consultas últimos 6 meses",
+    "emp_length": "antigüedad laboral", "home_ownership": "vivienda",
+    "revol_util": "uso del crédito rotativo (%)", "inq_last_6mths": "consultas últimos 6 meses",
+}
+CAMPO_FICO = "FICO (punto medio del rango, el que usa el modelo)"
+CRITERIOS = {
+    "criterio_fuera_de_rango": f"la tasa se aleja más de {RANGO_OBSERVADO:g} pt de la tasa de mercado; ahí no hay evidencia histórica",
+    "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto",
 }
 
 
@@ -90,7 +99,10 @@ def limpio(x):
 
 def resumen_solicitud(fila: pd.DataFrame) -> dict:
     f = fila.iloc[0]
-    return {nombre: limpio(f.get(campo)) for campo, nombre in CAMPOS_SOLICITUD.items()}
+    r = {nombre: limpio(f.get(campo)) for campo, nombre in CAMPOS_SOLICITUD.items()}
+    bajo, alto = f.get("fico_range_low"), f.get("fico_range_high")
+    r[CAMPO_FICO] = limpio((bajo + alto) / 2 if alto is not None and pd.notna(alto) else bajo)
+    return r
 
 
 # ---------- herramientas: código puro sobre los modelos ----------
@@ -122,7 +134,7 @@ class Herramientas:
         base, estres = self.motor.recomendar(sol), self.motor_estres.recomendar(sol)
         return limpio(base | {"tasa_equilibrio_estres": estres["tasa_equilibrio"],
                               "tasa_sugerida_estres": estres["tasa_sugerida"],
-                              "regla_cuota_max": CUOTA_MAX})
+                              "regla_cuota_max": CUOTA_MAX} | CRITERIOS)
 
     def simular_oferta(self, sol: pd.DataFrame, monto: float, tasa: float) -> dict:
         s = sol.copy()
@@ -131,7 +143,7 @@ class Herramientas:
         return limpio({"monto": monto, "tasa": tasa, "pd": ev["pd"], "roi_esperado": ev["roi_esperado"],
                        "utilidad_esperada": ev["utilidad_esperada"], "cuota_ingreso": ev["cuota_ingreso"],
                        "cumple_capacidad": ev["cumple_capacidad"], "tasa_mercado": ev["tasa_mercado"],
-                       "fuera_de_rango": ev["fuera_de_rango"]})
+                       "fuera_de_rango": ev["fuera_de_rango"]} | CRITERIOS)
 
 
 SIN_ARGUMENTOS = {"type": "object", "properties": {}, "required": [], "additionalProperties": False}
@@ -188,23 +200,39 @@ class Auditoria(BaseModel):
     hallazgos: list[str]
 
 
-SISTEMA_COMITE = f"""Eres el comité de crédito. Decides con base en el análisis de tres especialistas y los
-resultados de sus herramientas. Política del banco:
-- Aprobar si, al monto y tasa ofrecidos, el ROI esperado es ≥ 4% y la cuota es ≤ {CUOTA_MAX:.0%} del ingreso.
-- Contraoferta si con otro monto (≤ monto máximo) u otra tasa (≥ tasa sugerida, entre {TASA_MIN:g}% y {TASA_MAX:g}%)
-  sí se cumple; usa los números de las herramientas.
-- Rechazar si ninguna oferta razonable lleva el ROI esperado a ≥ 0% o no hay capacidad de pago.
-- Considera el escenario de estrés y la bandera fuera de rango como señales de cautela.
-- Si rechazas, monto = 0 y tasa = 0.
-El memo va en español, en markdown, con secciones: Resumen, Decisión, Riesgo, Economía, Cupo y precio, Alertas.
-Cita solo números que aparecen en los resultados de las herramientas."""
+POLITICA = f"""Política del banco (en este orden):
+1. Aprobar si, al monto y la tasa ofrecidos, el ROI esperado es ≥ {ROI_OBJETIVO:.0%} y la cuota es ≤ {CUOTA_MAX:.0%} del ingreso.
+2. Si no, contraoferta con la primera opción que cumpla:
+   a. el monto pedido a la tasa sugerida (ROI ≥ {ROI_OBJETIVO:.0%}), si existe, está entre {TASA_MIN:g}% y {TASA_MAX:g}% y la cuota sigue ≤ {CUOTA_MAX:.0%};
+   b. el monto máximo (a la tasa ofrecida) si es menor que el pedido.
+3. Si no, rechazar (monto = 0, tasa = 0).
+Reglas duras que verifica el código: cuota ≤ {CUOTA_MAX:.0%} del ingreso y ROI esperado ≥ {ROI_EQUILIBRIO:.0%} en lo que se otorga.
+El escenario de estrés y la bandera fuera de rango son alertas que se mencionan; por sí solas no cambian la decisión.
+El FICO de la solicitud es el punto medio del rango, el mismo que usa el modelo."""
 
-SISTEMA_AUDITOR = f"""Eres el auditor de crédito: reemplazas la revisión humana. Verifica que:
-1. Cada número del memo coincide (con redondeo) con los resultados de las herramientas.
-2. La decisión es coherente con la política (ROI ≥ 4% para aprobar; cuota ≤ {CUOTA_MAX:.0%} del ingreso).
+SISTEMA_COMITE = f"""Eres el comité de crédito. Decides con base en el análisis de tres especialistas y los
+resultados de sus herramientas, aplicando esta política:
+
+{POLITICA}
+
+El memo va en español, en markdown, con secciones: Resumen, Decisión, Riesgo, Economía, Cupo y precio, Alertas.
+Cita solo números que aparecen en los resultados de las herramientas o en la política.
+No agregues recomendaciones operativas (seguimiento, monitoreo, revisión manual) ni explicaciones causales que no
+salgan de las herramientas o de la política. Atribuye a cada especialista solo lo que dijo. Antes de afirmar que un
+dato no existe o no fue simulado, revisa los resultados de las herramientas."""
+
+SISTEMA_AUDITOR = f"""Eres el auditor de crédito: reemplazas la revisión humana. La política vigente es:
+
+{POLITICA}
+
+Verifica que:
+1. Cada número del memo coincide (con redondeo) con los resultados de las herramientas o con la política.
+2. La decisión es la que exige la política para estos números.
 3. No hay datos inventados ni contradicciones entre memo, razones y decisión.
 4. Si hay violaciones de reglas duras, no puedes aprobar.
-Aprueba solo si todo se cumple. En hallazgos, lista cada problema concreto (vacío si apruebas)."""
+Rechaza solo por problemas materiales: un número incorrecto, una decisión distinta de la que exige la política,
+una violación de reglas o un dato inventado que sostenga la decisión. Las observaciones menores (redacción,
+énfasis, detalles que no cambian la decisión) van en hallazgos con el prefijo "Menor:" y no impiden aprobar."""
 
 
 # ---------- reglas duras ----------
@@ -231,8 +259,8 @@ def reglas_duras(decision: dict, oferta: dict | None) -> list[str]:
 class Medidor:
     """Envuelve el cliente y suma tokens y llamadas de cada respuesta (seguro con nodos en paralelo)."""
 
-    def __init__(self, cliente):
-        self._cliente, self._lock = cliente, threading.Lock()
+    def __init__(self, cliente, modelo: str = MODELO):
+        self._cliente, self._lock, self.modelo = cliente, threading.Lock(), modelo
         self.llamadas = self.tokens_entrada = self.tokens_salida = 0
         self.beta = type("Beta", (), {})()
         self.beta.messages = type("Mensajes", (), {})()
@@ -254,20 +282,22 @@ class Medidor:
         with self._lock:
             self.llamadas = self.tokens_entrada = self.tokens_salida = 0
 
-    def costo_usd(self, precio_entrada=PRECIO_ENTRADA, precio_salida=PRECIO_SALIDA) -> float:
-        return (self.tokens_entrada * precio_entrada + self.tokens_salida * precio_salida) / 1e6
+    def costo_usd(self) -> float:
+        entrada, salida = PRECIOS[self.modelo]
+        return (self.tokens_entrada * entrada + self.tokens_salida * salida) / 1e6
 
 
-def _llamar(cliente, **kw):
-    """Todas las llamadas usan el modelo elegido y la red de seguridad de fallback del servidor."""
-    return kw.pop("_metodo")(model=MODELO, betas=BETAS, fallbacks="default", **kw)
+def _llamar(cliente, modelo: str = MODELO, **kw):
+    """Todas las llamadas usan el modelo elegido y, si lo admite, la red de seguridad de fallback del servidor."""
+    extra = {"betas": BETAS, "fallbacks": "default"} if modelo in CON_FALLBACK else {}
+    return kw.pop("_metodo")(model=modelo, **extra, **kw)
 
 
 def _texto(respuesta) -> str:
     return "".join(b.text for b in respuesta.content if b.type == "text").strip()
 
 
-def correr_especialista(cliente, herr: Herramientas, nombre: str, sol: pd.DataFrame) -> dict:
+def correr_especialista(cliente, herr: Herramientas, nombre: str, sol: pd.DataFrame, modelo: str = MODELO) -> dict:
     cfg = ESPECIALISTAS[nombre]
     funciones = {
         "consultar_riesgo": lambda _: herr.riesgo(sol),
@@ -280,7 +310,7 @@ def correr_especialista(cliente, herr: Herramientas, nombre: str, sol: pd.DataFr
                  + "\n\n" + INSTRUCCION_ESPECIALISTA}]
     llamadas = []
     for _ in range(MAX_TURNOS):
-        r = _llamar(cliente, _metodo=cliente.beta.messages.create, max_tokens=8000,
+        r = _llamar(cliente, modelo, _metodo=cliente.beta.messages.create, max_tokens=8000,
                     system=cfg["sistema"], tools=tools, messages=mensajes,
                     output_config={"effort": "medium"})
         if r.stop_reason == "refusal":
@@ -308,12 +338,12 @@ def _contexto(estado) -> str:
                        "especialistas": estado["especialistas"]}, ensure_ascii=False, indent=1)
 
 
-def decidir(cliente, estado) -> dict:
+def decidir(cliente, estado, modelo: str = MODELO) -> dict:
     partes = [_contexto(estado)]
     if estado.get("auditoria") and not estado["auditoria"]["aprobado"]:
         partes.append("El auditor rechazó tu decisión anterior. Corrige estos hallazgos:\n- "
                       + "\n- ".join(estado["auditoria"]["hallazgos"] + estado.get("violaciones", [])))
-    r = _llamar(cliente, _metodo=cliente.beta.messages.parse, max_tokens=16000, system=SISTEMA_COMITE,
+    r = _llamar(cliente, modelo, _metodo=cliente.beta.messages.parse, max_tokens=16000, system=SISTEMA_COMITE,
                 messages=[{"role": "user", "content": "\n\n".join(partes)}], output_format=Decision,
                 output_config={"effort": "high"})
     if r.stop_reason == "refusal" or r.parsed_output is None:
@@ -322,12 +352,12 @@ def decidir(cliente, estado) -> dict:
     return r.parsed_output.model_dump()
 
 
-def auditar(cliente, estado) -> dict:
+def auditar(cliente, estado, modelo: str = MODELO) -> dict:
     contenido = (_contexto(estado) + "\n\nDecisión del comité:\n"
                  + json.dumps(estado["decision"], ensure_ascii=False, indent=1)
                  + "\n\nOferta recalculada con el motor:\n" + json.dumps(estado.get("oferta"), ensure_ascii=False)
                  + "\n\nViolaciones de reglas duras:\n" + json.dumps(estado.get("violaciones", []), ensure_ascii=False))
-    r = _llamar(cliente, _metodo=cliente.beta.messages.parse, max_tokens=8000, system=SISTEMA_AUDITOR,
+    r = _llamar(cliente, modelo, _metodo=cliente.beta.messages.parse, max_tokens=8000, system=SISTEMA_AUDITOR,
                 messages=[{"role": "user", "content": contenido}], output_format=Auditoria,
                 output_config={"effort": "high"})
     if r.stop_reason == "refusal" or r.parsed_output is None:
@@ -364,7 +394,7 @@ def cliente_anthropic():
     return cliente
 
 
-def construir(cliente=None, herr: Herramientas | None = None):
+def construir(cliente=None, herr: Herramientas | None = None, modelo: str = MODELO):
     from langgraph.graph import END, START, StateGraph
 
     cliente = cliente or cliente_anthropic()
@@ -372,12 +402,12 @@ def construir(cliente=None, herr: Herramientas | None = None):
 
     def especialista(nombre):
         def nodo(estado):
-            r = correr_especialista(cliente, herr, nombre, estado["solicitud"])
+            r = correr_especialista(cliente, herr, nombre, estado["solicitud"], modelo)
             return {"especialistas": {nombre: r}, "historial": [{"nodo": nombre, "intento": 1, "contenido": r}]}
         return nodo
 
     def comite(estado):
-        d, n = decidir(cliente, estado), estado.get("intentos", 0) + 1
+        d, n = decidir(cliente, estado, modelo), estado.get("intentos", 0) + 1
         return {"decision": d, "intentos": n, "historial": [{"nodo": "comite", "intento": n, "contenido": d}]}
 
     def reglas(estado):
@@ -386,7 +416,7 @@ def construir(cliente=None, herr: Herramientas | None = None):
         return {"oferta": oferta, "violaciones": reglas_duras(d, oferta)}
 
     def auditor(estado):
-        a = auditar(cliente, estado)
+        a = auditar(cliente, estado, modelo)
         if estado["violaciones"]:  # el código manda: con violaciones no hay aprobación
             a = {"aprobado": False, "hallazgos": a["hallazgos"] + estado["violaciones"]}
         contenido = a | {"oferta": estado["oferta"], "violaciones": estado["violaciones"]}
@@ -434,13 +464,14 @@ def main() -> None:
     p = argparse.ArgumentParser(description="Evalúa una solicitud de jul–dic 2015 con el agente 100% IA.")
     p.add_argument("--semilla", type=int, default=0)
     p.add_argument("--no-guardar", action="store_true", help="no registrar la ejecución en SQLite")
+    p.add_argument("--modelo", default=MODELO, choices=sorted(PRECIOS))
     args = p.parse_args()
     df = cargar_poblacion()
     s2 = df[df["issue_d"] >= "2015-07-01"]
     sol = s2.sample(1, random_state=args.semilla)
-    medidor = Medidor(cliente_anthropic())
+    medidor = Medidor(cliente_anthropic(), args.modelo)
     inicio = time.perf_counter()
-    estado = evaluar_solicitud(construir(medidor), sol, {"semilla": args.semilla})
+    estado = evaluar_solicitud(construir(medidor, modelo=args.modelo), sol, {"semilla": args.semilla})
     segundos = time.perf_counter() - inicio
     if not args.no_guardar:
         with registro.conectar() as con:

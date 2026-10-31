@@ -1,0 +1,236 @@
+{
+ "historial": [
+  {
+   "nodo": "cupo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave**\n\n- **Oferta original (13.33%):** ROI esperado de 1.75% y utilidad de USD 227.11. Queda por debajo de la tasa sugerida (16%) y está fuera de rango, ya que la tasa de mercado es 14.98%. No hay evidencia histórica para esa oferta.\n- **Oferta alternativa (15%):** ROI de 3.30%, utilidad de USD 428.52 y dentro de rango. Cumple capacidad de pago (cuota/ingreso de 0.146 frente a un máximo de 0.20).\n- **Cupo:** monto máximo de USD 18,000. Tasa de equilibrio 12% (12% también bajo estrés) y tasa sugerida 16% (17% bajo estrés).\n- **Riesgo:** la PD es 0.314, alta. Con la herramienta no pude calcular el ROI de 15% bajo estrés, así que no lo afirmo.\n\n**Mejor oferta propuesta:** USD 13,000 a 15%. Mejora la utilidad y queda dentro del rango con evidencia, aunque no alcanza la tasa sugerida de 16%.\n\n**Señal final: neutral.** Condicionada a aceptar 15% en lugar de 13.33% y a validar el riesgo, dada la PD de 0.314.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_cupo_pricing",
+      "entrada": {},
+      "salida": {
+       "monto_pedido": 13000.0,
+       "tasa_ofrecida": 13.33,
+       "tasa_mercado": 14.982974,
+       "pd": 0.314128,
+       "roi_esperado": 0.01747,
+       "utilidad_esperada": 227.114382,
+       "cuota_ingreso": 0.142732,
+       "monto_maximo": 18000.0,
+       "tasa_equilibrio": 12.0,
+       "tasa_sugerida": 16.0,
+       "sugerida_fuera_de_rango": true,
+       "tasa_equilibrio_estres": 12.0,
+       "tasa_sugerida_estres": 17.0,
+       "regla_cuota_max": 0.2,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 13000,
+       "tasa": 13.33
+      },
+      "salida": {
+       "monto": 13000,
+       "tasa": 13.33,
+       "pd": 0.314128,
+       "roi_esperado": 0.01747,
+       "utilidad_esperada": 227.114393,
+       "cuota_ingreso": 0.142732,
+       "cumple_capacidad": true,
+       "tasa_mercado": 14.982974,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 13000,
+       "tasa": 15
+      },
+      "salida": {
+       "monto": 13000,
+       "tasa": 15,
+       "pd": 0.314128,
+       "roi_esperado": 0.032963,
+       "utilidad_esperada": 428.524822,
+       "cuota_ingreso": 0.146157,
+       "cumple_capacidad": true,
+       "tasa_mercado": 14.982974,
+       "fuera_de_rango": false,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "economia",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave (préstamo de USD 13.000 a 13,33%)**\n\n- **Escenario bueno:** rendimiento de 19,41%.\n- **Escenario malo:** pérdida económica de -36,81%.\n- **Probabilidad de incumplimiento (PD):** 31,41%, alta para este crédito.\n- **ROI esperado:** 1,75%, con utilidad esperada de USD 227,11. Es positivo, pero bajo para el riesgo que asume.\n- **Prepago:** probabilidad de 37,15% de pagar antes del mes 30; mes esperado de pago de 29,05.\n- **Capacidad de pago:** la cuota representa 14,27% del ingreso y sí cumple el criterio.\n- **Tasa de mercado estimada:** 14,98%. La tasa ofrecida queda más de 1 punto por debajo, fuera del rango con evidencia histórica.\n\n**Señal final: desfavorable.** La tasa no compensa una PD de 31,41% y una pérdida severa en el escenario malo. Además, está fuera del rango con evidencia histórica. Solo sería razonable aceptarla con una tasa más alta o con un monto menor.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_economia",
+      "entrada": {},
+      "salida": {
+       "r_bueno": 0.194072,
+       "r_malo": -0.368123,
+       "pd": 0.314128,
+       "roi_esperado": 0.01747,
+       "utilidad_esperada": 227.114382,
+       "prob_prepago_antes_mes_30": 0.371489,
+       "mes_esperado_de_pago": 29.046024
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 13000,
+       "tasa": 13.33
+      },
+      "salida": {
+       "monto": 13000,
+       "tasa": 13.33,
+       "pd": 0.314128,
+       "roi_esperado": 0.01747,
+       "utilidad_esperada": 227.114393,
+       "cuota_ingreso": 0.142732,
+       "cumple_capacidad": true,
+       "tasa_mercado": 14.982974,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "riesgo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: desfavorable.**\n\nLa PD del modelo campeón (LightGBM recalibrado) es **31.4%**, más del doble del promedio de la cartera (**12.9%**).\n\n**Qué impulsa el riesgo (SHAP, todos suben el riesgo salvo uno):**\n1. **FICO de 662:** es el factor más relevante.\n2. **Monto sobre ingreso anual (0.351):** el préstamo equivale a 35% del ingreso.\n3. **Antigüedad de la cuenta rotativa más vieja:** 55 meses.\n4. **DTI de 28.19%:** contribuye al riesgo, aunque en menor medida.\n5. **Estado WI:** es el único factor que reduce el riesgo.\n\nLas cinco razones explican la PD, pero no cubren todas las variables de la solicitud. Por eso no puedo afirmar que el uso del crédito rotativo (73.4%) o la tasa ofrecida tengan un efecto específico en este resultado.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_riesgo",
+      "entrada": {},
+      "salida": {
+       "pd": 0.314128,
+       "pd_promedio_cartera": 0.128836,
+       "razones": [
+        {
+         "descripcion": "Puntaje FICO",
+         "valor": 662.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.386155
+        },
+        {
+         "descripcion": "Monto solicitado sobre ingreso anual",
+         "valor": 0.351351,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.253574
+        },
+        {
+         "descripcion": "Antigüedad de la cuenta rotativa más vieja (meses)",
+         "valor": 55.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.203043
+        },
+        {
+         "descripcion": "Endeudamiento sobre ingreso (DTI)",
+         "valor": 28.190001,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.189413
+        },
+        {
+         "descripcion": "Estado de residencia",
+         "valor": "WI",
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.157431
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 1,
+   "contenido": {
+    "decision": "rechazar",
+    "monto": 0.0,
+    "tasa": 0.0,
+    "razones": [
+     "El ROI esperado a la tasa ofrecida de 13.33% es 1.75%, por debajo del mínimo de 4% de la política.",
+     "A 15% el ROI esperado es 3.30%, también por debajo de 4%. Las herramientas no simularon la tasa sugerida de 16%, así que no hay ROI verificado para la opción 2a.",
+     "El monto máximo de USD 18,000 es mayor que el monto pedido de USD 13,000, por lo que la opción 2b no aplica.",
+     "La cuota de 14.27% del ingreso cumple el máximo de 20%, pero no cambia la decisión porque el ROI no alcanza el mínimo de 4%."
+    ],
+    "memo": "## Resumen\n\nSolicitud de USD 13,000 a 13.33% con ingreso anual de USD 37,000, propósito de consolidación de deuda y FICO de 662 (punto medio del rango, el que usa el modelo). La política lleva a rechazar la solicitud.\n\n## Decisión\n\nRechazar, con monto 0 y tasa 0.\n\n- Paso 1: el ROI esperado a 13.33% es 1.75%, debajo del 4% exigido. La cuota es 14.27% del ingreso, dentro del 20%.\n- Paso 2a: la tasa sugerida es 16%. Las herramientas no simularon ROI ni cuota a esa tasa, así que no se verifica el ROI de 4% requerido.\n- Paso 2b: el monto máximo es USD 18,000, mayor que el pedido, así que no aplica.\n- Paso 3: rechazo.\n\n## Riesgo\n\nEl especialista de riesgo indica una PD de 31.4% con el modelo campeón (LightGBM recalibrado), frente a un promedio de cartera de 12.9%. Su señal final es desfavorable.\n\nSegún SHAP, los factores que suben el riesgo son: FICO de 662, monto sobre ingreso anual de 0.351, antigüedad de la cuenta rotativa más vieja de 55 meses y DTI de 28.19%. El estado WI es el único que baja el riesgo. El especialista indica que las cinco razones no cubren todas las variables, por lo que no afirma un efecto específico del uso de crédito rotativo (73.4%) ni de la tasa ofrecida.\n\n## Economía\n\nEl especialista de economía reporta un escenario bueno con rendimiento de 19.41% y un escenario malo con pérdida de -36.81%. El ROI esperado es 1.75%, con utilidad esperada de USD 227.11. La probabilidad de pago anticipado antes del mes 30 es 37.15%, con mes esperado de pago de 29.05. Su señal final es desfavorable.\n\n## Cupo y precio\n\nEl especialista de cupo reporta: tasa de mercado estimada de 14.98%, tasa de equilibrio de 12% (12% también bajo estrés), tasa sugerida de 16% (17% bajo estrés) y monto máximo de USD 18,000.\n\nA 15% el ROI esperado es 3.30%, con utilidad de USD 428.52 y cuota de 14.62% del ingreso. Este especialista propone USD 13,000 a 15% como mejor oferta, pero su señal final es neutral y está condicionada. A 15% el ROI sigue por debajo de 4%, por lo que esa propuesta no cumple la política. El especialista no pudo calcular el ROI de 15% bajo estrés, y no lo afirma.\n\n## Alertas\n\n- La tasa ofrecida de 13.33% está fuera de rango: se aleja más de 1 punto de la tasa de mercado de 14.98%, y no hay evidencia histórica para esa oferta.\n- La tasa sugerida de 16% también está marcada como fuera de rango.\n- Estas alertas se mencionan, pero por sí solas no cambian la decisión."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 1,
+   "contenido": {
+    "aprobado": true,
+    "hallazgos": [
+     "Menor: los números del memo coinciden con las herramientas y con la política (ROI 1.75% a 13.33%, ROI 3.30% a 15%, cuota 14.27% y 14.62%, PD 31.41%, PD promedio 12.9%, escenarios 19.41% y -36.81%, prepago 37.15%, mes 29.05, tasa de mercado 14.98%, monto máximo USD 18,000). La rechazo es la decisión que la política exige con la evidencia disponible, porque el paso 2a no se pudo verificar al no existir simulación a la tasa sugerida de 16%. Recomiendo simular la oferta a 16% antes de cerrar, ya que una tendencia lineal sugiere que el ROI podría acercarse o superar 4%, lo que cambiaría la contraoferta.",
+     "Menor: la razón sobre la opción 2b (monto máximo de USD 18,000 mayor que los USD 13,000 pedidos) es correcta y la regla no aplica.",
+     "Menor: las alertas de tasa fuera de rango (13.33% y 16%) se mencionan sin cambiar la decisión, como indica la política."
+    ],
+    "oferta": null,
+    "violaciones": []
+   }
+  }
+ ],
+ "final": {
+  "decision": "rechazar",
+  "monto": 0.0,
+  "tasa": 0.0,
+  "razones": [
+   "El ROI esperado a la tasa ofrecida de 13.33% es 1.75%, por debajo del mínimo de 4% de la política.",
+   "A 15% el ROI esperado es 3.30%, también por debajo de 4%. Las herramientas no simularon la tasa sugerida de 16%, así que no hay ROI verificado para la opción 2a.",
+   "El monto máximo de USD 18,000 es mayor que el monto pedido de USD 13,000, por lo que la opción 2b no aplica.",
+   "La cuota de 14.27% del ingreso cumple el máximo de 20%, pero no cambia la decisión porque el ROI no alcanza el mínimo de 4%."
+  ],
+  "memo": "## Resumen\n\nSolicitud de USD 13,000 a 13.33% con ingreso anual de USD 37,000, propósito de consolidación de deuda y FICO de 662 (punto medio del rango, el que usa el modelo). La política lleva a rechazar la solicitud.\n\n## Decisión\n\nRechazar, con monto 0 y tasa 0.\n\n- Paso 1: el ROI esperado a 13.33% es 1.75%, debajo del 4% exigido. La cuota es 14.27% del ingreso, dentro del 20%.\n- Paso 2a: la tasa sugerida es 16%. Las herramientas no simularon ROI ni cuota a esa tasa, así que no se verifica el ROI de 4% requerido.\n- Paso 2b: el monto máximo es USD 18,000, mayor que el pedido, así que no aplica.\n- Paso 3: rechazo.\n\n## Riesgo\n\nEl especialista de riesgo indica una PD de 31.4% con el modelo campeón (LightGBM recalibrado), frente a un promedio de cartera de 12.9%. Su señal final es desfavorable.\n\nSegún SHAP, los factores que suben el riesgo son: FICO de 662, monto sobre ingreso anual de 0.351, antigüedad de la cuenta rotativa más vieja de 55 meses y DTI de 28.19%. El estado WI es el único que baja el riesgo. El especialista indica que las cinco razones no cubren todas las variables, por lo que no afirma un efecto específico del uso de crédito rotativo (73.4%) ni de la tasa ofrecida.\n\n## Economía\n\nEl especialista de economía reporta un escenario bueno con rendimiento de 19.41% y un escenario malo con pérdida de -36.81%. El ROI esperado es 1.75%, con utilidad esperada de USD 227.11. La probabilidad de pago anticipado antes del mes 30 es 37.15%, con mes esperado de pago de 29.05. Su señal final es desfavorable.\n\n## Cupo y precio\n\nEl especialista de cupo reporta: tasa de mercado estimada de 14.98%, tasa de equilibrio de 12% (12% también bajo estrés), tasa sugerida de 16% (17% bajo estrés) y monto máximo de USD 18,000.\n\nA 15% el ROI esperado es 3.30%, con utilidad de USD 428.52 y cuota de 14.62% del ingreso. Este especialista propone USD 13,000 a 15% como mejor oferta, pero su señal final es neutral y está condicionada. A 15% el ROI sigue por debajo de 4%, por lo que esa propuesta no cumple la política. El especialista no pudo calcular el ROI de 15% bajo estrés, y no lo afirma.\n\n## Alertas\n\n- La tasa ofrecida de 13.33% está fuera de rango: se aleja más de 1 punto de la tasa de mercado de 14.98%, y no hay evidencia histórica para esa oferta.\n- La tasa sugerida de 16% también está marcada como fuera de rango.\n- Estas alertas se mencionan, pero por sí solas no cambian la decisión.",
+  "auditoria": {
+   "aprobado": true,
+   "hallazgos": [
+    "Menor: los números del memo coinciden con las herramientas y con la política (ROI 1.75% a 13.33%, ROI 3.30% a 15%, cuota 14.27% y 14.62%, PD 31.41%, PD promedio 12.9%, escenarios 19.41% y -36.81%, prepago 37.15%, mes 29.05, tasa de mercado 14.98%, monto máximo USD 18,000). La rechazo es la decisión que la política exige con la evidencia disponible, porque el paso 2a no se pudo verificar al no existir simulación a la tasa sugerida de 16%. Recomiendo simular la oferta a 16% antes de cerrar, ya que una tendencia lineal sugiere que el ROI podría acercarse o superar 4%, lo que cambiaría la contraoferta.",
+    "Menor: la razón sobre la opción 2b (monto máximo de USD 18,000 mayor que los USD 13,000 pedidos) es correcta y la regla no aplica.",
+    "Menor: las alertas de tasa fuera de rango (13.33% y 16%) se mencionan sin cambiar la decisión, como indica la política."
+   ]
+  },
+  "intentos": 1
+ },
+ "juez": {
+  "veredicto": {
+   "justifica_con_numeros": true,
+   "coherente": true,
+   "alertas": true,
+   "sin_invenciones": true,
+   "claro": true,
+   "explicacion_justifica_con_numeros": "Justifica el rechazo con varias cifras: ROI esperado de 1.75% frente al 4% exigido, cuota de 14.27% del ingreso, PD de 31.4% y ROI de 3.30% a 15%.",
+   "explicacion_coherente": "El memo indica rechazar con monto 0 y tasa 0, igual que la sección Decisión de los datos. Los pasos de la política conducen de forma consistente al rechazo.",
+   "explicacion_alertas": "Menciona las señales de cautela: la tasa de 13.33% fuera de rango, la tasa sugerida de 16% también fuera de rango, el ROI estrecho por debajo del umbral y la PD alta. No inventa alertas, como una cuota alta, que los datos no sustentan.",
+   "explicacion_sin_invenciones": "Todas las cifras coinciden con los datos de los especialistas. El umbral de ROI de 4% se presenta como criterio de política. Reconoce que el ROI a 16% y el ROI a 15% bajo estrés no fueron calculados, en lugar de suponerlos.",
+   "explicacion_claro": "La estructura es clara: un resumen con la decisión, pasos de política numerados y secciones por especialista. El motivo del rechazo (ROI bajo el 4% incluso a 15%) se entiende rápido."
+  },
+  "modelo": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 5060,
+   "output_tokens": 795
+  }
+ }
+}

@@ -45,7 +45,8 @@ flowchart LR
 | 11 ✅ | Agente LangGraph 100% IA: especialistas Claude en paralelo + comité + auditor | Agente funcionando con Claude Sonnet 5.5 (~USD 0,07 y ~30 s por solicitud), decisión 016 |
 | 12 ✅ | Servidor MCP con las herramientas del motor (riesgo, economía, cupo/pricing, simulación) | Servidor `credit-lab`, decisión 017 |
 | 13 ✅ | Registro de ejecuciones en SQLite + trazas en LangSmith (desempeño agéntico) | Ejecuciones registradas con su resultado real y trazadas, decisión 018 |
-| 14 | Evals del agente, demo y publicación | Release v1.0.0 |
+| 14 ✅ | **Evals del agente**: 30 casos con resultado real, calificación programada + juez Opus, versiones v0 → v2 con Haiku 5.5 | Concordancia 83%, fidelidad 94%, juez 97%, USD 0,007 por solicitud, decisión 019 |
+| 15 | Comparación con Sonnet, demo y publicación | Release v1.0.0 |
 
 ## Decisiones y trade-offs
 
@@ -89,6 +90,16 @@ from credit_lab import registro
 with registro.conectar() as con:
     print(registro.resumen(con))   # mora y ROI real por decisión, auditoría, costo y latencia
 ```
+
+### Evals del agente
+
+```bash
+python -m credit_lab.evals casos                              # elige los 30 casos (gratis)
+python -m credit_lab.evals correr --modelo claude-haiku-5-5   # corre el agente y el juez sobre los casos pendientes
+python -m credit_lab.evals reporte                            # evals/agente/<modelo>/<versión>/reporte.md
+```
+
+Resultados y trazas publicados en [evals/agente](evals/agente).
 
 Para ver las trazas del grafo en LangSmith, agrega `LANGSMITH_API_KEY` al `.env`; el proyecto se llama `credit-risk-agent-lab`.
 

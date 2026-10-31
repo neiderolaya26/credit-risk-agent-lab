@@ -1,0 +1,296 @@
+{
+ "historial": [
+  {
+   "nodo": "cupo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave**\n\n- **Solicitud original (16.000 USD a 9.99%):** ROI esperado de -0,30% y utilidad de -47,96 USD. La PD es 28,47%. Es inviable.\n- **Monto:** el máximo es 15.000 USD, así que el pedido excede el cupo.\n- **Tasas:** equilibrio 10,5%, sugerida 14,5%. Con estrés, el equilibrio sigue en 10,5% y la sugerida sube a 16,5%.\n- **Bandera fuera de rango:** 9,99% está más de 1 pt por debajo de la tasa de mercado (13,56%), así que queda marcada sin evidencia que la respalde.\n- **Contraoferta (15.000 USD a 14,5%):** ROI esperado de 4,62%, utilidad de 693,03 USD y PD de 27,74%. No está fuera de rango, y cumple capacidad de pago.\n- **Riesgo a vigilar:** 14,5% queda por debajo de la sugerida en estrés (16,5%), así que el margen se reduce si la PD sube. En esa simulación la tasa de mercado fue 13,69%, distinta del 13,56% de la primera consulta.\n\n**Mejor oferta:** 15.000 USD a 14,5%.\n\n**Señal final: desfavorable** para la solicitud tal como está (16.000 USD a 9,99%). La contraoferta resulta favorable con cautela, condicionada a que la PD no suba.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_cupo_pricing",
+      "entrada": {},
+      "salida": {
+       "monto_pedido": 16000.0,
+       "tasa_ofrecida": 9.99,
+       "tasa_mercado": 13.564623,
+       "pd": 0.284743,
+       "roi_esperado": -0.002998,
+       "utilidad_esperada": -47.96242,
+       "cuota_ingreso": 0.134661,
+       "monto_maximo": 15000.0,
+       "tasa_equilibrio": 10.5,
+       "tasa_sugerida": 14.5,
+       "sugerida_fuera_de_rango": false,
+       "tasa_equilibrio_estres": 10.5,
+       "tasa_sugerida_estres": 16.5,
+       "regla_cuota_max": 0.2
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 16000,
+       "tasa": 9.99
+      },
+      "salida": {
+       "monto": 16000,
+       "tasa": 9.99,
+       "pd": 0.284743,
+       "roi_esperado": -0.002998,
+       "utilidad_esperada": -47.962382,
+       "cuota_ingreso": 0.134661,
+       "cumple_capacidad": true,
+       "tasa_mercado": 13.564623,
+       "fuera_de_rango": true
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 15000,
+       "tasa": 14.5
+      },
+      "salida": {
+       "monto": 15000,
+       "tasa": 14.5,
+       "pd": 0.27736,
+       "roi_esperado": 0.046202,
+       "utilidad_esperada": 693.027409,
+       "cuota_ingreso": 0.134691,
+       "cumple_capacidad": true,
+       "tasa_mercado": 13.687118,
+       "fuera_de_rango": false
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "economia",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave (préstamo de USD 16.000 a 9,99%)**\n\n- **Escenario bueno:** rendimiento de 14,04%.\n- **Escenario malo:** pérdida económica de -36,32%.\n- **Probabilidad de incumplimiento (PD):** 28,47%.\n- **ROI esperado:** -0,30%, con utilidad esperada de -47,96 USD.\n- **Prepago:** probabilidad de 44,43% de pagar antes del mes 30; mes esperado de pago 27,76.\n- **Capacidad de pago:** cuota/ingreso de 13,47%, dentro del límite.\n- **Tasa de mercado estimada:** 13,56%. La tasa ofrecida está 3,57 puntos por debajo y la herramienta marca la oferta como fuera de rango.\n\n**Conclusión:** a 9,99% el préstamo no es rentable. El retorno esperado es negativo, porque la PD alta y la pérdida en el escenario malo superan el rendimiento del escenario bueno. La capacidad de pago no es el problema. El problema es el precio: la tasa debería subir hacia el nivel de mercado para que la oferta tenga sentido económico.\n\n**Señal final: desfavorable**",
+    "herramientas": [
+     {
+      "herramienta": "consultar_economia",
+      "entrada": {},
+      "salida": {
+       "r_bueno": 0.140398,
+       "r_malo": -0.363199,
+       "pd": 0.284743,
+       "roi_esperado": -0.002998,
+       "utilidad_esperada": -47.96242,
+       "prob_prepago_antes_mes_30": 0.444317,
+       "mes_esperado_de_pago": 27.75734
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 16000,
+       "tasa": 9.99
+      },
+      "salida": {
+       "monto": 16000,
+       "tasa": 9.99,
+       "pd": 0.284743,
+       "roi_esperado": -0.002998,
+       "utilidad_esperada": -47.962382,
+       "cuota_ingreso": 0.134661,
+       "cumple_capacidad": true,
+       "tasa_mercado": 13.564623,
+       "fuera_de_rango": true
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "riesgo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: desfavorable**\n\n**Hallazgos clave**\n- **PD del modelo: 0.284743** (28.5%), frente a un promedio de cartera de 0.128836 (12.9%). El riesgo es más del doble del promedio.\n- **Principal impulsor:** la antigüedad de la cuenta rotativa más vieja es de 9 meses y sube el riesgo (contribución logit 0.455652). Es el factor de mayor peso.\n- **Monto sobre ingreso (0.347826)** también sube el riesgo (0.215309).\n- **Cupo total en tarjetas de 2500** sube el riesgo (0.178782).\n- **FICO** sube el riesgo (0.191762), aunque la herramienta registra 677, no los 675 de la solicitud.\n- **Mitigante:** tener 2 cuentas rotativas activas baja el riesgo (-0.243604).\n\n**Nota:** el historial crediticio revolvente corto y el monto pedido explican la mayor parte del riesgo. Conviene verificar el FICO antes de decidir.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_riesgo",
+      "entrada": {},
+      "salida": {
+       "pd": 0.284743,
+       "pd_promedio_cartera": 0.128836,
+       "razones": [
+        {
+         "descripcion": "Antigüedad de la cuenta rotativa más vieja (meses)",
+         "valor": 9.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.455652
+        },
+        {
+         "descripcion": "Cuentas rotativas activas",
+         "valor": 2.0,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.243604
+        },
+        {
+         "descripcion": "Monto solicitado sobre ingreso anual",
+         "valor": 0.347826,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.215309
+        },
+        {
+         "descripcion": "Puntaje FICO",
+         "valor": 677.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.191762
+        },
+        {
+         "descripcion": "Cupo total en tarjetas",
+         "valor": 2500.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.178782
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 1,
+   "contenido": {
+    "decision": "contraoferta",
+    "monto": 15000.0,
+    "tasa": 14.5,
+    "razones": [
+     "La solicitud original de 16000 USD a 9.99% tiene ROI esperado de -0.002998 y utilidad esperada de -47.96 USD, por lo que no cumple la política.",
+     "El monto pedido de 16000 excede el monto máximo de 15000.",
+     "La contraoferta de 15000 USD a 14.5% (igual a la tasa sugerida) da ROI esperado de 0.046202, que supera el umbral de política, y utilidad esperada de 693.03 USD.",
+     "La cuota sobre ingreso de la contraoferta es 0.134691, dentro del límite de 0.2, y cumple capacidad de pago.",
+     "La oferta original está marcada fuera de rango porque 9.99% queda por debajo de la tasa de mercado de 13.564623.",
+     "La PD de la contraoferta es 0.27736, superior al promedio de cartera de 0.128836; el riesgo se mantiene alto.",
+     "Con estrés, la tasa sugerida sube a 16.5, por encima de 14.5, así que el margen se reduce si la PD sube.",
+     "El FICO de la herramienta es 677 y el de la solicitud es 675; conviene verificarlo antes de desembolsar."
+    ],
+    "memo": "## Resumen\nLa solicitud original (16000 USD a 9.99%) no es viable: ROI esperado de -0.002998 y utilidad esperada de -47.96 USD. Se recomienda contraoferta de 15000 USD a 14.5%, con ROI esperado de 0.046202 y utilidad esperada de 693.03 USD.\n\n## Decisión\nContraoferta: 15000 USD a una tasa de 14.5%. El monto pedido de 16000 excede el máximo de 15000. La contraoferta cumple capacidad de pago (cuota sobre ingreso de 0.134691, límite de 0.2) y no está marcada fuera de rango.\n\n## Riesgo\nPD de 0.27736 en la contraoferta y 0.284743 en la solicitud original, frente a un promedio de cartera de 0.128836. Los factores que más suben el riesgo son la antigüedad de la cuenta rotativa más vieja (9 meses), el monto sobre ingreso (0.347826) y el cupo total en tarjetas (2500). Mitiga tener 2 cuentas rotativas activas. Conviene verificar el FICO, ya que la herramienta registra 677 y la solicitud 675.\n\n## Economía\nEn la solicitud original, el escenario bueno da un rendimiento de 0.140398 y el escenario malo una pérdida de -0.363199. La probabilidad de prepago antes del mes 30 es 0.444317, con mes esperado de pago de 27.75734. La PD alta y la pérdida del escenario malo superan el rendimiento del escenario bueno, por lo que el precio es el problema, no la capacidad de pago. En la contraoferta, la utilidad esperada es 693.03 USD y el ROI esperado es 0.046202.\n\n## Cupo y precio\nMonto máximo: 15000 USD. Tasa de equilibrio: 10.5%. Tasa sugerida: 14.5%. Con estrés, la tasa de equilibrio se mantiene en 10.5% y la sugerida sube a 16.5%. Mejor oferta: 15000 USD a 14.5%.\n\n## Alertas\n- La oferta original de 9.99% está fuera de rango frente a la tasa de mercado de 13.564623 y no tiene evidencia que la respalde.\n- La tasa de 14.5% queda por debajo de la sugerida en estrés (16.5%), así que el margen se reduce si la PD sube.\n- En la simulación de la contraoferta, la tasa de mercado es 13.687118, distinta de la primera consulta (13.564623).\n- El FICO registrado por la herramienta (677) no coincide con el de la solicitud (675).\n- La contraoferta es favorable con cautela y queda condicionada a que la PD no suba."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 1,
+   "contenido": {
+    "aprobado": false,
+    "hallazgos": [
+     "El FICO usado por la herramienta de riesgo (677) no coincide con el FICO de la solicitud (675). La PD de 0.27736 de la contraoferta, y la de 0.284743 de la solicitud original, podrían estar calculadas con un dato de entrada distinto al de la solicitud, por lo que la contradicción no se resuelve.",
+     "La tasa de mercado cambia entre consultas: 13.564623 en la consulta de cupo y en la simulación de la oferta original, y 13.687118 en la simulación de la contraoferta. El memo lo señala, pero no lo resuelve, y la decisión de contraoferta depende de la comparación con esa tasa de mercado.",
+     "La aprobación de la contraoferta queda condicionada a verificar el FICO y a que la PD no suba. Ese condicionamiento está en el memo y en las razones, pero la decisión se toma sin resolver las contradicciones de datos, lo que incumple la regla de no tener contradicciones entre memo, razones y decisión.",
+     "El memo marca la tasa de 14.5% como por debajo de la tasa sugerida en estrés (16.5%), lo que reduce el margen si la PD sube. El ROI de 4.62% apenas supera el umbral de 4%, así que el margen de seguridad es estrecho.",
+     "El análisis de riesgo detallado (razones y contribuciones logit) corresponde solo a la solicitud original de 16000 USD. La contraoferta de 15000 USD no tiene desglose de factores de riesgo propio, aunque el memo le atribuye la PD de 0.27736."
+    ],
+    "oferta": {
+     "monto": 15000.0,
+     "tasa": 14.5,
+     "pd": 0.27736,
+     "roi_esperado": 0.046202,
+     "utilidad_esperada": 693.027409,
+     "cuota_ingreso": 0.134691,
+     "cumple_capacidad": true,
+     "tasa_mercado": 13.687118,
+     "fuera_de_rango": false
+    },
+    "violaciones": []
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 2,
+   "contenido": {
+    "decision": "contraoferta",
+    "monto": 15000.0,
+    "tasa": 14.5,
+    "razones": [
+     "La solicitud original de 16000 USD a 9.99% no es viable: ROI esperado de -0.002998 y utilidad esperada de -47.96",
+     "La contraoferta de 15000 USD a 14.5% tiene ROI esperado de 0.046202, por encima del umbral de 4%",
+     "La cuota sobre ingreso de 0.134691 queda dentro del límite de 0.2 y la capacidad de pago se cumple",
+     "El monto de 15000 es el máximo permitido y la tasa de 14.5 es la tasa sugerida, dentro del rango de 5% a 30%",
+     "Contradicción abierta: la herramienta de riesgo usa FICO 677 y la solicitud reporta un FICO distinto, por lo que la PD de 0.27736 no está verificada contra el dato de entrada",
+     "Contradicción abierta: la tasa de mercado es 13.564623 en la consulta de cupo y en la simulación original, y 13.687118 en la simulación de la contraoferta",
+     "Margen estrecho: la tasa sugerida en estrés es 16.5, por encima de la oferta de 14.5, y el ROI de 4.62% apenas supera el 4% exigido"
+    ],
+    "memo": "## Resumen\n\nLa solicitud original de 16000 USD a 9.99% no es viable: ROI esperado de -0.002998, PD de 0.284743 y utilidad esperada de -47.96. Se contraofrece 15000 USD a 14.5%, con ROI esperado de 0.046202, PD de 0.27736, utilidad esperada de 693.03 y cuota sobre ingreso de 0.134691.\n\n## Decisión\n\nContraoferta por 15000 USD a una tasa de 14.5%. Cumple la política: ROI esperado mayor o igual a 4% y cuota menor o igual a 20% del ingreso. El monto no excede el máximo de 15000 y la tasa es la sugerida, dentro del rango permitido.\n\nLa contraoferta debe formalizarse con dos verificaciones previas: (1) volver a correr consultar_riesgo con el FICO de la solicitud, para eliminar la diferencia con el 677 usado por la herramienta, y (2) volver a correr simular_oferta con una tasa de mercado de referencia única. Si el ROI a 14.5% cae por debajo de 0.04 o la PD sube por encima de 0.27736, la contraoferta se retira y el caso se reevalúa.\n\n## Riesgo\n\nLa PD de la solicitud original es 0.284743, frente a un promedio de cartera de 0.128836. Factores que suben el riesgo: antigüedad de la cuenta rotativa más vieja de 9 meses (contribución logit 0.455652), monto sobre ingreso de 0.347826 (0.215309), cupo total en tarjetas de 2500 (0.178782) y FICO de 677 (0.191762). Factor mitigante: 2 cuentas rotativas activas (-0.243604).\n\nEl desglose de factores corresponde solo a la solicitud original de 16000 USD. La PD de 0.27736 de la contraoferta se toma tal como la reporta simular_oferta y no tiene desglose propio.\n\n## Economía\n\nPara la solicitud original: rendimiento en escenario bueno de 0.140398, pérdida en escenario malo de -0.363199, PD de 0.284743, probabilidad de prepago antes del mes 30 de 0.444317 y mes esperado de pago de 27.75734. La capacidad de pago no es el problema; el precio lo es.\n\nPara la contraoferta solo se dispone de ROI esperado de 0.046202, utilidad esperada de 693.027409, PD de 0.27736 y cuota sobre ingreso de 0.134691. No hay escenarios de estrés de la contraoferta en los resultados.\n\n## Cupo y precio\n\nMonto máximo: 15000. Tasa de equilibrio: 10.5. Tasa sugerida: 14.5. En estrés, la tasa de equilibrio se mantiene en 10.5 y la sugerida sube a 16.5. La oferta de 14.5 queda por debajo de la sugerida en estrés, así que el margen se reduce si la PD sube. El ROI de 0.046202 apenas supera el umbral de 0.04.\n\n## Alertas\n\n- FICO: la herramienta de riesgo usa 677 y la solicitud reporta un valor distinto. La contradicción no está resuelta y la PD podría cambiar al corregirse el dato.\n- Tasa de mercado: 13.564623 en la consulta de cupo y en la simulación original; 13.687118 en la simulación de la contraoferta. La decisión de contraoferta depende de esta comparación, por lo que debe fijarse una referencia única antes de formalizar.\n- La simulación de la oferta original marca la tasa de 9.99 como fuera de rango (tasa de mercado 13.564623).\n- Margen estrecho sobre el umbral de ROI y tasa sugerida en estrés de 16.5 por encima de la oferta."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 2,
+   "contenido": {
+    "aprobado": false,
+    "hallazgos": [
+     "Contradicción de FICO no resuelta: la solicitud reporta 675, pero la herramienta consultar_riesgo usa 677. La PD de 0.27736 de la contraoferta no está verificada contra el dato de entrada, y el memo usa 677 en la sección de riesgo sin reconciliarlo.",
+     "Tasa de mercado inconsistente: 13.564623 en consultar_cupo_pricing y en la simulación original, y 13.687118 en la simulación de la contraoferta. La decisión depende de esta comparación y el memo no fija una referencia única.",
+     "El rango permitido de 5% a 30% citado en las razones de la decisión no aparece en ninguna salida de herramienta, por lo que no está respaldado por los datos proporcionados.",
+     "El memo condiciona la formalización a dos verificaciones pendientes (re-ejecutar consultar_riesgo con el FICO correcto y re-ejecutar simular_oferta con una tasa de mercado única). Mientras no se completen, la decisión no es definitiva.",
+     "Evidencia incompleta para la contraoferta: no hay escenarios de economía (rendimiento bueno y malo, prepago) ni estrés de PD para 15000 USD a 14.5%. El ROI de 4.62% apenas supera el umbral de 4% y la tasa sugerida en estrés (16.5%) está por encima de la oferta.",
+     "Afirmación de cumplimiento de política sobre base no verificada: el memo declara que la contraoferta cumple la política, pero el cumplimiento de ROI depende de una PD cuyo FICO de entrada es inconsistente."
+    ],
+    "oferta": {
+     "monto": 15000.0,
+     "tasa": 14.5,
+     "pd": 0.27736,
+     "roi_esperado": 0.046202,
+     "utilidad_esperada": 693.027409,
+     "cuota_ingreso": 0.134691,
+     "cumple_capacidad": true,
+     "tasa_mercado": 13.687118,
+     "fuera_de_rango": false
+    },
+    "violaciones": []
+   }
+  }
+ ],
+ "final": {
+  "decision": "rechazar",
+  "monto": 0.0,
+  "tasa": 0.0,
+  "razones": [
+   "La decisión no pasó la auditoría tras 2 intentos.",
+   "Contradicción de FICO no resuelta: la solicitud reporta 675, pero la herramienta consultar_riesgo usa 677. La PD de 0.27736 de la contraoferta no está verificada contra el dato de entrada, y el memo usa 677 en la sección de riesgo sin reconciliarlo.",
+   "Tasa de mercado inconsistente: 13.564623 en consultar_cupo_pricing y en la simulación original, y 13.687118 en la simulación de la contraoferta. La decisión depende de esta comparación y el memo no fija una referencia única.",
+   "El rango permitido de 5% a 30% citado en las razones de la decisión no aparece en ninguna salida de herramienta, por lo que no está respaldado por los datos proporcionados.",
+   "El memo condiciona la formalización a dos verificaciones pendientes (re-ejecutar consultar_riesgo con el FICO correcto y re-ejecutar simular_oferta con una tasa de mercado única). Mientras no se completen, la decisión no es definitiva.",
+   "Evidencia incompleta para la contraoferta: no hay escenarios de economía (rendimiento bueno y malo, prepago) ni estrés de PD para 15000 USD a 14.5%. El ROI de 4.62% apenas supera el umbral de 4% y la tasa sugerida en estrés (16.5%) está por encima de la oferta.",
+   "Afirmación de cumplimiento de política sobre base no verificada: el memo declara que la contraoferta cumple la política, pero el cumplimiento de ROI depende de una PD cuyo FICO de entrada es inconsistente."
+  ],
+  "memo": "## Resumen\n\nLa solicitud original de 16000 USD a 9.99% no es viable: ROI esperado de -0.002998, PD de 0.284743 y utilidad esperada de -47.96. Se contraofrece 15000 USD a 14.5%, con ROI esperado de 0.046202, PD de 0.27736, utilidad esperada de 693.03 y cuota sobre ingreso de 0.134691.\n\n## Decisión\n\nContraoferta por 15000 USD a una tasa de 14.5%. Cumple la política: ROI esperado mayor o igual a 4% y cuota menor o igual a 20% del ingreso. El monto no excede el máximo de 15000 y la tasa es la sugerida, dentro del rango permitido.\n\nLa contraoferta debe formalizarse con dos verificaciones previas: (1) volver a correr consultar_riesgo con el FICO de la solicitud, para eliminar la diferencia con el 677 usado por la herramienta, y (2) volver a correr simular_oferta con una tasa de mercado de referencia única. Si el ROI a 14.5% cae por debajo de 0.04 o la PD sube por encima de 0.27736, la contraoferta se retira y el caso se reevalúa.\n\n## Riesgo\n\nLa PD de la solicitud original es 0.284743, frente a un promedio de cartera de 0.128836. Factores que suben el riesgo: antigüedad de la cuenta rotativa más vieja de 9 meses (contribución logit 0.455652), monto sobre ingreso de 0.347826 (0.215309), cupo total en tarjetas de 2500 (0.178782) y FICO de 677 (0.191762). Factor mitigante: 2 cuentas rotativas activas (-0.243604).\n\nEl desglose de factores corresponde solo a la solicitud original de 16000 USD. La PD de 0.27736 de la contraoferta se toma tal como la reporta simular_oferta y no tiene desglose propio.\n\n## Economía\n\nPara la solicitud original: rendimiento en escenario bueno de 0.140398, pérdida en escenario malo de -0.363199, PD de 0.284743, probabilidad de prepago antes del mes 30 de 0.444317 y mes esperado de pago de 27.75734. La capacidad de pago no es el problema; el precio lo es.\n\nPara la contraoferta solo se dispone de ROI esperado de 0.046202, utilidad esperada de 693.027409, PD de 0.27736 y cuota sobre ingreso de 0.134691. No hay escenarios de estrés de la contraoferta en los resultados.\n\n## Cupo y precio\n\nMonto máximo: 15000. Tasa de equilibrio: 10.5. Tasa sugerida: 14.5. En estrés, la tasa de equilibrio se mantiene en 10.5 y la sugerida sube a 16.5. La oferta de 14.5 queda por debajo de la sugerida en estrés, así que el margen se reduce si la PD sube. El ROI de 0.046202 apenas supera el umbral de 0.04.\n\n## Alertas\n\n- FICO: la herramienta de riesgo usa 677 y la solicitud reporta un valor distinto. La contradicción no está resuelta y la PD podría cambiar al corregirse el dato.\n- Tasa de mercado: 13.564623 en la consulta de cupo y en la simulación original; 13.687118 en la simulación de la contraoferta. La decisión de contraoferta depende de esta comparación, por lo que debe fijarse una referencia única antes de formalizar.\n- La simulación de la oferta original marca la tasa de 9.99 como fuera de rango (tasa de mercado 13.564623).\n- Margen estrecho sobre el umbral de ROI y tasa sugerida en estrés de 16.5 por encima de la oferta.",
+  "auditoria": {
+   "aprobado": false,
+   "hallazgos": [
+    "Contradicción de FICO no resuelta: la solicitud reporta 675, pero la herramienta consultar_riesgo usa 677. La PD de 0.27736 de la contraoferta no está verificada contra el dato de entrada, y el memo usa 677 en la sección de riesgo sin reconciliarlo.",
+    "Tasa de mercado inconsistente: 13.564623 en consultar_cupo_pricing y en la simulación original, y 13.687118 en la simulación de la contraoferta. La decisión depende de esta comparación y el memo no fija una referencia única.",
+    "El rango permitido de 5% a 30% citado en las razones de la decisión no aparece en ninguna salida de herramienta, por lo que no está respaldado por los datos proporcionados.",
+    "El memo condiciona la formalización a dos verificaciones pendientes (re-ejecutar consultar_riesgo con el FICO correcto y re-ejecutar simular_oferta con una tasa de mercado única). Mientras no se completen, la decisión no es definitiva.",
+    "Evidencia incompleta para la contraoferta: no hay escenarios de economía (rendimiento bueno y malo, prepago) ni estrés de PD para 15000 USD a 14.5%. El ROI de 4.62% apenas supera el umbral de 4% y la tasa sugerida en estrés (16.5%) está por encima de la oferta.",
+    "Afirmación de cumplimiento de política sobre base no verificada: el memo declara que la contraoferta cumple la política, pero el cumplimiento de ROI depende de una PD cuyo FICO de entrada es inconsistente."
+   ]
+  },
+  "intentos": 2
+ },
+ "juez": {
+  "veredicto": {
+   "justifica_con_numeros": true,
+   "coherente": false,
+   "alertas": true,
+   "sin_invenciones": false,
+   "claro": true,
+   "explicacion_justifica_con_numeros": "El memo cita muchas cifras concretas: PD 0.284743 frente a 0.128836 de cartera, ROI -0.002998 frente a 0.046202, monto máximo 15000, tasa sugerida 14.5 y cuota/ingreso 0.134691.",
+   "explicacion_coherente": "La sección Decisión de los datos indica 'rechazar' con monto 0 y tasa 0. El memo, en cambio, presenta una contraoferta de 15000 USD al 14.5%. Decisión, monto y tasa no coinciden con lo registrado.",
+   "explicacion_alertas": "Menciona las señales de cautela reales: tasa original fuera de rango, ROI estrecho sobre el umbral (0.046 frente a 0.04) y tasa sugerida en estrés (16.5) por encima de la ofertada. También señala dos discrepancias verificables en los datos: FICO 675 frente a 677 y tasa de mercado 13.56 frente a 13.69.",
+   "explicacion_sin_invenciones": "Inventa una decisión de contraoferta que contradice la decisión de rechazo de los datos. Además agrega procedimientos y condiciones que no salen de los datos ni de la política: volver a correr herramientas y retirar la oferta si la PD supera 0.27736.",
+   "explicacion_claro": "El memo está bien estructurado y un analista entiende rápidamente qué propone y por qué, aunque lo propuesto no corresponde a la decisión real."
+  },
+  "modelo": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 3538,
+   "output_tokens": 1240
+  }
+ }
+}

@@ -1,0 +1,270 @@
+{
+ "historial": [
+  {
+   "nodo": "cupo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave (monto 12.000 USD)**\n\n- **Oferta actual (11,53%):** PD 3,48%, ROI esperado 14,01%, utilidad esperada 1.681 USD, cuota/ingreso 1,58%, capacidad cumplida. Pero está **fuera de rango**: tasa de mercado 8,69%, es decir, 2,84 pts por encima, sin evidencia histórica que la respalde.\n- **Monto máximo:** 35.000 USD.\n- **Tasa de equilibrio y sugerida:** ambas 5,0%, con la sugerida también fuera de rango. El estrés no cambia estos valores (5,0% en ambos casos).\n- **Alternativa 9,70%:** ROI 11,58%, utilidad 1.390 USD, pero sigue marcada fuera de rango (1,008 pts sobre mercado).\n- **Alternativa 9,69%:** ROI 11,57%, utilidad 1.388 USD, **dentro de rango** (0,997 pts sobre mercado).\n\n**Mejor oferta:** 12.000 USD a 9,69%. Conserva un ROI de 11,57% con evidencia histórica disponible. Cuesta unos 293 USD de utilidad frente a la oferta original, pero esa diferencia es la que sí tiene respaldo. La tasa de mercado se estima según perfil y monto, así que puede cambiar si cambia el monto.\n\n**Señal final: favorable**, con la oferta ajustada a 9,69%. A 11,53% la señal sería neutral, porque el ROI es sólido pero no hay evidencia para la tasa.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_cupo_pricing",
+      "entrada": {},
+      "salida": {
+       "monto_pedido": 12000.0,
+       "tasa_ofrecida": 11.53,
+       "tasa_mercado": 8.69229,
+       "pd": 0.034791,
+       "roi_esperado": 0.140091,
+       "utilidad_esperada": 1681.086913,
+       "cuota_ingreso": 0.015835,
+       "monto_maximo": 35000.0,
+       "tasa_equilibrio": 5.0,
+       "tasa_sugerida": 5.0,
+       "sugerida_fuera_de_rango": true,
+       "tasa_equilibrio_estres": 5.0,
+       "tasa_sugerida_estres": 5.0,
+       "regla_cuota_max": 0.2,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 12000,
+       "tasa": 11.53
+      },
+      "salida": {
+       "monto": 12000,
+       "tasa": 11.53,
+       "pd": 0.034791,
+       "roi_esperado": 0.140091,
+       "utilidad_esperada": 1681.086957,
+       "cuota_ingreso": 0.015835,
+       "cumple_capacidad": true,
+       "tasa_mercado": 8.69229,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 12000,
+       "tasa": 9.7
+      },
+      "salida": {
+       "monto": 12000,
+       "tasa": 9.7,
+       "pd": 0.034791,
+       "roi_esperado": 0.115811,
+       "utilidad_esperada": 1389.733298,
+       "cuota_ingreso": 0.015421,
+       "cumple_capacidad": true,
+       "tasa_mercado": 8.69229,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 12000,
+       "tasa": 9.69
+      },
+      "salida": {
+       "monto": 12000,
+       "tasa": 9.69,
+       "pd": 0.034791,
+       "roi_esperado": 0.115689,
+       "utilidad_esperada": 1388.271762,
+       "cuota_ingreso": 0.015418,
+       "cumple_capacidad": true,
+       "tasa_mercado": 8.69229,
+       "fuera_de_rango": false,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "economia",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave (USD 12.000 a 11,53%)**\n\n- **Escenario bueno:** rendimiento de 15,74%.\n- **Escenario malo:** pérdida económica de -33,92%.\n- **Probabilidad de incumplimiento (PD):** 3,48%.\n- **ROI esperado:** 14,01%, con utilidad esperada de 1.681 USD.\n- **Prepago:** 50,3% de probabilidad de pagar antes del mes 30, con mes esperado de pago en 26,4.\n- **Capacidad de pago:** la cuota equivale al 1,58% del ingreso.\n- **Tasa de mercado estimada:** 8,69%. La tasa ofrecida se aleja más de 1 punto de ese valor, por lo que la oferta queda fuera de rango. No hay evidencia histórica para esa zona.\n\n**Lectura:** el ROI esperado es alto y la PD es baja, así que el préstamo es rentable en el caso base. Sin embargo, el rendimiento malo es severo y la tasa está fuera del rango con respaldo histórico, por lo que la estimación es menos confiable. Además, la tasa de mercado depende del monto, así que cambiar el monto cambia la referencia.\n\n**Señal final: neutral.** Vale la pena considerarlo, pero conviene validar la tasa o revisar el monto antes de aprobarlo.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_economia",
+      "entrada": {},
+      "salida": {
+       "r_bueno": 0.157368,
+       "r_malo": -0.339236,
+       "pd": 0.034791,
+       "roi_esperado": 0.140091,
+       "utilidad_esperada": 1681.086913,
+       "prob_prepago_antes_mes_30": 0.503094,
+       "mes_esperado_de_pago": 26.3637
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 12000,
+       "tasa": 11.53
+      },
+      "salida": {
+       "monto": 12000,
+       "tasa": 11.53,
+       "pd": 0.034791,
+       "roi_esperado": 0.140091,
+       "utilidad_esperada": 1681.086957,
+       "cuota_ingreso": 0.015835,
+       "cumple_capacidad": true,
+       "tasa_mercado": 8.69229,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "riesgo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: favorable**\n\n**Hallazgos clave**\n\n- **PD del modelo: 3.48%**, frente a una PD promedio de cartera de 12.88%. El riesgo estimado está muy por debajo del promedio.\n- **Las cinco razones principales reducen el riesgo:**\n  1. Saldo promedio de las cuentas (88,349): −0.349 en logit.\n  2. Monto solicitado sobre ingreso anual (4%): −0.279.\n  3. Antigüedad de la cuenta rotativa más antigua (330 meses): −0.177.\n  4. DTI (12.67%): −0.162.\n  5. Consultas en los últimos 6 meses (0): −0.138.\n- **Punto de atención:** el uso del crédito rotativo (81.5%) no aparece entre las cinco razones principales, así que no es un factor que impulse el riesgo en este modelo. Tampoco tengo datos de su efecto cuantificado.\n- La tasa ofrecida (11.53%) no figura entre las razones SHAP, por lo que no puedo atribuirle ningún efecto sobre la PD.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_riesgo",
+      "entrada": {},
+      "salida": {
+       "pd": 0.034791,
+       "pd_promedio_cartera": 0.128836,
+       "razones": [
+        {
+         "descripcion": "Saldo promedio de las cuentas",
+         "valor": 88349.0,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.348934
+        },
+        {
+         "descripcion": "Monto solicitado sobre ingreso anual",
+         "valor": 0.04,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.279398
+        },
+        {
+         "descripcion": "Antigüedad de la cuenta rotativa más vieja (meses)",
+         "valor": 330.0,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.177288
+        },
+        {
+         "descripcion": "Endeudamiento sobre ingreso (DTI)",
+         "valor": 12.67,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.161835
+        },
+        {
+         "descripcion": "Consultas de crédito en los últimos 6 meses",
+         "valor": 0.0,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.138324
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 1,
+   "contenido": {
+    "decision": "aprobar",
+    "monto": 12000.0,
+    "tasa": 11.53,
+    "razones": [
+     "ROI esperado de 14.01%, mayor o igual que 4%, al monto y la tasa ofrecidos",
+     "Cuota de 1.58% del ingreso, menor o igual que 20%",
+     "Reglas duras cumplidas: cuota menor o igual que 20% del ingreso y ROI mayor o igual que 0%",
+     "PD de 3.48%, frente a una PD promedio de cartera de 12.88%",
+     "La tasa de 11.53% está fuera de rango respecto a la tasa de mercado de 8.69%; se trata como alerta y no cambia la decisión según la política"
+    ],
+    "memo": "## Resumen\nSolicitud de 12000 USD para consolidación de deuda, con ingreso anual de 300000 USD, FICO de 692 (punto medio del rango, el que usa el modelo) y tasa ofrecida de 11.53%. Se aprueba al monto y la tasa solicitados porque cumplen el criterio 1 de la política.\n\n## Decisión\nAprobar 12000 USD a 11.53%. El ROI esperado es de 14.01%, mayor o igual que 4%, y la cuota es de 1.58% del ingreso, menor o igual que 20%. Se cumplen las reglas duras: cuota menor o igual que 20% y ROI mayor o igual que 0%.\n\n## Riesgo\nLa PD del modelo es de 3.48%, frente a una PD promedio de cartera de 12.88%. Según la herramienta de riesgo, las cinco razones principales reducen el riesgo: saldo promedio de las cuentas de 88349 (contribución de -0.349 en logit), monto solicitado sobre ingreso anual de 4% (-0.279), antigüedad de la cuenta rotativa más vieja de 330 meses (-0.177), DTI de 12.67% (-0.162) y consultas en los últimos 6 meses de 0 (-0.138). El uso del crédito rotativo de 81.5% no aparece entre estas cinco razones, y la herramienta no reporta su contribución. El especialista de riesgo fija su señal final en favorable.\n\n## Economía\nLa herramienta de economía reporta un escenario bueno con rendimiento de 15.74% y un escenario malo con rendimiento de -33.92%. El ROI esperado es de 14.01%, con utilidad esperada de 1681.09 USD. La probabilidad de prepago antes del mes 30 es de 50.3%, con mes esperado de pago en 26.4. El especialista de economía fija su señal final en neutral; indica que el rendimiento malo es severo y que la estimación es menos confiable porque la tasa está fuera del rango con respaldo histórico.\n\n## Cupo y precio\nEl monto máximo a la tasa ofrecida es de 35000 USD. La tasa de mercado estimada es de 8.69%, por lo que la tasa ofrecida está 2.84 pts por encima, fuera del criterio de 1 pt. La tasa de equilibrio y la tasa sugerida son ambas de 5.0%; la sugerida también está fuera de rango, y el escenario de estrés no cambia estos valores. La alternativa de 9.69% tiene ROI de 11.57%, utilidad de 1388.27 USD y está dentro de rango. El especialista de cupo fija su señal final en favorable, con la oferta ajustada a 9.69%. Según la política, la decisión del comité se toma sobre la oferta original.\n\n## Alertas\n- La tasa ofrecida de 11.53% está fuera de rango respecto a la tasa de mercado de 8.69%, y no hay evidencia histórica para esa zona.\n- La tasa de mercado se estima según perfil y monto, así que puede cambiar si cambia el monto.\n- El escenario de estrés no cambia la tasa de equilibrio ni la tasa sugerida (5.0%). Por política, estas alertas no cambian la decisión."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 1,
+   "contenido": {
+    "aprobado": true,
+    "hallazgos": [
+     "Menor: en el memo, las cifras grandes aparecen sin separador de miles (88349, 35000, 1681.09), a diferencia de los 12.000 USD del análisis de cupo; no cambia la decisión.",
+     "Menor: el análisis de cupo recomienda 9,69% como 'mejor oferta', pero la decisión del comité se toma sobre la oferta original de 11,53%, como exige la política; el memo lo aclara, así que no hay contradicción material.",
+     "Verificado: ROI 14,01%, cuota 1,58% del ingreso, PD 3,48%, PD promedio 12,88%, escenarios económicos, prepago, monto máximo 35.000 USD y tasa de mercado 8,69% (2,84 pts de diferencia) coinciden con las herramientas; la decisión de aprobar 12.000 USD a 11,53% cumple el criterio 1 de la política y no hay violaciones de reglas duras."
+    ],
+    "oferta": {
+     "monto": 12000.0,
+     "tasa": 11.53,
+     "pd": 0.034791,
+     "roi_esperado": 0.140091,
+     "utilidad_esperada": 1681.086957,
+     "cuota_ingreso": 0.015835,
+     "cumple_capacidad": true,
+     "tasa_mercado": 8.69229,
+     "fuera_de_rango": true,
+     "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+     "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+    },
+    "violaciones": []
+   }
+  }
+ ],
+ "final": {
+  "decision": "aprobar",
+  "monto": 12000.0,
+  "tasa": 11.53,
+  "razones": [
+   "ROI esperado de 14.01%, mayor o igual que 4%, al monto y la tasa ofrecidos",
+   "Cuota de 1.58% del ingreso, menor o igual que 20%",
+   "Reglas duras cumplidas: cuota menor o igual que 20% del ingreso y ROI mayor o igual que 0%",
+   "PD de 3.48%, frente a una PD promedio de cartera de 12.88%",
+   "La tasa de 11.53% está fuera de rango respecto a la tasa de mercado de 8.69%; se trata como alerta y no cambia la decisión según la política"
+  ],
+  "memo": "## Resumen\nSolicitud de 12000 USD para consolidación de deuda, con ingreso anual de 300000 USD, FICO de 692 (punto medio del rango, el que usa el modelo) y tasa ofrecida de 11.53%. Se aprueba al monto y la tasa solicitados porque cumplen el criterio 1 de la política.\n\n## Decisión\nAprobar 12000 USD a 11.53%. El ROI esperado es de 14.01%, mayor o igual que 4%, y la cuota es de 1.58% del ingreso, menor o igual que 20%. Se cumplen las reglas duras: cuota menor o igual que 20% y ROI mayor o igual que 0%.\n\n## Riesgo\nLa PD del modelo es de 3.48%, frente a una PD promedio de cartera de 12.88%. Según la herramienta de riesgo, las cinco razones principales reducen el riesgo: saldo promedio de las cuentas de 88349 (contribución de -0.349 en logit), monto solicitado sobre ingreso anual de 4% (-0.279), antigüedad de la cuenta rotativa más vieja de 330 meses (-0.177), DTI de 12.67% (-0.162) y consultas en los últimos 6 meses de 0 (-0.138). El uso del crédito rotativo de 81.5% no aparece entre estas cinco razones, y la herramienta no reporta su contribución. El especialista de riesgo fija su señal final en favorable.\n\n## Economía\nLa herramienta de economía reporta un escenario bueno con rendimiento de 15.74% y un escenario malo con rendimiento de -33.92%. El ROI esperado es de 14.01%, con utilidad esperada de 1681.09 USD. La probabilidad de prepago antes del mes 30 es de 50.3%, con mes esperado de pago en 26.4. El especialista de economía fija su señal final en neutral; indica que el rendimiento malo es severo y que la estimación es menos confiable porque la tasa está fuera del rango con respaldo histórico.\n\n## Cupo y precio\nEl monto máximo a la tasa ofrecida es de 35000 USD. La tasa de mercado estimada es de 8.69%, por lo que la tasa ofrecida está 2.84 pts por encima, fuera del criterio de 1 pt. La tasa de equilibrio y la tasa sugerida son ambas de 5.0%; la sugerida también está fuera de rango, y el escenario de estrés no cambia estos valores. La alternativa de 9.69% tiene ROI de 11.57%, utilidad de 1388.27 USD y está dentro de rango. El especialista de cupo fija su señal final en favorable, con la oferta ajustada a 9.69%. Según la política, la decisión del comité se toma sobre la oferta original.\n\n## Alertas\n- La tasa ofrecida de 11.53% está fuera de rango respecto a la tasa de mercado de 8.69%, y no hay evidencia histórica para esa zona.\n- La tasa de mercado se estima según perfil y monto, así que puede cambiar si cambia el monto.\n- El escenario de estrés no cambia la tasa de equilibrio ni la tasa sugerida (5.0%). Por política, estas alertas no cambian la decisión.",
+  "auditoria": {
+   "aprobado": true,
+   "hallazgos": [
+    "Menor: en el memo, las cifras grandes aparecen sin separador de miles (88349, 35000, 1681.09), a diferencia de los 12.000 USD del análisis de cupo; no cambia la decisión.",
+    "Menor: el análisis de cupo recomienda 9,69% como 'mejor oferta', pero la decisión del comité se toma sobre la oferta original de 11,53%, como exige la política; el memo lo aclara, así que no hay contradicción material.",
+    "Verificado: ROI 14,01%, cuota 1,58% del ingreso, PD 3,48%, PD promedio 12,88%, escenarios económicos, prepago, monto máximo 35.000 USD y tasa de mercado 8,69% (2,84 pts de diferencia) coinciden con las herramientas; la decisión de aprobar 12.000 USD a 11,53% cumple el criterio 1 de la política y no hay violaciones de reglas duras."
+   ]
+  },
+  "intentos": 1
+ },
+ "juez": {
+  "veredicto": {
+   "justifica_con_numeros": true,
+   "coherente": true,
+   "alertas": true,
+   "sin_invenciones": true,
+   "claro": true,
+   "explicacion_justifica_con_numeros": "Justifica la aprobación con un ROI esperado de 14.01% y una cuota/ingreso de 1.58%. Además cita una PD de 3.48% frente al 12.88% de la cartera.",
+   "explicacion_coherente": "El resumen, la sección Decisión y el bloque decision de los datos coinciden: aprobar 12000 USD a 11.53%.",
+   "explicacion_alertas": "Menciona la principal señal de cautela: la tasa está fuera de rango (2.84 pts sobre el mercado) y no hay evidencia histórica. Recoge también el escenario malo severo y la dependencia de la tasa de mercado respecto al monto. No hay estrés sin tasa viable (la tasa es 5.0%), el ROI no es estrecho y la cuota no es alta. Listar el estrés sin cambios como alerta sobra un poco, pero no es una alerta inventada.",
+   "explicacion_sin_invenciones": "Todas las cifras coinciden con las herramientas. Las referencias a umbrales (ROI ≥ 4%, reglas duras) y a que el comité decide sobre la oferta original se presentan como política. No se contradicen con los datos ni introducen causas nuevas.",
+   "explicacion_claro": "La decisión y su porqué (ROI alto, cuota baja, PD baja) quedan claros en el resumen y en la sección Decisión. Las alertas están bien separadas."
+  },
+  "modelo": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 5562,
+   "output_tokens": 997
+  }
+ }
+}

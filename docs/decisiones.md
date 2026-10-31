@@ -255,3 +255,37 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
 - **Alternativas consideradas:** solo SQLite; solo LangSmith; publicar la base.
 - **Por qué (en mis palabras):** SQLite + LangSmith, fuera de git y en una sesión aparte.
 - **Prueba real (2026-10-31):** 3 préstamos de jul–dic 2015 registrados en SQLite y trazados en LangSmith (región US). Cada solicitud usa 8 llamadas, cuesta ~USD 0,07 y tarda ~30 s. En un caso el auditor rechazó el primer memo por inconsistencias de argumentación (no de números) y el comité lo corrigió.
+
+---
+
+## 019 — Evals del agente: 30 casos, calificación programada + juez, Haiku antes que Sonnet
+
+- **Fecha:** 2026-10-31
+- **Contexto:** con el agente funcionando hay que medir si decide bien. Ventaja: en 2015 se conoce el resultado real de cada préstamo. Neider quería cuidar el saldo y propuso usar Haiku para ahorrar en las decisiones (≈ 20 veces más barato que Sonnet).
+- **Decisión:**
+  - **Casos:** 30 préstamos de jul–dic 2015, estratificados por la decisión de la política determinista del motor y el resultado real (`evals/agente/casos.json`). La política casi nunca rechaza: en 3.000 préstamos solo hubo un rechazo.
+  - **Calificación:**
+    - Programada: concordancia con la política del motor, reglas duras, fidelidad de los números del memo a las herramientas y auditoría al primer intento.
+    - Juez **Claude Opus 5.5**, que no es ninguno de los modelos evaluados, con 5 criterios concretos.
+    - Negocio: mora y ROI real de lo que otorga el agente frente al motor y a Lending Club.
+  - **Variantes:** primero el agente con **Haiku 5.5**; Sonnet en los mismos 30 casos queda para después.
+  - **Piloto de 5 casos (v0):** el auditor nunca aprobó y todo terminó en rechazo conservador, por defectos de diseño nuestros. La solicitud mostraba un FICO distinto del que usa el modelo, el auditor no tenía la política completa, faltaban criterios explícitos y el auditor no distinguía la gravedad. La **v1** los corrige: concordancia 20% → 100%, auditoría al primer intento 0% → 80%, juez 56% → 76%.
+  - **Calificador:** el lector de números no aceptaba decimales con punto; se corrigió y se recalificó desde las trazas, sin gastar.
+- **Alternativas consideradas:** 20 o 100 casos; solo Sonnet; ambos modelos ahora; solo juez del memo.
+- **Por qué (en mis palabras):** lo anterior + juez del memo, con 30 casos para no gastar los 5 dólares de una; motor y Lending Club como línea base; Haiku ahora y Sonnet luego.
+- **v2 (2026-10-31):** el prompt del comité prohíbe recomendaciones y atribuciones sin respaldo. Al revisar el piloto apareció otro error de la eval: el juez no veía el análisis escrito de los especialistas y marcaba como inventado lo que el memo citaba de ellos. Se corrigió y se volvió a juzgar sin rehacer el agente.
+- **Resultado con 30 casos (Haiku 5.5, v2):**
+
+  | Métrica | Valor |
+  |---|---|
+  | Concordancia con la política del motor | 83% |
+  | Reglas duras | 100% |
+  | Fidelidad de números | 94% |
+  | Auditoría al primer intento | 93% |
+  | Juez (promedio de 5 criterios) | 97% |
+  | Costo por solicitud | USD 0,007 (juez aparte: USD 0,04) |
+  | Latencia | 51 s |
+
+  - Todos los desacuerdos van en una sola dirección: 5 de 13 contraofertas del motor el agente las rechazó. La causa es la ambigüedad de la regla 2b (el monto máximo solo garantiza ROI > 0%, no ≥ 4%). Esos 5 préstamos rindieron +11,1% en la realidad: el conservadurismo deja plata sobre la mesa. Con 5 casos es una señal para investigar, no una conclusión.
+  - La mora de la muestra (40%) es alta por diseño: la muestra está estratificada para incluir malos. No es comparable con la cartera.
+- **Pendiente:** correr Sonnet 5.5 en los mismos 30 casos (≈ USD 3, incluido el juez) y aclarar la regla 2b de la política.
