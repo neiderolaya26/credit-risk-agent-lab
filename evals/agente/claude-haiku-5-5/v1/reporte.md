@@ -2,16 +2,24 @@
 
 5 casos · 0 intentos con error · juez claude-opus-5-5 · costo agente USD 0.04 + juez USD 0.18
 Latencia media 60 s · 9.4 llamadas por caso
+Referencia: política 020 · casos.json 67a8d0abe5
 
 ## Notas (promedio por caso)
 
 | Métrica | Valor |
 |---|---|
-| concordancia | 100% |
+| concordancia | 80% |
 | reglas_ok | 100% |
 | fidelidad | 93% |
 | auditoria_1er_intento | 80% |
 | juez | 76% |
+| borradores del comité con violación de reglas duras | 0 de 6 |
+| casos escalados por no pasar la auditoría | 0 |
+| notas del juez inválidas (excluidas del promedio) | 0 |
+| piso de la fidelidad: % al azar que pasaría / montos al azar | 12% / 2% |
+
+`reglas_ok` mide la decisión final, que cumple por construcción; la fila de borradores muestra si el comité las cumple. La auditoría la hace el mismo modelo que redacta: no es una revisión independiente.
+Desde la v4 la decisión la toma la política y `concordancia` mide la opinión del comité.
 
 ## Juez por criterio
 
@@ -23,21 +31,20 @@ Latencia media 60 s · 9.4 llamadas por caso
 | sin_invenciones | 20% |
 | claro | 80% |
 
-## Decisión del agente frente a la política del motor
+## Propuesta frente a la política
 
-| motor | aprobar | contraoferta | rechazar |
+| política | aprobar | contraoferta | rechazar |
 |---|---|---|---|
 | aprobar | 2 | 0 | 0 |
-| contraoferta | 0 | 2 | 0 |
-| rechazar | 0 | 0 | 1 |
+| contraoferta | 0 | 2 | 1 |
 
 ## Resultado real de lo que se otorga (aprobar o contraoferta)
 
 |  | préstamos | mora real | ROI real |
 |---|---|---|---|
 | Agente | 4 | 50.0% | 4.7% |
-| Motor | 4 | 50.0% | 4.7% |
+| Motor | 5 | 60.0% | -9.6% |
 | Lending Club (todos) | 5 | 60.0% | -9.6% |
 
-Con 30 casos estas diferencias son ruidosas: sirven para detectar errores grandes, no para declarar un ganador.
+Con 5 casos estas diferencias son ruidosas: sirven para detectar errores grandes, no para declarar un ganador.
 La contraoferta cambia monto o tasa; se usa el resultado real del préstamo original como aproximación.

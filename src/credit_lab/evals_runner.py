@@ -15,12 +15,41 @@ import numpy as np
 import pandas as pd
 
 from credit_lab import registro
-from credit_lab.agente import (PRECIOS, VERSION, Herramientas, Medidor, cliente_anthropic, construir, evaluar_solicitud,
-                               NO_OTORGA, limpio, reglas_duras, resumen_solicitud)
-from credit_lab.evals import CARPETA, JUEZ, RUBRICA, cargar_muestra, fidelidad, juzgar
+import hashlib
+
+from credit_lab.agente import (PRECIOS, VERSION, Herramientas, Medidor, a_df, cliente_anthropic, construir,
+                               evaluar_solicitud, NO_OTORGA, limpio, reglas_duras, resumen_solicitud)
+from credit_lab.evals import CARPETA, JUEZ, RUBRICA, cargar_muestra, fidelidad, juzgar, piso_fidelidad
 from credit_lab.prepago import rendimiento
 
 HILOS = 4
+# qué versión de la política sirve de referencia para cada versión del agente (issue #19): las versiones se
+# comparan con la política con la que se construyeron, y el reporte dice cuál es
+POLITICA_DE_VERSION = {"v0": "020", "v1": "020", "v2": "020", "v3": "020", "v4": "023"}
+CAMPO_REFERENCIA = {"020": "decision_motor_020", "023": "decision_motor"}
+
+
+def referencia(caso: dict, version: str) -> str:
+    return caso.get(CAMPO_REFERENCIA[POLITICA_DE_VERSION.get(version, "023")]) or caso["decision_motor"]
+
+
+def huella_casos() -> str:
+    """Huella corta de casos.json: si cambian los casos o sus referencias, cambia (issue #19)."""
+    return hashlib.sha256((CARPETA / "casos.json").read_bytes()).hexdigest()[:10]
+
+
+def propuesta(final: dict) -> str:
+    """Lo que se compara con la política: desde la v4 la opinión del comité (la decisión final coincide con la
+    política por construcción); antes, la decisión del comité."""
+    if "opinion_comite" in final:
+        return final["opinion_comite"] or "sin opinión"
+    return final["decision"]
+
+
+def borradores_con_violacion(historial: list) -> tuple[int, int]:
+    """Issue #20: cuántos borradores revisó el auditor y cuántos violaban una regla dura."""
+    auditados = [p["contenido"] for p in historial if p["nodo"] == "auditor"]
+    return len(auditados), sum(bool(a.get("violaciones")) for a in auditados)
 _lock = threading.Lock()
 
 
@@ -41,18 +70,22 @@ def datos_juez(historial: list, final: dict, solicitud: dict) -> dict:
     return {"solicitud": solicitud,
             "especialistas": {n: {"analisis": e["analisis"], "herramientas": [h["salida"] for h in e["herramientas"]]}
                               for n, e in especialistas.items()},
-            "decision": {k: final[k] for k in ("decision", "monto", "tasa")}}
+            "decision": {k: final[k] for k in ("decision", "monto", "tasa")}
+            | ({"opinion_comite": final["opinion_comite"]} if "opinion_comite" in final else {})}
 
 
 def calificar(estado: dict, caso: dict, herr) -> dict:
     """Notas programadas (gratis) de una ejecución."""
-    final, sol = estado["final"], estado["solicitud"]
+    final, sol = estado["final"], a_df(estado["solicitud"])
     salidas = [h["salida"] for e in estado["especialistas"].values() for h in e["herramientas"]]
     oferta = None if final["decision"] in NO_OTORGA else herr.simular_oferta(sol, final["monto"], final["tasa"])
-    fid, sin_respaldo = fidelidad(final.get("memo", ""), salidas + ([oferta] if oferta else []),
-                                  resumen_solicitud(sol))
+    extra = [oferta] if oferta else []
+    if "decision_politica" in final:  # v4: la decisión de la política también es una fuente de cifras
+        extra.append({k: final[k] for k in ("monto", "tasa")})
+    fid, sin_respaldo = fidelidad(final.get("memo", ""), salidas + extra, resumen_solicitud(sol))
+    sin_respaldo = {"numeros": sin_respaldo, "piso": piso_fidelidad(salidas + extra, resumen_solicitud(sol))}
     return {
-        "concordancia": float(final["decision"] == caso["decision_motor"]),
+        "concordancia": float(propuesta(final) == referencia(caso, VERSION)),
         "reglas_ok": float(not reglas_duras(final, oferta)),
         "fidelidad": fid,
         "auditoria_1er_intento": float(final["auditoria"]["aprobado"] and final["intentos"] == 1),
@@ -79,7 +112,9 @@ def correr_caso(caso: dict, s2: pd.DataFrame, herr, cliente, modelo: str, carpet
         encoding="utf-8")
     return {
         "id": caso["id"], "tags": [caso["decision_motor"], "malo" if caso["malo_real"] else "bueno"],
-        "modelo": modelo, "version": VERSION, "decision_agente": final["decision"], "decision_motor": caso["decision_motor"],
+        "modelo": modelo, "version": VERSION, "decision_agente": propuesta(final), "decision_final": final["decision"],
+        "decision_motor": referencia(caso, VERSION), "casos": huella_casos(),
+        "borradores": borradores_con_violacion(estado["historial"]),
         "monto": final["monto"], "tasa": final["tasa"], "intentos": final["intentos"],
         "grade": nota, "juez_criterios": {k: v.get(k) for k in RUBRICA} if v else None,
         "sin_respaldo": sin_respaldo, "malo_real": caso["malo_real"],
@@ -106,7 +141,7 @@ def correr(limite: int | None = None, modelo: str = "claude-haiku-5-5", hilos: i
             try:
                 fila = f.result()
                 _anexar(resultados, fila)
-                print(f"{c['id']}: {fila['decision_agente']} (motor: {fila['decision_motor']}) · "
+                print(f"{c['id']}: {fila['decision_agente']} (política: {fila['decision_motor']}) · "
                       f"fidelidad {fila['grade']['fidelidad']:.0%} · juez {fila['grade']['juez']} · "
                       f"USD {fila['cost_usd']:.4f}", flush=True)
             except Exception as e:  # el caso queda pendiente para la próxima corrida
@@ -128,7 +163,8 @@ def tabla_md(df: pd.DataFrame, formato: str | dict = "{}") -> str:
 
 
 def recalificar(modelo: str = "claude-haiku-5-5", version: str = VERSION) -> None:
-    """Recalcula la fidelidad desde las trazas guardadas (sin llamar a ningún modelo), p. ej. tras corregir el calificador."""
+    """Recalcula fidelidad y concordancia desde las trazas guardadas (sin llamar a ningún modelo), p. ej. tras
+    corregir el calificador o cambiar las referencias de casos.json (issue #19)."""
     carpeta = CARPETA / modelo / version
     ruta = carpeta / "results.jsonl"
     filas = [json.loads(l) for l in ruta.read_text(encoding="utf-8").splitlines() if l.strip()]
@@ -138,9 +174,16 @@ def recalificar(modelo: str = "claude-haiku-5-5", version: str = VERSION) -> Non
         salidas = [h["salida"] for p in t["historial"] if p["nodo"] in ("riesgo", "economia", "cupo")
                    for h in p["contenido"]["herramientas"]]
         ofertas = [p["contenido"].get("oferta") for p in t["historial"] if p["nodo"] == "auditor"]
+        ofertas += [p["contenido"] for p in t["historial"] if p["nodo"] == "politica"]  # v4
         fid, sin = fidelidad(t["final"].get("memo", ""), salidas + [o for o in ofertas if o],
                              casos[f["id"]]["solicitud"])
-        f["grade"]["fidelidad"], f["sin_respaldo"] = fid, sin
+        f["grade"]["fidelidad"] = fid
+        f["sin_respaldo"] = {"numeros": sin, "piso": piso_fidelidad(salidas + [o for o in ofertas if o],
+                                                                    casos[f["id"]]["solicitud"])}
+        f["decision_motor"] = referencia(casos[f["id"]], version)
+        f["grade"]["concordancia"] = float(f["decision_agente"] == f["decision_motor"])
+        f["borradores"] = borradores_con_violacion(t["historial"])
+        f["casos"] = huella_casos()
     ruta.write_text("".join(json.dumps(f, ensure_ascii=False) + "\n" for f in filas), encoding="utf-8")
     reporte(modelo, version)
 
@@ -186,25 +229,43 @@ def reporte(modelo: str = "claude-haiku-5-5", version: str = VERSION) -> pd.Data
     criterios = {k: df[f"juez_criterios.{k}"].mean() for k in RUBRICA if f"juez_criterios.{k}" in df}
     otorga_agente = ~df["decision_agente"].isin(NO_OTORGA)  # un caso escalado no otorga hasta que lo firme un analista
     otorga_motor = df["decision_motor"].ne("rechazar")
+    juez_nulos = int(df["grade.juez"].isna().sum())  # issue #21: formatos inválidos del juez, contados aparte
+    borr = [f.get("borradores") or [0, 0] for f in filas]
+    auditados, con_violacion = sum(b[0] for b in borr), sum(b[1] for b in borr)
+    escalados = int(df.get("decision_final", df["decision_agente"]).eq("escalar").sum())
+    pisos = [f["sin_respaldo"]["piso"] for f in filas if isinstance(f.get("sin_respaldo"), dict)]
+    piso = {k: np.mean([x[k] for x in pisos]) for k in ("porcentajes", "montos")} if pisos else None
 
     def negocio(m):
         return {"préstamos": int(m.sum()), "mora real": df.loc[m, "malo_real"].mean(), "ROI real": df.loc[m, "roi_real"].mean()}
 
     negocio_tabla = pd.DataFrame({"Agente": negocio(otorga_agente), "Motor": negocio(otorga_motor),
                                   "Lending Club (todos)": negocio(pd.Series(True, index=df.index))}).T
-    confusion = pd.crosstab(df["decision_motor"], df["decision_agente"], rownames=["motor"], colnames=["agente"])
+    confusion = pd.crosstab(df["decision_motor"], df["decision_agente"], rownames=["política"],
+                            colnames=["comité" if version >= "v4" else "agente"])
     costo_agente, costo_juez = df["cost_usd"].sum(), sum(_costo_juez(f) for f in filas)
     errores = carpeta / "errors.jsonl"
     n_err = len(errores.read_text(encoding="utf-8").splitlines()) if errores.exists() else 0
 
     lineas = [f"# Eval del agente · {modelo} · {version}", "",
               f"{n} casos · {n_err} intentos con error · juez {JUEZ} · costo agente USD {costo_agente:.2f} + juez USD {costo_juez:.2f}",
-              f"Latencia media {df['latency_s'].mean():.0f} s · {df['llamadas'].mean():.1f} llamadas por caso", "",
+              f"Latencia media {df['latency_s'].mean():.0f} s · {df['llamadas'].mean():.1f} llamadas por caso",
+              f"Referencia: política {POLITICA_DE_VERSION.get(version, '023')} · casos.json {huella_casos()}", "",
               "## Notas (promedio por caso)", "", "| Métrica | Valor |", "|---|---|"]
     lineas += [f"| {k} | {v:.0%} |" for k, v in notas.items()]
+    lineas += [f"| borradores del comité con violación de reglas duras | {con_violacion} de {auditados} |",
+               f"| casos escalados por no pasar la auditoría | {escalados} |",
+               f"| notas del juez inválidas (excluidas del promedio) | {juez_nulos} |"]
+    if piso:
+        lineas += [f"| piso de la fidelidad: % al azar que pasaría / montos al azar | "
+                   f"{piso['porcentajes']:.0%} / {piso['montos']:.0%} |"]
+    lineas += ["",
+               "`reglas_ok` mide la decisión final, que cumple por construcción; la fila de borradores muestra si el "
+               "comité las cumple. La auditoría la hace el mismo modelo que redacta: no es una revisión independiente.",
+               "Desde la v4 la decisión la toma la política y `concordancia` mide la opinión del comité."]
     lineas += ["", "## Juez por criterio", "", "| Criterio | Cumple |", "|---|---|"]
     lineas += [f"| {k} | {v:.0%} |" for k, v in criterios.items()]
-    lineas += ["", "## Decisión del agente frente a la política del motor", "", tabla_md(confusion), "",
+    lineas += ["", "## Propuesta frente a la política", "", tabla_md(confusion), "",
                "## Resultado real de lo que se otorga (aprobar o contraoferta)", "",
                tabla_md(negocio_tabla, {"préstamos": "{:,.0f}", "mora real": "{:.1%}", "ROI real": "{:.1%}"}), "",
                f"Con {n} casos estas diferencias son ruidosas: sirven para detectar errores grandes, no para declarar un ganador.",

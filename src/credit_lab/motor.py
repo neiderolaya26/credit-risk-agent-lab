@@ -28,7 +28,7 @@ import numpy as np
 import pandas as pd
 
 from credit_lab.campeon import cargar as cargar_campeon
-from credit_lab.causal import fuera_de_rango, pd_estres
+from credit_lab.causal import EFECTO_ESTRES, fuera_de_rango, pd_estres
 from credit_lab.poblacion import RAIZ
 
 PLAZO = 36
@@ -45,7 +45,7 @@ def cuota(monto, tasa_anual, plazo: int = PLAZO):
 
 
 class Motor:
-    def __init__(self, cuota_max: float = CUOTA_MAX, estres: bool = False):
+    def __init__(self, cuota_max: float = CUOTA_MAX, estres: bool = False, efecto_estres: float = EFECTO_ESTRES):
         m = RAIZ / "modelos"
         self.campeon = cargar_campeon()
         self.supervivencia = joblib.load(m / "prepago_c_supervivencia.joblib")
@@ -53,6 +53,7 @@ class Motor:
         self.tasa_mercado = joblib.load(m / "referencia_tasa.joblib")
         self.cuota_max = cuota_max
         self.estres = estres
+        self.efecto_estres = efecto_estres  # supuesto, no estimación (issue #42)
 
     def evaluar(self, df: pd.DataFrame) -> pd.DataFrame:
         """Evalúa cada fila tal cual viene (su loan_amnt e int_rate)."""
@@ -61,7 +62,7 @@ class Motor:
         tasa, ref = df["int_rate"].to_numpy(), self.tasa_mercado.predecir_recalibrada(df)
         p = self.campeon.pd(df)
         if self.estres:
-            p = pd_estres(p, tasa, ref)
+            p = pd_estres(p, tasa, ref, self.efecto_estres)
         rb = self.supervivencia.predecir(df)
         rm = self.perdida.predecir(df)
         out = pd.DataFrame({"monto": df["loan_amnt"].to_numpy(), "tasa": tasa, "tasa_mercado": ref,
@@ -151,3 +152,46 @@ def monto_maximo_lote(motor: Motor, df: pd.DataFrame, montos=MONTOS, roi_minimo:
     ok = rentable & ev["cumple_capacidad"].to_numpy()
     monto = np.where(ok, g["loan_amnt"].to_numpy(), 0.0)
     return pd.Series(monto).groupby(g["_prestamo"].to_numpy()).max().to_numpy()
+
+
+# ---------- política de crédito (decisiones 020 y 023) ----------
+
+TOPE_SUBIDA = 2.0  # puntos: una contraoferta no sube la tasa más de esto (decisión 023, issue #36)
+
+
+def politica_lote(motor: Motor, df: pd.DataFrame, tope_subida: float = TOPE_SUBIDA, banda: bool = True) -> pd.DataFrame:
+    """Decisión de la política sin LLM para cada solicitud, con la oferta que haría (decisión 023).
+
+    1. Aprobar si, al monto y la tasa pedidos, el ROI esperado es ≥ 4% y la cuota ≤ 20% del ingreso.
+    2. Si no, contraoferta, primero bajando el monto y después subiendo la tasa:
+       b. el mayor monto con ROI ≥ 4% y cuota ≤ 20% a la tasa ofrecida, si es menor que el pedido;
+       a. el monto pedido a la tasa sugerida (ROI ≥ 4%), si sube como máximo `tope_subida` puntos,
+          queda dentro de la banda de mercado (no fuera de rango) y la cuota sigue ≤ 20%.
+    3. Si no, rechazar.
+    """
+    ev = motor.evaluar(df)
+    pedido, tasa, ingreso = df["loan_amnt"].to_numpy(float), df["int_rate"].to_numpy(float), df["annual_inc"].to_numpy(float)
+    t_sug = tasa_minima_lote(motor, df, ROI_OBJETIVO)
+    m_max = monto_maximo_lote(motor, df, roi_minimo=ROI_OBJETIVO)
+    aprueba = (ev["roi_esperado"].to_numpy() >= ROI_OBJETIVO) & ev["cumple_capacidad"].to_numpy()
+    por_monto = (m_max > 0) & (m_max < pedido)
+    t = np.nan_to_num(t_sug, nan=np.inf)
+    por_tasa = (np.isfinite(t) & (t <= np.minimum(TASAS.max(), tasa + tope_subida))
+                & (~fuera_de_rango(np.where(np.isfinite(t), t, 0.0), ev["tasa_mercado"].to_numpy()) if banda else True)
+                & (cuota(pedido, np.where(np.isfinite(t), t, TASAS.max())) / (ingreso / 12) <= motor.cuota_max))
+    decision = np.select([aprueba, por_monto, por_tasa], ["aprobar", "contraoferta", "contraoferta"], "rechazar")
+    regla = np.select([aprueba, por_monto, por_tasa], ["1", "2b", "2a"], "3")
+    monto = np.select([aprueba, por_monto, por_tasa], [pedido, m_max, pedido], 0.0)
+    tasa_oferta = np.select([aprueba, por_monto, por_tasa], [tasa, tasa, t], 0.0)
+    return pd.DataFrame({"decision": decision, "regla": regla, "monto": monto, "tasa": tasa_oferta,
+                         "roi_esperado": ev["roi_esperado"].to_numpy(), "tasa_sugerida": t_sug,
+                         "monto_maximo": m_max, "tasa_mercado": ev["tasa_mercado"].to_numpy()}, index=df.index)
+
+
+def decidir_politica(motor: Motor, sol: pd.DataFrame, tope_subida: float = TOPE_SUBIDA) -> dict:
+    """La política aplicada a una solicitud (una fila): decisión, regla, monto y tasa de la oferta."""
+    f = politica_lote(motor, sol, tope_subida).iloc[0]
+    return {"decision": str(f["decision"]), "regla": str(f["regla"]), "monto": float(f["monto"]),
+            "tasa": float(f["tasa"]), "roi_esperado_pedido": float(f["roi_esperado"]),
+            "tasa_sugerida": None if pd.isna(f["tasa_sugerida"]) else float(f["tasa_sugerida"]),
+            "monto_maximo_objetivo": float(f["monto_maximo"]), "tasa_mercado": float(f["tasa_mercado"])}

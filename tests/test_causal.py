@@ -53,3 +53,48 @@ def test_estres_solo_castiga_el_sobreprecio():
 
 def test_fuera_de_rango():
     assert fuera_de_rango([12.0, 13.5, 10.5], [12.0, 12.0, 12.0], rango=1.0).tolist() == [False, True, True]
+
+
+def test_dml_de_punta_a_punta_recupera_theta_con_confusion(monkeypatch):
+    """Issue #45: panel sintético donde el perfil del cliente mueve la tasa y la mora a la vez.
+    El DML (residuos con cross-fitting + theta) recupera el efecto; la correlación simple no."""
+    from credit_lab import causal
+
+    monkeypatch.setattr(causal, "PARAMS", causal.PARAMS | {"n_estimators": 300, "learning_rate": 0.1, "min_child_samples": 20})
+    rng = np.random.default_rng(3)
+    n, efecto = 6000, 0.4
+    sg, mes = rng.integers(0, 10, n), rng.integers(0, 12, n)
+    x = rng.normal(size=n)  # perfil del cliente: confusor
+    tasa = 10 + sg + 0.3 * mes + 1.5 * x + rng.normal(0, 1, n)
+    y = 2 * sg - 0.5 * mes + 3 * x + efecto * tasa + rng.normal(0, 1, n)
+    X = pd.DataFrame({"x": x, "subgrado": sg, "mes": mes})
+    r = causal.residuos(X, tasa, {"y": y}, pliegues=3)
+    dml = theta(r["u_y"], r["v"], sg * 12 + mes)
+    simple = np.polyfit(tasa, y, 1)[0]
+    assert dml["ic_bajo"] < efecto < dml["ic_alto"]
+    assert abs(simple - efecto) > 0.5  # la correlación simple absorbe el confusor
+
+
+def test_las_restricciones_dejan_al_mes_sin_interacciones():
+    from credit_lab.causal import _restricciones
+
+    assert _restricciones(["x", "subgrado", "mes"]) == [[0, 1], [2]]
+
+
+def test_wild_cluster_bootstrap_cubre_el_efecto_y_rechaza_cero():
+    from credit_lab.causal import wild_cluster_bootstrap
+
+    df = _panel(n=3000, efecto=0.5, semilla=4)
+    X = np.c_[np.ones(len(df)), df["int_rate"]]
+    w = wild_cluster_bootstrap(df["y"] - 2 * df["sub_grade"] + 0.5 * df["mes"], X, df["sub_grade"], j=1, replicas=199)
+    assert w["ic_bajo"] < 0.5 < w["ic_alto"] and w["p_valor"] < 0.05
+
+
+def test_dos_vias_no_es_mas_angosta_que_una():
+    from credit_lab.causal import ols_cluster_dos_vias
+
+    df = _panel(n=3000, semilla=5)
+    X = np.c_[np.ones(len(df)), df["int_rate"]]
+    _, se1 = ols_cluster(df["y"], X, df["sub_grade"])
+    _, se2 = ols_cluster_dos_vias(df["y"], X, df["sub_grade"], df["mes"])
+    assert (se2 >= se1 - 1e-12).all()

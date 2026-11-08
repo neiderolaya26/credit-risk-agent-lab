@@ -89,6 +89,61 @@ def ols_cluster(y, X, cluster, k_absorbidos: int = 0) -> tuple[np.ndarray, np.nd
     return b, np.sqrt(np.diag(v))
 
 
+def ols_cluster_dos_vias(y, X, c1, c2, k_absorbidos: int = 0) -> tuple[np.ndarray, np.ndarray]:
+    """Varianza agrupada en dos vías (Cameron, Gelbach y Miller): V(c1) + V(c2) − V(c1 × c2). Issue #44."""
+    c1, c2 = np.asarray(c1), np.asarray(c2)
+    inter = pd.Series(c1).astype(str).str.cat(pd.Series(c2).astype(str), sep="|").to_numpy()
+    b, s1 = ols_cluster(y, X, c1, k_absorbidos)
+    _, s2 = ols_cluster(y, X, c2, k_absorbidos)
+    _, s12 = ols_cluster(y, X, inter, k_absorbidos)
+    v = s1 ** 2 + s2 ** 2 - s12 ** 2
+    return b, np.sqrt(np.maximum(v, s1 ** 2))  # si la resta queda negativa, se usa la de una vía (conservador)
+
+
+PESOS_WEBB = np.array([-np.sqrt(1.5), -1.0, -np.sqrt(0.5), np.sqrt(0.5), 1.0, np.sqrt(1.5)])
+
+
+def wild_cluster_bootstrap(y, X, cluster, j: int = 0, replicas: int = 999, semilla: int = SEMILLA,
+                           k_absorbidos: int = 0) -> dict:
+    """IC 95% bootstrap-t del coeficiente j con wild cluster bootstrap (pesos de Webb, sin restringir) y
+    p-valor de H0: b_j = 0. Con pocos grupos (35 subgrados) la varianza CR1 tiende a quedar corta (issue #44)."""
+    y, X = np.asarray(y, dtype=float), np.asarray(X, dtype=float)
+    cluster = np.asarray(cluster)
+    grupos, idx = np.unique(cluster, return_inverse=True)
+    b, se = ols_cluster(y, X, cluster, k_absorbidos)
+    ajuste, e = X @ b, y - X @ b
+    rng = np.random.default_rng(semilla)
+    t_boot = np.empty(replicas)
+    for r in range(replicas):
+        w = rng.choice(PESOS_WEBB, size=len(grupos))[idx]
+        bb, sb = ols_cluster(ajuste + e * w, X, cluster, k_absorbidos)
+        t_boot[r] = (bb[j] - b[j]) / sb[j]
+    q_bajo, q_alto = np.quantile(t_boot, [0.025, 0.975])
+    t_obs = b[j] / se[j]
+    return {"theta": b[j], "se_cr1": se[j], "ic_bajo": b[j] - q_alto * se[j], "ic_alto": b[j] - q_bajo * se[j],
+            "p_valor": float(np.mean(np.abs(t_boot) >= abs(t_obs)))}
+
+
+def robustez_placebo(d: pd.DataFrame, perfil: pd.DataFrame, y: str = "malo", replicas: int = 999) -> pd.DataFrame:
+    """Decisión 015 con otras inferencias: la especificación dos vías + perfil con placebo, con IC CR1 por
+    subgrado, agrupados en dos vías (subgrado y mes) y por wild cluster bootstrap (issue #44)."""
+    datos = pd.DataFrame({"y": d[y].to_numpy(), "int_rate": d["int_rate"].to_numpy(),
+                          "tasa_sig": d["tasa_sig"].to_numpy()}, index=d.index).join(perfil.set_axis(d.index))
+    grupos = [d["sub_grade"].to_numpy(), d["mes"].to_numpy()]
+    x = quitar_efectos_fijos(datos, grupos)
+    k_abs = sum(len(np.unique(g)) for g in grupos) - 1
+    yy, X = x["y"].to_numpy(), x.drop(columns="y").to_numpy()
+    filas = {}
+    for j, nombre in enumerate(["tasa de este mes", "tasa del mes siguiente (placebo)"]):
+        b, se1 = ols_cluster(yy, X, d["sub_grade"], k_abs)
+        _, se2 = ols_cluster_dos_vias(yy, X, d["sub_grade"], d["mes"], k_abs)
+        w = wild_cluster_bootstrap(yy, X, d["sub_grade"], j, replicas, k_absorbidos=k_abs)
+        filas[nombre] = {"theta": b[j], "IC CR1 bajo": b[j] - 1.96 * se1[j], "IC CR1 alto": b[j] + 1.96 * se1[j],
+                         "IC dos vías bajo": b[j] - 1.96 * se2[j], "IC dos vías alto": b[j] + 1.96 * se2[j],
+                         "IC wild bajo": w["ic_bajo"], "IC wild alto": w["ic_alto"], "p wild": w["p_valor"]}
+    return pd.DataFrame(filas).T
+
+
 def efectos_fijos(df: pd.DataFrame, y: str, controles: pd.DataFrame | None = None,
                   fijos: tuple = ("sub_grade", "mes"), cluster: str = "sub_grade",
                   tratamientos: tuple = ("int_rate",)) -> pd.DataFrame:
@@ -181,3 +236,22 @@ def pd_estres(pd_base, tasa, tasa_ref, efecto: float = EFECTO_ESTRES) -> np.ndar
 def fuera_de_rango(tasa, tasa_ref, rango: float = RANGO_OBSERVADO) -> np.ndarray:
     """La tasa se aleja de la de mercado más de lo que se movieron las tablas: ahí no hay evidencia."""
     return np.abs(np.asarray(tasa, dtype=float) - np.asarray(tasa_ref, dtype=float)) > rango
+
+
+def main() -> None:
+    """python -m credit_lab.causal: recalcula la tabla de robustez de la decisión 015 (issue #44)."""
+    from credit_lab.features import LOGISTICA
+    from credit_lab.poblacion import cargar_poblacion
+
+    df = preparar(cargar_poblacion())
+    tr = df[df["muestra"].eq("train")].reset_index(drop=True)
+    tr["tasa_sig"] = tasa_siguiente(tr)
+    d = tr.dropna(subset=["tasa_sig"]).reset_index(drop=True)
+    pre = preprocesador("logistica").fit(derivar(d)[LOGISTICA], d["malo"])
+    perfil = pd.DataFrame(np.asarray(pre.transform(derivar(d)[LOGISTICA])), index=d.index).add_prefix("woe_")
+    pd.set_option("display.float_format", "{:+.4f}".format)
+    print(robustez_placebo(d, perfil))
+
+
+if __name__ == "__main__":
+    main()

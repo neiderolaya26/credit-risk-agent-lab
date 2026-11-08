@@ -2,6 +2,7 @@
 
 35 casos · 0 intentos con error · juez claude-opus-5-5 · costo agente USD 0.24 + juez USD 1.43
 Latencia media 46 s · 8.5 llamadas por caso
+Referencia: política 020 · casos.json 67a8d0abe5
 
 ## Notas (promedio por caso)
 
@@ -12,6 +13,13 @@ Latencia media 46 s · 8.5 llamadas por caso
 | fidelidad | 94% |
 | auditoria_1er_intento | 100% |
 | juez | 98% |
+| borradores del comité con violación de reglas duras | 0 de 35 |
+| casos escalados por no pasar la auditoría | 0 |
+| notas del juez inválidas (excluidas del promedio) | 0 |
+| piso de la fidelidad: % al azar que pasaría / montos al azar | 13% / 3% |
+
+`reglas_ok` mide la decisión final, que cumple por construcción; la fila de borradores muestra si el comité las cumple. La auditoría la hace el mismo modelo que redacta: no es una revisión independiente.
+Desde la v4 la decisión la toma la política y `concordancia` mide la opinión del comité.
 
 ## Juez por criterio
 
@@ -23,9 +31,9 @@ Latencia media 46 s · 8.5 llamadas por caso
 | sin_invenciones | 94% |
 | claro | 100% |
 
-## Decisión del agente frente a la política del motor
+## Propuesta frente a la política
 
-| motor | aprobar | contraoferta | rechazar |
+| política | aprobar | contraoferta | rechazar |
 |---|---|---|---|
 | aprobar | 16 | 0 | 0 |
 | contraoferta | 0 | 14 | 0 |

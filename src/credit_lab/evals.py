@@ -26,7 +26,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from credit_lab.motor import CUOTA_MAX, MONTOS, ROI_OBJETIVO, TASAS, Motor, cuota, monto_maximo_lote, tasa_minima_lote
+from credit_lab.motor import Motor, politica_lote
 from credit_lab.poblacion import RAIZ
 
 CARPETA = RAIZ / "evals" / "agente"
@@ -38,19 +38,10 @@ POOL = 3000
 # ---------- política determinista del motor (la misma que se le da al comité) ----------
 
 def politica_motor(motor: Motor, df: pd.DataFrame) -> pd.DataFrame:
-    """Decisión de la política sin LLM para cada préstamo, con la oferta que haría."""
-    ev = motor.evaluar(df)
-    t_sug = tasa_minima_lote(motor, df, ROI_OBJETIVO)
-    m_max = monto_maximo_lote(motor, df, roi_minimo=ROI_OBJETIVO)  # regla 2b (decisión 020)
-    pedido, tasa, ingreso = df["loan_amnt"].to_numpy(), df["int_rate"].to_numpy(), df["annual_inc"].to_numpy()
-    aprueba = (ev["roi_esperado"].to_numpy() >= ROI_OBJETIVO) & ev["cumple_capacidad"].to_numpy()
-    # contraoferta por tasa: el monto pedido a la tasa sugerida, si cabe en la cuota
-    por_tasa = ~np.isnan(t_sug) & (t_sug <= TASAS.max()) & (cuota(pedido, np.nan_to_num(t_sug, nan=TASAS.max())) / (ingreso / 12) <= CUOTA_MAX)
-    # contraoferta por monto: el mayor monto con ROI ≥ 4% a la tasa ofrecida
-    por_monto = (m_max > 0) & (m_max < pedido)
-    decision = np.where(aprueba, "aprobar", np.where(por_tasa | por_monto, "contraoferta", "rechazar"))
-    return pd.DataFrame({"decision_motor": decision, "roi_esperado": ev["roi_esperado"].to_numpy(),
-                         "tasa_sugerida": t_sug, "monto_maximo": m_max}, index=df.index)
+    """Decisión de la política sin LLM para cada préstamo (la misma que aplica el agente, decisión 023)."""
+    p = politica_lote(motor, df)
+    return pd.DataFrame({"decision_motor": p["decision"], "regla": p["regla"], "roi_esperado": p["roi_esperado"],
+                         "tasa_sugerida": p["tasa_sugerida"], "monto_maximo": p["monto_maximo"]}, index=df.index)
 
 
 def seleccionar_casos(motor: Motor, s2: pd.DataFrame, por_estrato: int = POR_ESTRATO) -> pd.DataFrame:
@@ -101,6 +92,19 @@ def agregar_rechazos(motor: Motor, s2: pd.DataFrame, n: int = 5, carpeta: Path =
     return agregados
 
 
+def reetiquetar(motor: Motor, s2: pd.DataFrame, carpeta: Path = CARPETA) -> pd.DataFrame:
+    """Recalcula la referencia de cada caso con la política vigente (decisión 023) y guarda la anterior en
+    `decision_motor_020`, para que cada versión del agente se compare con su propia política (issue #19)."""
+    filas = json.loads((carpeta / "casos.json").read_text(encoding="utf-8"))
+    pol = politica_motor(motor, s2.iloc[[f["posicion"] for f in filas]])
+    for f, (_, p) in zip(filas, pol.iterrows()):
+        f.setdefault("decision_motor_020", f["decision_motor"])
+        f["decision_motor"], f["regla_motor"] = p["decision_motor"], p["regla"]
+        f["roi_esperado_motor"] = round(float(p["roi_esperado"]), 4)
+    escribir_casos(filas, carpeta)
+    return pd.DataFrame(filas).set_index("id")[["decision_motor_020", "decision_motor", "regla_motor"]]
+
+
 def escribir_casos(filas: list[dict], carpeta: Path = CARPETA) -> None:
     from credit_lab.agente import CAMPO_FICO
 
@@ -108,11 +112,13 @@ def escribir_casos(filas: list[dict], carpeta: Path = CARPETA) -> None:
     lineas = ["# Casos de la eval del agente", "",
               f"{len(filas)} préstamos de jul–dic 2015, estratificados por la decisión de la política del motor y el resultado real "
               "(c30 en adelante: rechazos del motor agregados en la decisión 022).", "",
-              "| id | motor | real | subgrado | monto | tasa LC | ingreso | FICO | DTI | propósito | ROI esperado |",
-              "|---|---|---|---|---|---|---|---|---|---|---|"]
+              "`motor` es la política vigente (decisión 023); `motor 020` la anterior, referencia de las versiones v0 a v3.", "",
+              "| id | motor | motor 020 | real | subgrado | monto | tasa LC | ingreso | FICO | DTI | propósito | ROI esperado |",
+              "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     for f in filas:
         s = f["solicitud"]
-        lineas.append(f"| {f['id']} | {f['decision_motor']} | {'malo' if f['malo_real'] else 'bueno'} | {f['subgrado']} | "
+        lineas.append(f"| {f['id']} | {f['decision_motor']} | {f.get('decision_motor_020', f['decision_motor'])} | "
+                      f"{'malo' if f['malo_real'] else 'bueno'} | {f['subgrado']} | "
                       f"{s['monto pedido (USD)']:,.0f} | {s['tasa ofrecida por Lending Club (%)']:.2f}% | "
                       f"{s['ingreso anual (USD)']:,.0f} | {s.get(CAMPO_FICO, s.get("FICO")):.0f} | {s['deuda / ingreso (%)']} | {s['propósito']} | "
                       f"{f['roi_esperado_motor']:.1%} |")
@@ -182,12 +188,27 @@ def fidelidad(memo: str, salidas: list, solicitud: dict) -> tuple[float, list[fl
     return 1 - len(sin_respaldo) / len(nums), sin_respaldo
 
 
+def piso_fidelidad(salidas: list, solicitud: dict, n: int = 2000, semilla: int = SEMILLA) -> dict:
+    """Prueba nula de la métrica (issue #23): qué proporción de números al azar pasaría como respaldada con
+    las mismas fuentes. Si el piso es alto, la fidelidad discrimina poco."""
+    rng = np.random.default_rng(semilla)
+    porcentajes = [round(x, int(d)) for x, d in zip(rng.uniform(0, 40, n), rng.integers(1, 3, n))]  # 0–40, 1 o 2 decimales
+    montos = np.round(rng.uniform(1_000, 35_000, n), -1)
+
+    def tasa(nums):
+        memo = " ".join(f"{x:.2f}" if not float(x).is_integer() else f"{x:.0f}" for x in nums)
+        return fidelidad(memo, salidas, solicitud)[0]
+
+    return {"porcentajes": tasa(porcentajes), "montos": tasa(montos)}
+
+
 # ---------- juez del memo ----------
 
 JUEZ = "claude-opus-5-5"  # tercero: no es el modelo evaluado (Haiku hoy, Sonnet después)
 RUBRICA = {
     "justifica_con_numeros": "La decisión se justifica con al menos dos cifras concretas de riesgo, economía o cupo.",
-    "coherente": "La decisión, el monto y la tasa del memo coinciden entre sí y con la sección Decisión.",
+    "coherente": "La decisión, el monto y la tasa del memo coinciden entre sí y con la sección Decisión "
+                 "(o Decisión de la política, desde la v4).",
     "alertas": "Si hay señales de cautela en los datos (fuera de rango, estrés sin tasa viable, ROI estrecho, "
                "cuota alta), el memo las menciona; si no hay, no inventa alertas.",
     "sin_invenciones": "No afirma datos, causas ni recomendaciones que no salgan de los datos o de la política.",
@@ -217,7 +238,7 @@ def juzgar(cliente, memo: str, datos: dict) -> dict:
 
 def main() -> None:
     p = argparse.ArgumentParser(description="Evals del agente de crédito.")
-    p.add_argument("accion", choices=["casos", "rechazos", "correr", "reporte", "recalificar", "rejuzgar"])
+    p.add_argument("accion", choices=["casos", "rechazos", "reetiquetar", "correr", "reporte", "recalificar", "rejuzgar"])
     p.add_argument("--version", default=None, help="variante a reportar o recalificar (por defecto la actual)")
     p.add_argument("--limite", type=int, default=None)
     p.add_argument("--modelo", default="claude-haiku-5-5")
@@ -229,6 +250,9 @@ def main() -> None:
         guardar_casos(casos, s2)
         print(casos.groupby(["decision_motor", "malo"]).size())
         print(f"Casos guardados en {CARPETA}")
+    elif args.accion == "reetiquetar":
+        t = reetiquetar(Motor(), cargar_muestra())
+        print(pd.crosstab(t["decision_motor_020"], t["decision_motor"]))
     elif args.accion == "rechazos":
         for f in agregar_rechazos(Motor(), cargar_muestra()):
             print(f["id"], f["decision_motor"], "malo" if f["malo_real"] else "bueno", f["subgrado"])

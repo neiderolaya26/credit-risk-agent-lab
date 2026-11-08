@@ -20,7 +20,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from credit_lab.agente import MODELO, limpio, resumen_solicitud
+from credit_lab.agente import MODELO, a_df, limpio, resumen_solicitud
 from credit_lab.poblacion import RAIZ
 from credit_lab.prepago import rendimiento
 
@@ -58,19 +58,26 @@ CREATE TABLE IF NOT EXISTS pasos (
     contenido TEXT NOT NULL
 );
 """
+# columnas agregadas después (decisiones 021 y 023): se crean con ALTER TABLE en bases viejas
+COLUMNAS_NUEVAS = {
+    "estado": "TEXT", "hilo": "TEXT", "decision_politica": "TEXT", "opinion_comite": "TEXT",
+    "desacuerdo": "INTEGER", "decision_final": "TEXT", "analista": "TEXT", "motivo": "TEXT",
+    "comentario": "TEXT", "fecha_firma": "TEXT",
+}
 
 
 @contextmanager
 def conectar(ruta: Path = RUTA) -> Iterator[sqlite3.Connection]:
-    """Abre la base (creando las tablas si faltan) y la cierra al salir del with."""
+    """Abre la base (creando las tablas y columnas que falten) y la cierra al salir del with."""
     ruta = Path(ruta)
     ruta.parent.mkdir(parents=True, exist_ok=True)
     con = sqlite3.connect(ruta)
     try:
         con.executescript(ESQUEMA)
         columnas = {c[1] for c in con.execute("PRAGMA table_info(ejecuciones)")}
-        if "estado" not in columnas:  # bases creadas antes de la decisión 021
-            con.execute("ALTER TABLE ejecuciones ADD COLUMN estado TEXT")
+        for nombre, tipo in COLUMNAS_NUEVAS.items():
+            if nombre not in columnas:
+                con.execute(f"ALTER TABLE ejecuciones ADD COLUMN {nombre} {tipo}")
         yield con
     finally:
         con.close()
@@ -81,30 +88,47 @@ def _json(x) -> str:
 
 
 def guardar(con: sqlite3.Connection, estado: dict, medidor=None, segundos: float | None = None,
-            semilla: int | None = None, modelo: str | None = None) -> int:
-    """Guarda una ejecución y sus pasos; devuelve el id. Sin la columna `malo`, el resultado real queda vacío."""
-    sol, final = estado["solicitud"], estado["final"]
+            semilla: int | None = None, modelo: str | None = None, solicitud: pd.DataFrame | None = None) -> int:
+    """Guarda una ejecución y sus pasos; devuelve el id. `decision` es la propuesta; `decision_final` es la
+    que cuenta (issue #18): queda vacía hasta que la firma un analista, y vacía si la devuelve."""
+    sol, final = a_df(solicitud if solicitud is not None else estado["solicitud"]), estado["final"]
     malo = int(sol["malo"].iloc[0]) if "malo" in sol else None
     roi = float(rendimiento(sol).iloc[0]) if {"total_pymnt", "funded_amnt", "collection_recovery_fee"} <= set(sol) else None
+    firma = final.get("firma") or {}
+    fila = {
+        "fecha": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "modelo": modelo or getattr(medidor, "modelo", None) or MODELO, "semilla": semilla,
+        "solicitud": _json(resumen_solicitud(sol)), "decision": final["decision"], "monto": final["monto"],
+        "tasa": final["tasa"], "auditoria_aprobada": int(final["auditoria"]["aprobado"]), "intentos": final["intentos"],
+        "hallazgos": _json(final["auditoria"]["hallazgos"]), "memo": final.get("memo", ""),
+        "llamadas_llm": getattr(medidor, "llamadas", None), "tokens_entrada": getattr(medidor, "tokens_entrada", None),
+        "tokens_salida": getattr(medidor, "tokens_salida", None), "costo_usd": medidor.costo_usd() if medidor else None,
+        "segundos": segundos, "malo_real": malo, "roi_real": roi, "estado": final.get("estado"),
+        "hilo": estado.get("hilo"), "decision_politica": final.get("decision_politica"),
+        "opinion_comite": final.get("opinion_comite"),
+        "desacuerdo": None if final.get("desacuerdo") is None else int(final["desacuerdo"]),
+        "decision_final": final.get("decision_final"), "analista": firma.get("analista"),
+        "motivo": firma.get("motivo"), "comentario": firma.get("comentario"), "fecha_firma": firma.get("fecha"),
+    }
     with con:
-        cur = con.execute(
-            "INSERT INTO ejecuciones (fecha, modelo, semilla, solicitud, decision, monto, tasa, auditoria_aprobada,"
-            " intentos, hallazgos, memo, llamadas_llm, tokens_entrada, tokens_salida, costo_usd, segundos,"
-            " malo_real, roi_real, estado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (datetime.now(timezone.utc).isoformat(timespec="seconds"),
-             modelo or getattr(medidor, "modelo", None) or MODELO, semilla,
-             _json(resumen_solicitud(sol)), final["decision"], final["monto"], final["tasa"],
-             int(final["auditoria"]["aprobado"]), final["intentos"], _json(final["auditoria"]["hallazgos"]),
-             final.get("memo", ""),
-             getattr(medidor, "llamadas", None), getattr(medidor, "tokens_entrada", None),
-             getattr(medidor, "tokens_salida", None), medidor.costo_usd() if medidor else None,
-             segundos, malo, roi, final.get("estado")))
+        cur = con.execute(f"INSERT INTO ejecuciones ({', '.join(fila)}) VALUES ({', '.join('?' * len(fila))})",
+                          tuple(fila.values()))
         ejecucion = cur.lastrowid
         con.executemany(
             "INSERT INTO pasos (ejecucion_id, orden, nodo, intento, contenido) VALUES (?, ?, ?, ?, ?)",
             [(ejecucion, i, p["nodo"], p["intento"], _json(p["contenido"]))
              for i, p in enumerate(estado.get("historial", []))])
     return ejecucion
+
+
+def actualizar_firma(con: sqlite3.Connection, hilo: str, final: dict) -> None:
+    """Registra la firma diferida de un analista en la ejecución de ese hilo."""
+    firma = final.get("firma") or {}
+    with con:
+        con.execute("UPDATE ejecuciones SET estado = ?, decision_final = ?, analista = ?, motivo = ?, comentario = ?,"
+                    " fecha_firma = ? WHERE hilo = ?",
+                    (final.get("estado"), final.get("decision_final"), firma.get("analista"), firma.get("motivo"),
+                     firma.get("comentario"), firma.get("fecha"), hilo))
 
 
 def leer(con: sqlite3.Connection, tabla: str = "ejecuciones") -> pd.DataFrame:
@@ -114,11 +138,13 @@ def leer(con: sqlite3.Connection, tabla: str = "ejecuciones") -> pd.DataFrame:
 
 
 def resumen(con: sqlite3.Connection) -> pd.DataFrame:
-    """Desempeño por decisión: cuántas, mora y ROI real, auditoría al primer intento, costo y latencia."""
+    """Desempeño por decisión efectiva (issue #18): solo cuentan las aprobadas automáticamente y las firmadas.
+    Las pendientes y las devueltas por el analista no son decisiones y quedan fuera."""
     e = leer(con)
     if e.empty:
         return e
-    return e.groupby("decision").agg(
+    e = e[e["decision_final"].notna()]
+    return e.groupby(["decision_final", "estado"]).agg(
         ejecuciones=("id", "size"),
         mora_real=("malo_real", "mean"),
         roi_real=("roi_real", "mean"),
@@ -127,3 +153,23 @@ def resumen(con: sqlite3.Connection) -> pd.DataFrame:
         costo_usd=("costo_usd", "mean"),
         segundos=("segundos", "mean"),
     )
+
+
+def kpis(con: sqlite3.Connection) -> dict:
+    """KPIs de la cola del analista (issue #38)."""
+    e = leer(con)
+    if e.empty:
+        return {}
+    firmadas = e["estado"].isin(["firmada por analista", "devuelta por analista"])
+    t_firma = (pd.to_datetime(e["fecha_firma"], utc=True, format="ISO8601")
+               - pd.to_datetime(e["fecha"], utc=True, format="ISO8601")).dt.total_seconds() / 60
+    return {
+        "ejecuciones": len(e),
+        "aprobadas_automaticamente": e["estado"].eq("aprobada automáticamente").mean(),
+        "a_firma": e["estado"].ne("aprobada automáticamente").mean(),
+        "pendientes": e["estado"].eq("pendiente de firma").mean(),
+        "devueltas_sobre_firmadas": e.loc[firmadas, "estado"].eq("devuelta por analista").mean() if firmadas.any() else None,
+        "desacuerdos_comite_politica": e["desacuerdo"].mean(),
+        "motivos_analista": e.loc[firmadas, "motivo"].value_counts().to_dict(),
+        "minutos_hasta_firma": t_firma[firmadas].median() if firmadas.any() else None,
+    }
