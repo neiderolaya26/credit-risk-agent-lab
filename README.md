@@ -4,9 +4,9 @@
 
 **En 30 segundos:**
 
-- **Riesgo que vale plata:** un LightGBM entrenado solo con datos públicos de la solicitud ordena el riesgo mejor que el score de Lending Club y, con la misma tasa de rechazo (20%), genera **+USD 337 mil de utilidad real por cada 10.000 solicitudes** (IC 95% [272; 408] mil, 2015 fuera de tiempo).
+- **Riesgo que vale plata:** un LightGBM entrenado solo con datos públicos de la solicitud ordena el riesgo mejor que el score de Lending Club y, con la misma tasa de rechazo (20%), genera **+USD 337 mil de utilidad real por cada 10.000 solicitudes** (IC 95% [272; 408] mil, 2015 fuera de tiempo). Son 0,32% de los USD 104 M que se colocan y 4,7% más utilidad que ordenando por el score de Lending Club.
 - **Decisión completa, no solo un score:** prepago por supervivencia, pérdida económica, cupo y precio con capacidad de pago, y un análisis causal del efecto de la tasa que se reporta como resultado negativo.
-- **Agente de IA con control humano:** un grafo en LangGraph analiza, decide y se audita; aprueba solo los casos claros, y los rechazos y contraofertas quedan como propuesta hasta que un analista los firma. Evaluado en 30 casos con resultado real.
+- **Agente de IA con control humano:** un grafo en LangGraph analiza, decide y se audita; aprueba solo los casos claros (el comité de IA y el motor deben coincidir), y los rechazos, las contraofertas y los casos que no pasan la auditoría quedan como propuesta hasta que un analista los firma. Evaluado en 35 casos con resultado real: coincide con la política en el 100%.
 
 ![Utilidad extra del campeón frente al score de Lending Club](docs/img/valor_campeon.png)
 
@@ -19,22 +19,22 @@
 | Pieza | Resultado (fuera de tiempo, 2015) | Decisión |
 |---|---|---|
 | Riesgo | El campeón LightGBM (AUC 0,6823) le gana al score de Lending Club (0,6784) solo con variables públicas de la solicitud; IC 95% de la diferencia [+0,0016; +0,0063] | 006–007 |
-| Valor del modelo | Con la misma tasa de rechazo, ordenar por el campeón y no por la tasa de Lending Club suma +USD 195 mil (10% de rechazo), +337 mil (20%) y +447 mil (30%) de utilidad real por cada 10.000 solicitudes. La mora baja poco (11,7% frente a 11,9% al 20%): el valor viene de no rechazar préstamos caros pero buenos | 021 |
+| Valor del modelo | Con la misma tasa de rechazo, ordenar por el campeón y no por la tasa de Lending Club suma +USD 195 mil (10% de rechazo), +337 mil (20%) y +447 mil (30%) de utilidad real por cada 10.000 solicitudes. La mora baja poco (11,7% frente a 11,9% al 20%): el valor viene de no rechazar préstamos caros pero buenos. En contexto: al 20% se colocan unos USD 104 M por cada 10.000 solicitudes (monto medio USD 12.806), así que +337 mil son 0,32% del monto colocado y 4,7% más utilidad que la regla de Lending Club (USD 7,16 M). El IC solo mide el ruido de la muestra de 2015, no un cambio de ciclo | 021 |
 | Aprobación | La política por utilidad esperada logra la misma utilidad que un corte por PD, con mejor ROI (6,30%) y menos mora | 008 |
 | Prepago y severidad | La supervivencia en tiempo discreto predice el rendimiento mejor que las alternativas (RMSE 0,0497); la LGD clásica no tiene señal | 011 |
 | Cupo y precio | Los préstamos que Lending Club cobró por debajo de la tasa sugerida rindieron 2,8% frente a 6,7%; los que pidieron más que el monto máximo, 1,8% con 30% de mora | 012–013 |
 | Inferencia causal | La relación tasa–mora es selección, no causa: desaparece dentro del subgrado, pero el placebo falla, así que el efecto no queda identificado. El escenario de estrés detecta un 4,9% de clientes sin tasa viable que en la realidad rindieron −1,3% con 31,5% de mora | 014–015 |
-| Agente | Con Haiku 5.5 en 30 casos con resultado real (versión v2): coincide con la política del motor en el 83% de los casos, cumple las reglas duras en el 100%, respalda con herramientas el 94% de las cifras del memo, pasa la auditoría al primer intento en el 93% y saca 97% en el juez (Opus 5.5), a USD 0,007 por solicitud. Los 5 desacuerdos fueron contraofertas del motor que el agente rechazó; la v3 corrige su causa y **no tiene eval propia** | 016–021 |
+| Agente | Con Haiku 5.5 (versión v3) en 35 casos con resultado real (16 aprobaciones, 14 contraofertas y 5 rechazos según el motor): coincide con la política del motor en el 100%, cumple las reglas duras en el 100%, respalda con herramientas el 94% de las cifras del memo, pasa la auditoría al primer intento en el 100% y saca 98% en el juez (Opus 5.5), a USD 0,007 por solicitud. La v2 coincidía en el 83%: las evals mostraron que rechazaba contraofertas válidas, la regla 2b lo corrigió (decisión 020) y la v3 lo confirmó. La doble llave y el estado "escalar" no se activaron en estos casos; los cubren los tests | 016–021 |
 
 ## Límites y equidad
 
-- **El agente no decide solo los casos que afectan al cliente.** En crédito, un rechazo o un cambio de condiciones exige poder explicarlo y responder por él. El agente aprueba automáticamente solo lo que cumple la política; los rechazos y las contraofertas se pausan (`interrupt` de LangGraph) hasta que un analista los firma o los devuelve (decisión 021). Las evals miden la propuesta, sin firma.
+- **El agente no decide solo los casos que afectan al cliente.** En crédito, un rechazo o un cambio de condiciones exige poder explicarlo y responder por él. El agente aprueba automáticamente solo con doble llave: el comité de IA dice "aprobar" y la política del motor, sin LLM, también aprueba. Todo lo demás se pausa (`interrupt` de LangGraph) hasta que un analista lo firma o lo devuelve (decisiones 021 y 022). Si la auditoría falla dos veces, el caso no se convierte en rechazo: se escala al analista con la propuesta original. Las evals miden la propuesta, sin firma.
 - **Equidad:** los datos públicos no traen sexo, edad ni raza, así que no se puede medir discriminación directa. Se revisaron proxies con el corte de rechazo del 20% (`python -m credit_lab.valor`):
   - Calibración: la PD del campeón queda a ±0,5 puntos de la mora real en cada grupo de vivienda y de región; ningún grupo queda castigado de más respecto de su riesgo.
   - Región: el rechazo es parejo (19,8% a 20,1%).
   - Vivienda: hay impacto dispar. Se rechaza al 29% de quienes arriendan frente al 11% de quienes tienen hipoteca, en línea con su mora real (17,7% frente a 12,1%). Como la vivienda se correlaciona con la edad y el ingreso, en producción habría que monitorearla y justificarla.
 - **Datos:** préstamos aprobados por Lending Club entre 2012 y 2015. No hay rechazados ni datos de aceptación de ofertas, así que no se modela la demanda ni el sesgo de selección de la originación.
-- **Evals pequeñas:** 30 casos sirven para detectar errores grandes, no para declarar diferencias finas entre versiones o modelos.
+- **Evals pequeñas:** 35 casos sirven para detectar errores grandes, no para declarar diferencias finas entre versiones o modelos.
 - **Utilidad bruta:** no descuenta fondeo ni costos operativos; por eso la tasa sugerida exige ROI ≥ 4% (decisión 013).
 
 ## Diagrama
@@ -91,14 +91,14 @@ flowchart TB
         COM --> RD["Reglas duras en código<br/>cuota ≤ 20% · ROI ≥ 0%"]
         RD --> AUD["Auditor IA<br/>por materialidad"]
         AUD -. "observaciones (máx. 2)" .-> COM
-        AUD --> FIR["Firma: aprobación automática<br/>rechazo o contraoferta → analista"]
+        AUD --> FIR["Firma: automática solo si comité y motor aprueban<br/>lo demás o auditoría fallida → analista"]
         FIR --> MEMO["Decisión + memo"]
     end
 
     subgraph OPS["8 · Operación y evaluación"]
         direction LR
         MCP["Servidor MCP<br/>5 herramientas + política"]
-        REG["SQLite<br/>ejecuciones, pasos y resultado real"] --> EVA["Evals: 30 casos estratificados<br/>reglas, fidelidad y juez Opus 5.5"]
+        REG["SQLite<br/>ejecuciones, pasos y resultado real"] --> EVA["Evals: 35 casos estratificados<br/>reglas, fidelidad y juez Opus 5.5"]
         LS["LangSmith<br/>trazas del grafo"]
         CI["GitHub Actions<br/>63 tests"]
     end
@@ -117,7 +117,7 @@ flowchart TB
 
 ## Cómo reproducirlo
 
-Requiere **Python 3.14**. Las versiones exactas están en `requirements.txt`. Con GPU NVIDIA, instala torch desde el índice `cu128` (ver el comentario en ese archivo); XGBoost usa la GPU si la encuentra.
+Requiere **Python 3.12 o superior** (el CI prueba 3.12 y 3.14). Las versiones exactas están en `requirements.txt`. Con GPU NVIDIA, instala torch desde el índice `cu128` (ver el comentario en ese archivo); XGBoost usa la GPU si la encuentra.
 
 ```bash
 python -m venv .venv && .venv\Scripts\activate          # Windows (en Linux/macOS: source .venv/bin/activate)
@@ -162,7 +162,7 @@ claude mcp add credit-lab --env PYTHONPATH=<ruta-del-repo>/src -- <ruta-del-repo
 python -m credit_lab.agente --semilla 0    # requiere ANTHROPIC_API_KEY en .env (no se sube a git)
 ```
 
-Si la propuesta es un rechazo o una contraoferta, el comando muestra el memo y pide la firma del analista antes de cerrar la decisión. Cada ejecución queda registrada en `data/agente/ejecuciones.db` (SQLite, fuera de git) con su estado de firma y el resultado real del préstamo:
+Si la propuesta no es una aprobación con doble llave (rechazo, contraoferta o caso escalado), el comando muestra el memo y pide la firma del analista antes de cerrar la decisión. Cada ejecución queda registrada en `data/agente/ejecuciones.db` (SQLite, fuera de git) con su estado de firma y el resultado real del préstamo:
 
 ```python
 from credit_lab import registro
@@ -176,6 +176,7 @@ Para ver las trazas del grafo en LangSmith, agrega `LANGSMITH_API_KEY` al `.env`
 
 ```bash
 python -m credit_lab.evals casos                              # elige los 30 casos (gratis)
+python -m credit_lab.evals rechazos                           # agrega 5 rechazos del motor (c30–c34, gratis)
 python -m credit_lab.evals correr --modelo claude-haiku-5-5   # corre el agente (sin firma) y el juez sobre los casos pendientes
 python -m credit_lab.evals reporte --version v2               # evals/agente/<modelo>/<versión>/reporte.md
 ```
@@ -202,6 +203,7 @@ Resultados, reportes y trazas de v0, v1 y v2 publicados en [evals/agente](evals/
 | 14 ✅ | **Evals del agente**: 30 casos con resultado real, calificación programada + juez Opus, versiones v0 → v2 con Haiku 5.5 | Concordancia 83%, fidelidad 94%, juez 97%, USD 0,007 por solicitud, decisión 019 |
 | 15 ✅ | Regla 2b con ROI ≥ 4%, contraofertas verificables (v3), demo y publicación | Notebook 11, página del proyecto y release v1.0.0, decisión 020 |
 | 16 ✅ | Revisión de cierre: firma humana en rechazos y contraofertas, valor en dinero, equidad, reproducibilidad y CI | Decisión 021 |
+| 17 ✅ | Segunda revisión: doble llave en la aprobación, "escalar" ante auditoría fallida, evals de la v3, contexto del valor y Python 3.12 | Decisión 022 |
 
 ## Decisiones y trade-offs
 

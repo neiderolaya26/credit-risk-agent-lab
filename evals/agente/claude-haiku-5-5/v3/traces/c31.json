@@ -1,0 +1,247 @@
+{
+ "historial": [
+  {
+   "nodo": "cupo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: desfavorable** para el monto y tasa solicitados (2.400 USD a 14,65%).\n\n**Hallazgos clave**\n- **Con 14,65% el ROI esperado es negativo (-1,52%)**, con utilidad esperada de -36,5 USD y PD de 29,8%.\n- **Monto máximo con utilidad > 0: 1.000 USD.** No hay monto que alcance ROI ≥ 4% a la tasa actual (monto máximo objetivo: 0).\n- **Tasa de equilibrio (ROI ≥ 0%): 18%.** La herramienta no devolvió tasa sugerida (ROI ≥ 4%) ni escenario de estrés calculable.\n- **Alternativa simulada: 1.000 USD a 18%**: ROI 4,53%, utilidad 45,3 USD, PD 22,3%, cuota/ingreso 2,9%, dentro de capacidad.\n- **Tasa de mercado estimada: 16,95%** para 2.400 USD (17,16% para 1.000 USD). La oferta de 14,65% queda fuera de rango (más de 1 pt por debajo), así que no hay evidencia histórica que la respalde.\n\n**Mejor oferta:** 1.000 USD a 18%. Está cerca de la tasa de mercado (17,16%), con ROI positivo, aunque sin alcanzar el objetivo de 4% en el caso de 2.400 USD.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_cupo_pricing",
+      "entrada": {},
+      "salida": {
+       "monto_pedido": 2400.0,
+       "tasa_ofrecida": 14.65,
+       "tasa_mercado": 16.947609,
+       "pd": 0.297881,
+       "roi_esperado": -0.015209,
+       "utilidad_esperada": -36.500829,
+       "cuota_ingreso": 0.066229,
+       "monto_maximo": 1000.0,
+       "monto_maximo_objetivo": 0.0,
+       "tasa_equilibrio": 18.0,
+       "tasa_sugerida": null,
+       "sugerida_fuera_de_rango": false,
+       "tasa_equilibrio_estres": null,
+       "tasa_sugerida_estres": null,
+       "regla_cuota_max": 0.2,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 2400,
+       "tasa": 14.65
+      },
+      "salida": {
+       "monto": 2400,
+       "tasa": 14.65,
+       "pd": 0.297881,
+       "roi_esperado": -0.015209,
+       "utilidad_esperada": -36.500822,
+       "cuota_ingreso": 0.066229,
+       "cumple_capacidad": true,
+       "tasa_mercado": 16.947609,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 1000,
+       "tasa": 18
+      },
+      "salida": {
+       "monto": 1000,
+       "tasa": 18,
+       "pd": 0.222549,
+       "roi_esperado": 0.045271,
+       "utilidad_esperada": 45.271016,
+       "cuota_ingreso": 0.028922,
+       "cumple_capacidad": true,
+       "tasa_mercado": 17.155026,
+       "fuera_de_rango": false,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "economia",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: desfavorable.**\n\n- **Escenario bueno:** rendimiento de 14,20 % anual, con prepago esperado antes del mes 30 de 80,88 % y mes esperado de pago de 16,37.\n- **Escenario malo:** pérdida económica de -38,56 %.\n- **Probabilidad de incumplimiento (PD):** 29,79 %.\n- **ROI esperado:** -1,52 %, es decir, una utilidad esperada de -36,50 USD.\n- **Capacidad de pago:** la cuota representa 6,62 % del ingreso, así que la oferta cumple el criterio de capacidad.\n- **Tasa de mercado estimada:** 16,95 %. La tasa ofrecida (14,65 %) queda más de 1 punto por debajo, por lo que la oferta está fuera de rango y no hay evidencia histórica que la respalde.\n\nA 14,65 % el préstamo no es rentable: la PD alta supera el margen que aporta la tasa. Sería necesario revisar la tasa o el riesgo del perfil antes de aprobarlo.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_economia",
+      "entrada": {},
+      "salida": {
+       "r_bueno": 0.14195,
+       "r_malo": -0.385639,
+       "pd": 0.297881,
+       "roi_esperado": -0.015209,
+       "utilidad_esperada": -36.500829,
+       "prob_prepago_antes_mes_30": 0.808762,
+       "mes_esperado_de_pago": 16.365042
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 2400,
+       "tasa": 14.65
+      },
+      "salida": {
+       "monto": 2400,
+       "tasa": 14.65,
+       "pd": 0.297881,
+       "roi_esperado": -0.015209,
+       "utilidad_esperada": -36.500822,
+       "cuota_ingreso": 0.066229,
+       "cumple_capacidad": true,
+       "tasa_mercado": 16.947609,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "riesgo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: desfavorable**\n\n- **PD estimada: 29.8%**, más del doble del promedio de la cartera (12.9%).\n- **Todas las razones top-5 suben el riesgo.** Por orden de contribución al logit:\n  1. **Antigüedad laboral sin dato** (null): es el mayor impulsor. Falta el dato, así que conviene verificarlo antes de decidir.\n  2. **Consultas de crédito en 6 meses (2):** sugieren búsqueda reciente de financiamiento.\n  3. **Ingreso anual (USD 15,000):** bajo ingreso eleva la PD en este modelo.\n  4. **Propósito médico:** aporta riesgo adicional según el modelo.\n  5. **FICO 662:** contribuye al riesgo, aunque con menor peso.\n\nEl modelo no reporta efecto a favor del cliente en estas cinco variables. Antes de decidir, sería útil confirmar la antigüedad laboral. Las contribuciones son relativas entre sí y no permiten separar el efecto de la tasa ofrecida o de la deuda/ingreso, porque no aparecen entre las cinco principales.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_riesgo",
+      "entrada": {},
+      "salida": {
+       "pd": 0.297881,
+       "pd_promedio_cartera": 0.128836,
+       "razones": [
+        {
+         "descripcion": "Antigüedad laboral",
+         "valor": null,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.30249
+        },
+        {
+         "descripcion": "Consultas de crédito en los últimos 6 meses",
+         "valor": 2.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.289072
+        },
+        {
+         "descripcion": "Ingreso anual",
+         "valor": 15000.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.282004
+        },
+        {
+         "descripcion": "Propósito del préstamo",
+         "valor": "medical",
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.197784
+        },
+        {
+         "descripcion": "Puntaje FICO",
+         "valor": 662.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.180137
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 1,
+   "contenido": {
+    "decision": "rechazar",
+    "monto": 0.0,
+    "tasa": 0.0,
+    "razones": [
+     "ROI esperado de -1,52% a 2.400 USD y 14,65%, por debajo del 4% requerido por la política (paso 1 no cumplido)",
+     "La tasa sugerida con ROI ≥ 4% es nula en la herramienta de cupo, por lo que la opción 2a no aplica",
+     "El monto máximo objetivo a la tasa ofrecida es 0 USD; no existe monto con ROI ≥ 4% a 14,65%, así que la opción 2b no genera una contraoferta válida",
+     "La cuota de 6,62% del ingreso cumple el límite de 20%, pero no compensa el ROI negativo",
+     "La tasa ofrecida está fuera de rango (tasa de mercado estimada de 16,95%); es una alerta que no cambia la decisión"
+    ],
+    "memo": "## Resumen\nSolicitud de 2.400 USD a 14,65% (propósito médico, ingreso anual de 15.000 USD, FICO 662). La política no permite aprobar ni contraofertar: el ROI esperado es negativo y no existe monto con ROI ≥ 4% a la tasa ofrecida.\n\n## Decisión\nRechazar. Monto = 0 y tasa = 0.\n- Paso 1: ROI esperado de -1,52% (menor que 4%) a 2.400 USD y 14,65%. No aprueba.\n- Paso 2a: la tasa sugerida con ROI ≥ 4% es nula en la herramienta de cupo. No aplica.\n- Paso 2b: el monto máximo objetivo a 14,65% es 0 USD. No hay contraoferta.\n- Paso 3: rechazo.\n\n## Riesgo\nEl especialista de riesgo reporta una PD de 29,8%, frente a un promedio de cartera de 12,9%. Según sus datos, las cinco razones principales suben el riesgo: antigüedad laboral sin dato (null, mayor contribución logit con 0,302), consultas en los últimos 6 meses (2; 0,289), ingreso anual de 15.000 USD (0,282), propósito médico (0,198) y FICO 662 (0,180). El especialista indica que las contribuciones son relativas entre sí y no permiten separar el efecto de la tasa ofrecida o de la deuda/ingreso (4,24%).\n\n## Economía\nEl especialista de economía reporta un escenario bueno con rendimiento de 14,20% anual, probabilidad de prepago antes del mes 30 de 80,88% y mes esperado de pago de 16,37. En el escenario malo, la pérdida económica es de -38,56%. El ROI esperado es de -1,52%, con una utilidad esperada de -36,50 USD. Según este especialista, a 14,65% el préstamo no es rentable porque la PD alta supera el margen que aporta la tasa.\n\n## Cupo y precio\nLa tasa de mercado estimada es 16,95% para 2.400 USD. La tasa de equilibrio (ROI ≥ 0%) es 18%. El especialista de cupo simuló una alternativa de 1.000 USD a 18%, con ROI de 4,53%, utilidad de 45,27 USD, PD de 22,25% y cuota de 2,89% del ingreso. Esta alternativa no corresponde a las opciones 2a ni 2b de la política, porque cambia tanto el monto como la tasa ofrecida.\n\n## Alertas\n- Tasa ofrecida fuera de rango: 14,65% frente a una tasa de mercado de 16,95%. Según la política, no cambia la decisión.\n- Antigüedad laboral sin dato (null).\n- Escenario de estrés no calculable: la tasa de equilibrio de estrés y la tasa sugerida de estrés son nulas en la herramienta."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 1,
+   "contenido": {
+    "aprobado": true,
+    "hallazgos": [
+     "Menor: Las cifras del memo coinciden con las herramientas y con la política tras redondeo: ROI -1,52%, utilidad -36,50 USD, PD 29,8%, cuota 6,62%, tasa de mercado 16,95%, tasa de equilibrio 18%, PD promedio de cartera 12,9%, r_bueno 14,20%, r_malo -38,56%, prepago 80,88% y mes esperado 16,37.",
+     "Menor: La decisión de rechazar (monto 0, tasa 0) es la que exige la política: el paso 1 no se cumple, el paso 2a no aplica porque la tasa sugerida es nula y el monto máximo objetivo es 0.",
+     "Menor: El memo describe el paso 2b como sin contraoferta válida, pero la política lo activa formalmente porque 0 es menor que el monto pedido; el resultado es equivalente al rechazo y no cambia la decisión.",
+     "Menor: El análisis de cupo presenta 1.000 USD a 18% como 'Mejor oferta'. No es una opción de la política; el memo lo aclara como alternativa simulada que no corresponde a 2a ni 2b, así que no sostiene la decisión.",
+     "Menor: La afirmación de que las contribuciones logit no permiten separar el efecto de la tasa o de la deuda/ingreso es una interpretación no explícita en la herramienta de riesgo, aunque no altera la decisión.",
+     "Menor: El análisis de cupo menciona un monto máximo con utilidad positiva de 1.000 USD y un monto máximo objetivo de 0; ambos son consistentes con las herramientas, pero el memo no aclara la diferencia entre los dos conceptos."
+    ],
+    "oferta": null,
+    "violaciones": []
+   }
+  }
+ ],
+ "final": {
+  "decision": "rechazar",
+  "monto": 0.0,
+  "tasa": 0.0,
+  "razones": [
+   "ROI esperado de -1,52% a 2.400 USD y 14,65%, por debajo del 4% requerido por la política (paso 1 no cumplido)",
+   "La tasa sugerida con ROI ≥ 4% es nula en la herramienta de cupo, por lo que la opción 2a no aplica",
+   "El monto máximo objetivo a la tasa ofrecida es 0 USD; no existe monto con ROI ≥ 4% a 14,65%, así que la opción 2b no genera una contraoferta válida",
+   "La cuota de 6,62% del ingreso cumple el límite de 20%, pero no compensa el ROI negativo",
+   "La tasa ofrecida está fuera de rango (tasa de mercado estimada de 16,95%); es una alerta que no cambia la decisión"
+  ],
+  "memo": "## Resumen\nSolicitud de 2.400 USD a 14,65% (propósito médico, ingreso anual de 15.000 USD, FICO 662). La política no permite aprobar ni contraofertar: el ROI esperado es negativo y no existe monto con ROI ≥ 4% a la tasa ofrecida.\n\n## Decisión\nRechazar. Monto = 0 y tasa = 0.\n- Paso 1: ROI esperado de -1,52% (menor que 4%) a 2.400 USD y 14,65%. No aprueba.\n- Paso 2a: la tasa sugerida con ROI ≥ 4% es nula en la herramienta de cupo. No aplica.\n- Paso 2b: el monto máximo objetivo a 14,65% es 0 USD. No hay contraoferta.\n- Paso 3: rechazo.\n\n## Riesgo\nEl especialista de riesgo reporta una PD de 29,8%, frente a un promedio de cartera de 12,9%. Según sus datos, las cinco razones principales suben el riesgo: antigüedad laboral sin dato (null, mayor contribución logit con 0,302), consultas en los últimos 6 meses (2; 0,289), ingreso anual de 15.000 USD (0,282), propósito médico (0,198) y FICO 662 (0,180). El especialista indica que las contribuciones son relativas entre sí y no permiten separar el efecto de la tasa ofrecida o de la deuda/ingreso (4,24%).\n\n## Economía\nEl especialista de economía reporta un escenario bueno con rendimiento de 14,20% anual, probabilidad de prepago antes del mes 30 de 80,88% y mes esperado de pago de 16,37. En el escenario malo, la pérdida económica es de -38,56%. El ROI esperado es de -1,52%, con una utilidad esperada de -36,50 USD. Según este especialista, a 14,65% el préstamo no es rentable porque la PD alta supera el margen que aporta la tasa.\n\n## Cupo y precio\nLa tasa de mercado estimada es 16,95% para 2.400 USD. La tasa de equilibrio (ROI ≥ 0%) es 18%. El especialista de cupo simuló una alternativa de 1.000 USD a 18%, con ROI de 4,53%, utilidad de 45,27 USD, PD de 22,25% y cuota de 2,89% del ingreso. Esta alternativa no corresponde a las opciones 2a ni 2b de la política, porque cambia tanto el monto como la tasa ofrecida.\n\n## Alertas\n- Tasa ofrecida fuera de rango: 14,65% frente a una tasa de mercado de 16,95%. Según la política, no cambia la decisión.\n- Antigüedad laboral sin dato (null).\n- Escenario de estrés no calculable: la tasa de equilibrio de estrés y la tasa sugerida de estrés son nulas en la herramienta.",
+  "auditoria": {
+   "aprobado": true,
+   "hallazgos": [
+    "Menor: Las cifras del memo coinciden con las herramientas y con la política tras redondeo: ROI -1,52%, utilidad -36,50 USD, PD 29,8%, cuota 6,62%, tasa de mercado 16,95%, tasa de equilibrio 18%, PD promedio de cartera 12,9%, r_bueno 14,20%, r_malo -38,56%, prepago 80,88% y mes esperado 16,37.",
+    "Menor: La decisión de rechazar (monto 0, tasa 0) es la que exige la política: el paso 1 no se cumple, el paso 2a no aplica porque la tasa sugerida es nula y el monto máximo objetivo es 0.",
+    "Menor: El memo describe el paso 2b como sin contraoferta válida, pero la política lo activa formalmente porque 0 es menor que el monto pedido; el resultado es equivalente al rechazo y no cambia la decisión.",
+    "Menor: El análisis de cupo presenta 1.000 USD a 18% como 'Mejor oferta'. No es una opción de la política; el memo lo aclara como alternativa simulada que no corresponde a 2a ni 2b, así que no sostiene la decisión.",
+    "Menor: La afirmación de que las contribuciones logit no permiten separar el efecto de la tasa o de la deuda/ingreso es una interpretación no explícita en la herramienta de riesgo, aunque no altera la decisión.",
+    "Menor: El análisis de cupo menciona un monto máximo con utilidad positiva de 1.000 USD y un monto máximo objetivo de 0; ambos son consistentes con las herramientas, pero el memo no aclara la diferencia entre los dos conceptos."
+   ]
+  },
+  "intentos": 1,
+  "llave_motor": false,
+  "estado": "propuesta sin firma (eval)"
+ },
+ "juez": {
+  "veredicto": {
+   "justifica_con_numeros": true,
+   "coherente": true,
+   "alertas": true,
+   "sin_invenciones": true,
+   "claro": true,
+   "explicacion_justifica_con_numeros": "El rechazo se apoya en varias cifras concretas: ROI esperado de -1,52% (menor que 4%), monto máximo objetivo de 0 USD, tasa sugerida nula, PD de 29,8% frente a 12,9% de la cartera y utilidad esperada de -36,50 USD.",
+   "explicacion_coherente": "El memo indica rechazar con monto 0 y tasa 0, igual que la sección Decisión de los datos (rechazar, 0, 0). El resumen y los pasos también son consistentes con ese resultado.",
+   "explicacion_alertas": "Recoge las señales de cautela presentes en los datos: tasa fuera de rango (14,65% frente a 16,95%), escenario de estrés no calculable y antigüedad laboral sin dato. No inventa alertas. Por ejemplo, no señala la cuota como alta, lo cual es correcto con 6,6%.",
+   "explicacion_sin_invenciones": "Todas las cifras coinciden con las salidas de los especialistas: PD, contribuciones logit, r_bueno, r_malo, prepago, mes de pago, tasa de mercado, tasa de equilibrio y la alternativa de 1.000 USD a 18%. Las referencias a la política son coherentes con los pasos aplicados y no añaden causas ni recomendaciones ajenas a los datos.",
+   "explicacion_claro": "El resumen y la sección Decisión presentan de inmediato el rechazo y su motivo: ROI negativo y ningún monto ni tasa viable. Los pasos numerados facilitan una lectura rápida."
+  },
+  "modelo": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 5024,
+   "output_tokens": 963
+  }
+ }
+}

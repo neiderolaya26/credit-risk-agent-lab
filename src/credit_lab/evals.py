@@ -68,28 +68,53 @@ def seleccionar_casos(motor: Motor, s2: pd.DataFrame, por_estrato: int = POR_EST
     return casos
 
 
+def _filas(casos: pd.DataFrame, s2: pd.DataFrame, desde: int = 0) -> list[dict]:
+    from credit_lab.agente import resumen_solicitud
+
+    posicion = {idx: i for i, idx in enumerate(s2.index)}
+    return [{"id": f"c{n:02d}", "posicion": posicion[idx], "decision_motor": c["decision_motor"],
+             "malo_real": int(c["malo"]), "subgrado": c["sub_grade"],
+             "roi_esperado_motor": round(float(c["roi_esperado"]), 4),
+             "solicitud": resumen_solicitud(casos.loc[[idx]])}
+            for n, (idx, c) in enumerate(casos.iterrows(), start=desde)]
+
+
 def guardar_casos(casos: pd.DataFrame, s2: pd.DataFrame, carpeta: Path = CARPETA) -> None:
     """casos.json: posición en la muestra jul–dic 2015 (no ids de Lending Club) + estrato. casos.md: para revisar."""
-    from credit_lab.agente import CAMPO_FICO, resumen_solicitud
-
     carpeta.mkdir(parents=True, exist_ok=True)
-    posicion = {idx: i for i, idx in enumerate(s2.index)}
-    filas = []
-    for n, (idx, c) in enumerate(casos.iterrows()):
-        filas.append({"id": f"c{n:02d}", "posicion": posicion[idx], "decision_motor": c["decision_motor"],
-                      "malo_real": int(c["malo"]), "subgrado": c["sub_grade"],
-                      "roi_esperado_motor": round(float(c["roi_esperado"]), 4),
-                      "solicitud": resumen_solicitud(casos.loc[[idx]])})
+    escribir_casos(_filas(casos, s2), carpeta)
+
+
+def agregar_rechazos(motor: Motor, s2: pd.DataFrame, n: int = 5, carpeta: Path = CARPETA) -> list[dict]:
+    """Agrega n casos que la política del motor rechaza (decisión 022): con la regla 2b casi no quedaban
+    rechazos entre los 30 originales. Mezcla resultados reales (la mayoría malos, como en la población rechazada)."""
+    filas = json.loads((carpeta / "casos.json").read_text(encoding="utf-8"))
+    usados = {f["posicion"] for f in filas}
+    pool = s2.drop(s2.index[list(usados)]).sample(20 * POOL, random_state=SEMILLA + 1)
+    pool = pool.join(politica_motor(motor, pool))
+    rech = pool[pool["decision_motor"].eq("rechazar")]
+    malos, buenos = rech[rech["malo"].eq(1)], rech[rech["malo"].eq(0)]
+    n_buenos = min(2, len(buenos))
+    nuevos = pd.concat([malos.sample(n - n_buenos, random_state=SEMILLA), buenos.sample(n_buenos, random_state=SEMILLA)])
+    agregados = _filas(nuevos, s2, desde=len(filas))
+    escribir_casos(filas + agregados, carpeta)
+    return agregados
+
+
+def escribir_casos(filas: list[dict], carpeta: Path = CARPETA) -> None:
+    from credit_lab.agente import CAMPO_FICO
+
     (carpeta / "casos.json").write_text(json.dumps(filas, ensure_ascii=False, indent=1), encoding="utf-8")
     lineas = ["# Casos de la eval del agente", "",
-              "30 préstamos de jul–dic 2015, estratificados por la decisión de la política del motor y el resultado real.", "",
+              f"{len(filas)} préstamos de jul–dic 2015, estratificados por la decisión de la política del motor y el resultado real "
+              "(c30 en adelante: rechazos del motor agregados en la decisión 022).", "",
               "| id | motor | real | subgrado | monto | tasa LC | ingreso | FICO | DTI | propósito | ROI esperado |",
               "|---|---|---|---|---|---|---|---|---|---|---|"]
     for f in filas:
         s = f["solicitud"]
         lineas.append(f"| {f['id']} | {f['decision_motor']} | {'malo' if f['malo_real'] else 'bueno'} | {f['subgrado']} | "
                       f"{s['monto pedido (USD)']:,.0f} | {s['tasa ofrecida por Lending Club (%)']:.2f}% | "
-                      f"{s['ingreso anual (USD)']:,.0f} | {s[CAMPO_FICO]:.0f} | {s['deuda / ingreso (%)']} | {s['propósito']} | "
+                      f"{s['ingreso anual (USD)']:,.0f} | {s.get(CAMPO_FICO, s.get("FICO")):.0f} | {s['deuda / ingreso (%)']} | {s['propósito']} | "
                       f"{f['roi_esperado_motor']:.1%} |")
     (carpeta / "casos.md").write_text("\n".join(lineas) + "\n", encoding="utf-8")
 
@@ -192,7 +217,7 @@ def juzgar(cliente, memo: str, datos: dict) -> dict:
 
 def main() -> None:
     p = argparse.ArgumentParser(description="Evals del agente de crédito.")
-    p.add_argument("accion", choices=["casos", "correr", "reporte", "recalificar", "rejuzgar"])
+    p.add_argument("accion", choices=["casos", "rechazos", "correr", "reporte", "recalificar", "rejuzgar"])
     p.add_argument("--version", default=None, help="variante a reportar o recalificar (por defecto la actual)")
     p.add_argument("--limite", type=int, default=None)
     p.add_argument("--modelo", default="claude-haiku-5-5")
@@ -204,6 +229,9 @@ def main() -> None:
         guardar_casos(casos, s2)
         print(casos.groupby(["decision_motor", "malo"]).size())
         print(f"Casos guardados en {CARPETA}")
+    elif args.accion == "rechazos":
+        for f in agregar_rechazos(Motor(), cargar_muestra()):
+            print(f["id"], f["decision_motor"], "malo" if f["malo_real"] else "bueno", f["subgrado"])
     elif args.accion == "correr":
         from credit_lab.evals_runner import correr
 

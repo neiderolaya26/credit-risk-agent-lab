@@ -16,7 +16,7 @@ import pandas as pd
 
 from credit_lab import registro
 from credit_lab.agente import (PRECIOS, VERSION, Herramientas, Medidor, cliente_anthropic, construir, evaluar_solicitud,
-                               limpio, reglas_duras, resumen_solicitud)
+                               NO_OTORGA, limpio, reglas_duras, resumen_solicitud)
 from credit_lab.evals import CARPETA, JUEZ, RUBRICA, cargar_muestra, fidelidad, juzgar
 from credit_lab.prepago import rendimiento
 
@@ -48,7 +48,7 @@ def calificar(estado: dict, caso: dict, herr) -> dict:
     """Notas programadas (gratis) de una ejecución."""
     final, sol = estado["final"], estado["solicitud"]
     salidas = [h["salida"] for e in estado["especialistas"].values() for h in e["herramientas"]]
-    oferta = None if final["decision"] == "rechazar" else herr.simular_oferta(sol, final["monto"], final["tasa"])
+    oferta = None if final["decision"] in NO_OTORGA else herr.simular_oferta(sol, final["monto"], final["tasa"])
     fid, sin_respaldo = fidelidad(final.get("memo", ""), salidas + ([oferta] if oferta else []),
                                   resumen_solicitud(sol))
     return {
@@ -184,7 +184,7 @@ def reporte(modelo: str = "claude-haiku-5-5", version: str = VERSION) -> pd.Data
     n = len(df)
     notas = {k: df[f"grade.{k}"].mean() for k in ("concordancia", "reglas_ok", "fidelidad", "auditoria_1er_intento", "juez")}
     criterios = {k: df[f"juez_criterios.{k}"].mean() for k in RUBRICA if f"juez_criterios.{k}" in df}
-    otorga_agente = df["decision_agente"].ne("rechazar")
+    otorga_agente = ~df["decision_agente"].isin(NO_OTORGA)  # un caso escalado no otorga hasta que lo firme un analista
     otorga_motor = df["decision_motor"].ne("rechazar")
 
     def negocio(m):
@@ -207,7 +207,7 @@ def reporte(modelo: str = "claude-haiku-5-5", version: str = VERSION) -> pd.Data
     lineas += ["", "## Decisión del agente frente a la política del motor", "", tabla_md(confusion), "",
                "## Resultado real de lo que se otorga (aprobar o contraoferta)", "",
                tabla_md(negocio_tabla, {"préstamos": "{:,.0f}", "mora real": "{:.1%}", "ROI real": "{:.1%}"}), "",
-               "Con 30 casos estas diferencias son ruidosas: sirven para detectar errores grandes, no para declarar un ganador.",
+               f"Con {n} casos estas diferencias son ruidosas: sirven para detectar errores grandes, no para declarar un ganador.",
                "La contraoferta cambia monto o tasa; se usa el resultado real del préstamo original como aproximación."]
     texto = "\n".join(lineas) + "\n"
     (carpeta / "reporte.md").write_text(texto, encoding="utf-8")

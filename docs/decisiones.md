@@ -313,7 +313,7 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
 ## 021 — Revisión de cierre: firma humana, valor en dinero, equidad y reproducibilidad
 
 - **Fecha:** 2026-10-31
-- **Contexto:** una revisión estricta del repo, hecha como la haría un hiring manager de riesgo de crédito, encontró cinco problemas:
+- **Contexto:** al revisar el proyecto pensando en cómo funcionaría en producción en una financiera, identifiqué cinco problemas:
   - "100% IA, sin intervención humana" es una señal de alarma en crédito (gobierno de modelos, explicación de rechazos, crédito justo), y no había análisis de equidad;
   - el repo no se podía reproducir (sin pipeline documentado, versiones sin fijar, sin CI);
   - la mejora del AUC (+0,0039) no estaba traducida a dinero;
@@ -334,4 +334,21 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
     - `ajustar` ya no depende de un archivo que solo creaba el notebook 04.
   - **Presentación:** resumen de 30 segundos con un gráfico arriba, `README.en.md`, la concordancia (83%) en los resultados, la aclaración de que la v3 no tiene eval propia y el formato corregido de los reportes de evals.
 - **Alternativas consideradas:** solo cambiar el mensaje y dejar el agente sin firma; mantener 100% IA.
-- **Por qué (en mis palabras):** humano en rechazos.
+- **Por qué (en mis palabras):** me parece prudente que el factor humano tenga poder de decisión en los desembolsos: al fin y al cabo se está arriesgando un activo importante, el capital. Las herramientas de IA son un complemento de todo el proceso: hacen más fácil el desembolso y tienen en cuenta las características del cliente. Pero en todos los modelos existe una zona gris, y ahí es prudente hacer un doble check con el factor humano, porque la experiencia del analista es un factor diferencial.
+
+---
+
+## 022 — Doble llave en la aprobación y "escalar" cuando la auditoría falla
+
+- **Fecha:** 2026-10-31
+- **Contexto:** con la firma humana de la decisión 021 quedaron dos huecos:
+  - la aprobación automática dependía solo de que el comité de IA dijera "aprobar"; nada en el código exigía que el motor también aprobara (en las evals nunca pasó, pero tampoco había nada que lo impidiera);
+  - si la auditoría fallaba dos veces, el caso se convertía en "rechazar" con monto 0, así que el analista recibía un rechazo cuando en realidad el agente no había podido decidir.
+- **Decisión:**
+  - **Doble llave:** una aprobación sale automática solo si el comité dice "aprobar" y la regla 1 de la política del motor, sin LLM, también aprueba el monto y la tasa pedidos (ROI esperado ≥ 4% y cuota ≤ 20% del ingreso). Si las llaves no coinciden, el caso espera la firma de un analista.
+  - **Escalar:** si la auditoría no aprueba tras dos intentos, la decisión final es "escalar", con la propuesta original del comité, y espera la firma. Un caso escalado no otorga crédito, ni en el registro ni en las evals.
+  - **Evals de la v3** con Haiku 5.5, ya con estas dos reglas, en los 30 casos más 5 rechazos del motor (c30–c34): con la regla 2b casi no quedaban rechazos en la muestra. Resultado: concordancia 100% (la v2, 83%), auditoría al primer intento 100%, juez 98%, USD 0,007 por solicitud. La doble llave y el estado "escalar" no se activaron; los cubren los tests.
+  - **Contexto del valor:** +USD 337 mil por cada 10.000 solicitudes al 20% de rechazo son 0,32% de los USD 104 M colocados y 4,7% más utilidad que la regla de Lending Club. El IC solo mide el ruido de la muestra de 2015.
+  - **Python 3.12 o superior**, con el CI probando 3.12 y 3.14.
+- **Alternativas consideradas:** dejar la aprobación solo en manos del comité; mantener el rechazo conservador cuando falla la auditoría.
+- **Por qué (en mis palabras):** en todos los modelos existe una zona gris. Cuando el comité de IA y el motor no coinciden, o la auditoría no logra validar la propuesta, el caso está en esa zona, y ahí es prudente hacer un doble check con el factor humano, que aporta el diferencial de la experiencia. Un caso que el agente no pudo decidir no es un rechazo.

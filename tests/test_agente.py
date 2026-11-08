@@ -10,6 +10,12 @@ OFERTA_OK = {"cuota_ingreso": 0.07, "roi_esperado": 0.05}
 
 
 class HerramientasFalsas:
+    def __init__(self, motor_aprueba: bool = True):
+        self._motor_aprueba = motor_aprueba
+
+    def motor_aprueba(self, sol):
+        return self._motor_aprueba
+
     def riesgo(self, sol):
         return {"pd": 0.12}
 
@@ -75,7 +81,8 @@ def test_auditor_devuelve_al_comite_y_luego_aprueba():
 def test_violacion_de_regla_impide_aprobar_aunque_el_auditor_apruebe():
     cliente = ClienteFalso([_decision(tasa=45.0)] * 2, [Auditoria(aprobado=True, hallazgos=[])] * 2)
     final = evaluar_solicitud(construir(cliente, HerramientasFalsas()), SOLICITUD)["final"]
-    assert final["decision"] == "rechazar" and final["intentos"] == 2
+    assert final["decision"] == "escalar" and final["intentos"] == 2  # no se convierte en rechazo (decisión 022)
+    assert final["propuesta_original"]["tasa"] == 45.0 and final["estado"] == "pendiente de firma"
     assert any("tasa fuera de la grilla" in h for h in final["auditoria"]["hallazgos"])
 
 
@@ -83,6 +90,13 @@ def test_aprobacion_no_espera_firma():
     cliente = ClienteFalso([_decision()], [Auditoria(aprobado=True, hallazgos=[])])
     estado = evaluar_solicitud(construir(cliente, HerramientasFalsas()), SOLICITUD, hilo="a")
     assert "__interrupt__" not in estado and estado["final"]["estado"] == "aprobada automáticamente"
+
+
+def test_aprobacion_sin_llave_del_motor_espera_firma():
+    cliente = ClienteFalso([_decision()], [Auditoria(aprobado=True, hallazgos=[])])
+    estado = evaluar_solicitud(construir(cliente, HerramientasFalsas(motor_aprueba=False)), SOLICITUD, hilo="c")
+    assert estado["final"]["decision"] == "aprobar" and estado["final"]["estado"] == "pendiente de firma"
+    assert estado["__interrupt__"][0].value["llave_motor"] is False
 
 
 def test_contraoferta_espera_firma_y_el_analista_la_confirma():

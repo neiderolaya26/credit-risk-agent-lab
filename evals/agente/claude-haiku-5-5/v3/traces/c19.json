@@ -1,0 +1,269 @@
+{
+ "historial": [
+  {
+   "nodo": "cupo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: neutral.**\n\n**Hallazgos clave**\n- **Oferta original (7.000 USD a 12,29%):** ROI esperado 3,90%, por debajo del objetivo de 4%. Utilidad de 272,9 USD y PD de 26,5%. Cuota/ingreso de 7,0%, dentro del límite de 20%.\n- **Límites:** monto máximo con utilidad > 0 de 19.000 USD. Monto máximo con ROI ≥ 4% de 6.000 USD. Tasa de equilibrio de 8,5%. Tasa sugerida de 12,5% para 7.000 USD (ROI 4,10%).\n- **Mejor oferta: 6.000 USD a 12,29%.** ROI 4,82%, utilidad 289,1 USD, PD 24,9%, cuota/ingreso 6,0%.\n- **Estrés:** las tasas de equilibrio y sugerida bajo estrés (8,5% y 12,5%) coinciden con las base.\n- **Advertencia:** tasa de mercado de ~16,5%. Las tres opciones quedan a más de 1 pt de esa tasa, sin evidencia histórica que las respalde.\n\n**Recomendación:** ofrecer 6.000 USD a 12,29%, sujeto a validar la tasa con datos históricos antes de aprobar.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_cupo_pricing",
+      "entrada": {},
+      "salida": {
+       "monto_pedido": 7000.0,
+       "tasa_ofrecida": 12.29,
+       "tasa_mercado": 16.531318,
+       "pd": 0.265233,
+       "roi_esperado": 0.038988,
+       "utilidad_esperada": 272.915525,
+       "cuota_ingreso": 0.070041,
+       "monto_maximo": 19000.0,
+       "monto_maximo_objetivo": 6000.0,
+       "tasa_equilibrio": 8.5,
+       "tasa_sugerida": 12.5,
+       "sugerida_fuera_de_rango": true,
+       "contraoferta_a_tasa_sugerida": {
+        "monto": 7000.0,
+        "tasa": 12.5,
+        "pd": 0.265233,
+        "roi_esperado": 0.041036,
+        "utilidad_esperada": 287.250217,
+        "cuota_ingreso": 0.070253,
+        "cumple_capacidad": true,
+        "tasa_mercado": 16.531318,
+        "fuera_de_rango": true,
+        "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+        "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+       },
+       "contraoferta_b_monto_objetivo": {
+        "monto": 6000.0,
+        "tasa": 12.29,
+        "pd": 0.24879,
+        "roi_esperado": 0.048184,
+        "utilidad_esperada": 289.102444,
+        "cuota_ingreso": 0.060035,
+        "cumple_capacidad": true,
+        "tasa_mercado": 16.538005,
+        "fuera_de_rango": true,
+        "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+        "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+       },
+       "tasa_equilibrio_estres": 8.5,
+       "tasa_sugerida_estres": 12.5,
+       "regla_cuota_max": 0.2,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 7000,
+       "tasa": 12.29
+      },
+      "salida": {
+       "monto": 7000,
+       "tasa": 12.29,
+       "pd": 0.265233,
+       "roi_esperado": 0.038988,
+       "utilidad_esperada": 272.915527,
+       "cuota_ingreso": 0.070041,
+       "cumple_capacidad": true,
+       "tasa_mercado": 16.531318,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "economia",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave (préstamo de USD 7.000 a 12,29%)**\n\n- **Escenario bueno:** rendimiento de 16,72%.\n- **Escenario malo:** pérdida de -31,62%.\n- **Probabilidad de incumplimiento (PD):** 26,52%.\n- **ROI esperado:** 3,90%, equivalente a una utilidad esperada de USD 272,92.\n- **Prepago:** probabilidad de 47,62% de pagar antes del mes 30; mes esperado de pago 26,45.\n- **Capacidad de pago:** cuota/ingreso de 7,00%, dentro del límite.\n- **Tasa de mercado estimada:** 16,53%. La tasa ofrecida está más de 1 punto por debajo, por lo que la oferta queda **fuera de rango** y no hay evidencia histórica que la respalde.\n\n**Lectura:** el ROI esperado es positivo, pero es bajo para una PD de 26,52% y una pérdida de -31,62% en el escenario malo. La rentabilidad depende de que el préstamo no caiga en incumplimiento, y la tasa ofrecida está por debajo de la que el mercado estimaría para este perfil.\n\n**Señal final: neutral.** Sería más atractivo a una tasa cercana o superior a la de mercado estimada, o con una PD menor.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_economia",
+      "entrada": {},
+      "salida": {
+       "r_bueno": 0.167212,
+       "r_malo": -0.31623,
+       "pd": 0.265233,
+       "roi_esperado": 0.038988,
+       "utilidad_esperada": 272.915525,
+       "prob_prepago_antes_mes_30": 0.476241,
+       "mes_esperado_de_pago": 26.454734
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 7000,
+       "tasa": 12.29
+      },
+      "salida": {
+       "monto": 7000,
+       "tasa": 12.29,
+       "pd": 0.265233,
+       "roi_esperado": 0.038988,
+       "utilidad_esperada": 272.915527,
+       "cuota_ingreso": 0.070041,
+       "cumple_capacidad": true,
+       "tasa_mercado": 16.531318,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "riesgo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: desfavorable.**\n\nLa PD del modelo campeón (LightGBM recalibrado) es **26.5%**, frente a un promedio de cartera de **12.9%**, es decir, más del doble.\n\n**Razones que suben el riesgo (SHAP):**\n1. **Uso de tarjetas:** 101.4%. Contribución más fuerte (+0.36 en logit).\n2. **Consultas de crédito en 6 meses:** 2 (+0.22).\n3. **Cuentas rotativas activas:** 11 (+0.19).\n4. **Ingreso anual:** USD 40,000 (+0.13).\n\n**Razón que baja el riesgo:** antigüedad de la cuenta rotativa más antigua, 238 meses (-0.12).\n\n**Discrepancia a revisar:** la solicitud indica un uso del crédito rotativo de 54.4%, pero la herramienta usó 101.4% para \"uso de tarjetas\". Si el dato correcto es 54.4%, la PD que devolvió el modelo podría estar sobrestimada. Conviene confirmar la variable antes de decidir.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_riesgo",
+      "entrada": {},
+      "salida": {
+       "pd": 0.265233,
+       "pd_promedio_cartera": 0.128836,
+       "razones": [
+        {
+         "descripcion": "Uso de tarjetas (%)",
+         "valor": 101.400002,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.360459
+        },
+        {
+         "descripcion": "Consultas de crédito en los últimos 6 meses",
+         "valor": 2.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.215663
+        },
+        {
+         "descripcion": "Cuentas rotativas activas",
+         "valor": 11.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.187902
+        },
+        {
+         "descripcion": "Ingreso anual",
+         "valor": 40000.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.128453
+        },
+        {
+         "descripcion": "Antigüedad de la cuenta rotativa más vieja (meses)",
+         "valor": 238.0,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.119099
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 1,
+   "contenido": {
+    "decision": "contraoferta",
+    "monto": 7000.0,
+    "tasa": 12.5,
+    "razones": [
+     "La oferta original (7.000 USD a 12,29%) tiene ROI esperado de 3,90%, por debajo del 4% exigido en el paso 1 de la política.",
+     "La cuota de la oferta original es 7,00% del ingreso, dentro del límite de 20%.",
+     "Contraoferta a: 7.000 USD a la tasa sugerida de 12,5%, con ROI esperado de 4,10% (≥ 4%), tasa dentro del rango de 5% a 30% y cuota de 7,03% (≤ 20%).",
+     "La tasa sugerida aparece marcada como fuera de rango (se aleja más de 1 pt de la tasa de mercado). La política indica que esta alerta no cambia la decisión.",
+     "La contraoferta b (6.000 USD a 12,29%) no se aplica porque la opción a ya cumple.",
+     "El especialista de riesgo reporta una PD de 26,5% frente a un promedio de cartera de 12,9%, con señal desfavorable."
+    ],
+    "memo": "## Resumen\nSolicitud de 7.000 USD a 12,29% para consolidación de deuda, con FICO de 687 (punto medio del rango). La oferta original no cumple el ROI esperado mínimo de 4% (3,90%). El comité emite una contraoferta de 7.000 USD a 12,5%, que cumple el criterio 2a de la política.\n\n## Decisión\nContraoferta por 7.000 USD a una tasa de 12,5%. Paso 1: la oferta original no cumple (ROI de 3,90% frente a un mínimo de 4%). Paso 2a: a la tasa sugerida de 12,5%, el ROI es de 4,10%, la tasa está dentro del rango de 5% a 30% y la cuota es de 7,03% del ingreso (≤ 20%). La contraoferta b no se evalúa porque la opción a ya cumple.\n\n## Riesgo\nEl especialista de riesgo reporta señal desfavorable. La PD del modelo campeón (LightGBM recalibrado) es de 26,5%, frente a un promedio de cartera de 12,9%. Factores que suben el riesgo según SHAP: uso de tarjetas de 101,4% (+0,36 en logit), consultas de crédito en 6 meses de 2 (+0,22), cuentas rotativas activas de 11 (+0,19) e ingreso anual de USD 40.000 (+0,13). Factor que baja el riesgo: antigüedad de la cuenta rotativa más vieja de 238 meses (-0,12).\n\n## Economía\nEl especialista de economía reporta señal neutral para la oferta original. Escenario bueno con rendimiento de 16,72% y escenario malo con pérdida de -31,62%. PD de 26,52%, ROI esperado de 3,90% y utilidad esperada de USD 272,92. Probabilidad de 47,62% de pagar antes del mes 30, con mes esperado de pago 26,45. Cuota de 7,00% del ingreso. Según el especialista, el ROI es bajo para la PD y la pérdida en el escenario malo. Según la simulación de cupo, la contraoferta de 7.000 USD a 12,5% tiene ROI de 4,10% y utilidad esperada de USD 287,25.\n\n## Cupo y precio\nEl especialista de cupo reporta señal neutral. Monto máximo con utilidad positiva: 19.000 USD. Monto máximo con ROI ≥ 4%: 6.000 USD. Tasa de equilibrio: 8,5%. Tasa sugerida: 12,5% para 7.000 USD. Tasa de equilibrio y tasa sugerida bajo estrés: 8,5% y 12,5%, que coinciden con las base. El especialista propone como mejor oferta 6.000 USD a 12,29% (ROI de 4,82%, utilidad de USD 289,1, PD de 24,9% y cuota de 6,0%), sujeta a validar la tasa con datos históricos. El comité no adopta esa propuesta porque la opción 2a de la política se cumple primero.\n\n## Alertas\n- Tasa de mercado estimada de 16,53% para 7.000 USD. La tasa ofrecida (12,29%) y la sugerida (12,5%) quedan a más de 1 pt de esa tasa, sin evidencia histórica que las respalde. Según la política, esta alerta no cambia la decisión.\n- La tasa de mercado se estima para el perfil y el monto, por lo que cambia si cambia el monto.\n- Discrepancia de datos: la solicitud indica uso del crédito rotativo de 54,4%, mientras que la herramienta de riesgo usó 101,4% como uso de tarjetas. El especialista de riesgo señaló que, si el dato correcto es 54,4%, la PD podría estar sobrestimada."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 1,
+   "contenido": {
+    "aprobado": true,
+    "hallazgos": [
+     "Verificado: ROI de la oferta original 3,90% (3,8988%), cuota 7,00%, PD 26,52%, utilidad 272,92 USD, r_bueno 16,72%, r_malo -31,62%, prepago 47,62% y mes esperado 26,45 coinciden con las herramientas.",
+     "Verificado: contraoferta a (7.000 USD a 12,5%) con ROI 4,10% (4,1036%), utilidad 287,25 USD y cuota 7,03% coincide con la herramienta y cumple el paso 2a de la política; la decisión de contraoferta por 7.000 USD a 12,5% es la que exige la política.",
+     "Verificado: monto máximo 19.000 USD, monto máximo objetivo 6.000 USD, tasa de equilibrio 8,5%, tasa sugerida 12,5%, tasa de mercado 16,5% y opción 6.000 USD a 12,29% (ROI 4,82%, utilidad 289,1 USD, PD 24,9%, cuota 6,0%) coinciden con las herramientas con redondeo.",
+     "Verificado: PD del modelo 26,5%, promedio de cartera 12,9% y contribuciones SHAP (101,4%: +0,36; consultas: +0,22; cuentas rotativas: +0,19; ingreso: +0,13; antigüedad: -0,12) coinciden con la salida de la herramienta de riesgo.",
+     "Verificado: no hay violaciones de reglas duras (cuota ≤ 20% y ROI ≥ 0% en lo otorgado) y la alerta de tasa fuera de rango se trata como lo indica la política.",
+     "Menor: la discrepancia de uso del crédito rotativo (54,4% en la solicitud frente a 101,4% usado por el modelo) está bien señalada en el memo, pero la PD usada en la decisión podría depender de esa variable. Conviene confirmar el dato con el área responsable para documentar la decisión.",
+     "Menor: el memo afirma que la PD de 24,9% de la opción 6.000 USD a 12,29% corresponde a 0,24879, que redondeado a un decimal es 24,9%; es correcto, pero a dos decimales sería 24,88%."
+    ],
+    "oferta": {
+     "monto": 7000.0,
+     "tasa": 12.5,
+     "pd": 0.265233,
+     "roi_esperado": 0.041036,
+     "utilidad_esperada": 287.250217,
+     "cuota_ingreso": 0.070253,
+     "cumple_capacidad": true,
+     "tasa_mercado": 16.531318,
+     "fuera_de_rango": true,
+     "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+     "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+    },
+    "violaciones": []
+   }
+  }
+ ],
+ "final": {
+  "decision": "contraoferta",
+  "monto": 7000.0,
+  "tasa": 12.5,
+  "razones": [
+   "La oferta original (7.000 USD a 12,29%) tiene ROI esperado de 3,90%, por debajo del 4% exigido en el paso 1 de la política.",
+   "La cuota de la oferta original es 7,00% del ingreso, dentro del límite de 20%.",
+   "Contraoferta a: 7.000 USD a la tasa sugerida de 12,5%, con ROI esperado de 4,10% (≥ 4%), tasa dentro del rango de 5% a 30% y cuota de 7,03% (≤ 20%).",
+   "La tasa sugerida aparece marcada como fuera de rango (se aleja más de 1 pt de la tasa de mercado). La política indica que esta alerta no cambia la decisión.",
+   "La contraoferta b (6.000 USD a 12,29%) no se aplica porque la opción a ya cumple.",
+   "El especialista de riesgo reporta una PD de 26,5% frente a un promedio de cartera de 12,9%, con señal desfavorable."
+  ],
+  "memo": "## Resumen\nSolicitud de 7.000 USD a 12,29% para consolidación de deuda, con FICO de 687 (punto medio del rango). La oferta original no cumple el ROI esperado mínimo de 4% (3,90%). El comité emite una contraoferta de 7.000 USD a 12,5%, que cumple el criterio 2a de la política.\n\n## Decisión\nContraoferta por 7.000 USD a una tasa de 12,5%. Paso 1: la oferta original no cumple (ROI de 3,90% frente a un mínimo de 4%). Paso 2a: a la tasa sugerida de 12,5%, el ROI es de 4,10%, la tasa está dentro del rango de 5% a 30% y la cuota es de 7,03% del ingreso (≤ 20%). La contraoferta b no se evalúa porque la opción a ya cumple.\n\n## Riesgo\nEl especialista de riesgo reporta señal desfavorable. La PD del modelo campeón (LightGBM recalibrado) es de 26,5%, frente a un promedio de cartera de 12,9%. Factores que suben el riesgo según SHAP: uso de tarjetas de 101,4% (+0,36 en logit), consultas de crédito en 6 meses de 2 (+0,22), cuentas rotativas activas de 11 (+0,19) e ingreso anual de USD 40.000 (+0,13). Factor que baja el riesgo: antigüedad de la cuenta rotativa más vieja de 238 meses (-0,12).\n\n## Economía\nEl especialista de economía reporta señal neutral para la oferta original. Escenario bueno con rendimiento de 16,72% y escenario malo con pérdida de -31,62%. PD de 26,52%, ROI esperado de 3,90% y utilidad esperada de USD 272,92. Probabilidad de 47,62% de pagar antes del mes 30, con mes esperado de pago 26,45. Cuota de 7,00% del ingreso. Según el especialista, el ROI es bajo para la PD y la pérdida en el escenario malo. Según la simulación de cupo, la contraoferta de 7.000 USD a 12,5% tiene ROI de 4,10% y utilidad esperada de USD 287,25.\n\n## Cupo y precio\nEl especialista de cupo reporta señal neutral. Monto máximo con utilidad positiva: 19.000 USD. Monto máximo con ROI ≥ 4%: 6.000 USD. Tasa de equilibrio: 8,5%. Tasa sugerida: 12,5% para 7.000 USD. Tasa de equilibrio y tasa sugerida bajo estrés: 8,5% y 12,5%, que coinciden con las base. El especialista propone como mejor oferta 6.000 USD a 12,29% (ROI de 4,82%, utilidad de USD 289,1, PD de 24,9% y cuota de 6,0%), sujeta a validar la tasa con datos históricos. El comité no adopta esa propuesta porque la opción 2a de la política se cumple primero.\n\n## Alertas\n- Tasa de mercado estimada de 16,53% para 7.000 USD. La tasa ofrecida (12,29%) y la sugerida (12,5%) quedan a más de 1 pt de esa tasa, sin evidencia histórica que las respalde. Según la política, esta alerta no cambia la decisión.\n- La tasa de mercado se estima para el perfil y el monto, por lo que cambia si cambia el monto.\n- Discrepancia de datos: la solicitud indica uso del crédito rotativo de 54,4%, mientras que la herramienta de riesgo usó 101,4% como uso de tarjetas. El especialista de riesgo señaló que, si el dato correcto es 54,4%, la PD podría estar sobrestimada.",
+  "auditoria": {
+   "aprobado": true,
+   "hallazgos": [
+    "Verificado: ROI de la oferta original 3,90% (3,8988%), cuota 7,00%, PD 26,52%, utilidad 272,92 USD, r_bueno 16,72%, r_malo -31,62%, prepago 47,62% y mes esperado 26,45 coinciden con las herramientas.",
+    "Verificado: contraoferta a (7.000 USD a 12,5%) con ROI 4,10% (4,1036%), utilidad 287,25 USD y cuota 7,03% coincide con la herramienta y cumple el paso 2a de la política; la decisión de contraoferta por 7.000 USD a 12,5% es la que exige la política.",
+    "Verificado: monto máximo 19.000 USD, monto máximo objetivo 6.000 USD, tasa de equilibrio 8,5%, tasa sugerida 12,5%, tasa de mercado 16,5% y opción 6.000 USD a 12,29% (ROI 4,82%, utilidad 289,1 USD, PD 24,9%, cuota 6,0%) coinciden con las herramientas con redondeo.",
+    "Verificado: PD del modelo 26,5%, promedio de cartera 12,9% y contribuciones SHAP (101,4%: +0,36; consultas: +0,22; cuentas rotativas: +0,19; ingreso: +0,13; antigüedad: -0,12) coinciden con la salida de la herramienta de riesgo.",
+    "Verificado: no hay violaciones de reglas duras (cuota ≤ 20% y ROI ≥ 0% en lo otorgado) y la alerta de tasa fuera de rango se trata como lo indica la política.",
+    "Menor: la discrepancia de uso del crédito rotativo (54,4% en la solicitud frente a 101,4% usado por el modelo) está bien señalada en el memo, pero la PD usada en la decisión podría depender de esa variable. Conviene confirmar el dato con el área responsable para documentar la decisión.",
+    "Menor: el memo afirma que la PD de 24,9% de la opción 6.000 USD a 12,29% corresponde a 0,24879, que redondeado a un decimal es 24,9%; es correcto, pero a dos decimales sería 24,88%."
+   ]
+  },
+  "intentos": 1,
+  "llave_motor": false,
+  "estado": "propuesta sin firma (eval)"
+ },
+ "juez": {
+  "veredicto": {
+   "justifica_con_numeros": true,
+   "coherente": true,
+   "alertas": true,
+   "sin_invenciones": true,
+   "claro": true,
+   "explicacion_justifica_con_numeros": "La decisión se apoya en varias cifras: ROI original de 3,90% frente al mínimo de 4%, ROI de 4,10% a 12,5%, cuota/ingreso de 7,03% (≤20%) y utilidad esperada de USD 287,25.",
+   "explicacion_coherente": "El resumen, la sección Decisión y los datos coinciden: contraoferta por 7.000 USD a 12,5%.",
+   "explicacion_alertas": "El memo menciona que las tasas ofrecida y sugerida quedan fuera de rango frente a la tasa de mercado (16,53%), sin evidencia histórica. También señala la discrepancia entre el uso del crédito rotativo de 54,4% y el 101,4% usado por el modelo, y reporta la PD de más del doble del promedio de cartera. No inventa alertas, aunque podría haber destacado que el ROI de 4,10% queda apenas por encima del mínimo.",
+   "explicacion_sin_invenciones": "Todas las cifras coinciden con los datos (PD, ROI, utilidades, cuota 7,03%, SHAP, estrés). Las referencias al rango de 5% a 30%, al paso 2a y a que la alerta no cambia la decisión se presentan como reglas de política, sin contradecir los datos.",
+   "explicacion_claro": "La estructura es clara y la sección Decisión explica en pocas líneas por qué se emite la contraoferta y por qué no se adopta la propuesta de 6.000 USD."
+  },
+  "modelo": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 5678,
+   "output_tokens": 1052
+  }
+ }
+}

@@ -1,6 +1,6 @@
 # Casos de la eval del agente
 
-30 préstamos de jul–dic 2015, estratificados por la decisión de la política del motor y el resultado real.
+35 préstamos de jul–dic 2015, estratificados por la decisión de la política del motor y el resultado real (c30 en adelante: rechazos del motor agregados en la decisión 022).
 
 | id | motor | real | subgrado | monto | tasa LC | ingreso | FICO | DTI | propósito | ROI esperado |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -24,7 +24,7 @@
 | c17 | contraoferta | malo | B1 | 5,000 | 8.18% | 51,000 | 685 | 25.84 | medical | -0.5% |
 | c18 | contraoferta | malo | C3 | 13,000 | 13.33% | 37,000 | 660 | 28.190001 | debt_consolidation | 1.8% |
 | c19 | contraoferta | malo | C1 | 7,000 | 12.29% | 40,000 | 685 | 15.2 | debt_consolidation | 3.9% |
-| c20 | rechazar | malo | E3 | 20,000 | 19.19% | 45,000 | 695 | 27.969999 | small_business | 0.8% |
+| c20 | contraoferta | malo | E3 | 20,000 | 19.19% | 45,000 | 695 | 27.969999 | small_business | 0.8% |
 | c21 | aprobar | malo | B4 | 24,000 | 10.99% | 72,000 | 660 | 10.18 | credit_card | 6.1% |
 | c22 | contraoferta | bueno | A4 | 30,000 | 7.26% | 160,000 | 750 | 22.73 | debt_consolidation | 2.5% |
 | c23 | aprobar | bueno | B1 | 12,000 | 8.38% | 48,000 | 665 | 29.940001 | credit_card | 5.8% |
@@ -34,3 +34,8 @@
 | c27 | aprobar | bueno | E1 | 8,000 | 18.25% | 36,000 | 665 | 24.030001 | house | 6.7% |
 | c28 | contraoferta | bueno | D5 | 14,050 | 17.86% | 37,000 | 670 | 30.879999 | credit_card | 3.1% |
 | c29 | contraoferta | bueno | C5 | 12,600 | 14.33% | 35,000 | 675 | 12.65 | debt_consolidation | 3.2% |
+| c30 | rechazar | malo | C2 | 10,000 | 12.88% | 25,200 | 697 | 23.469999 | credit_card | -5.3% |
+| c31 | rechazar | malo | C5 | 2,400 | 14.65% | 15,000 | 662 | 4.24 | medical | -1.5% |
+| c32 | rechazar | malo | D1 | 8,650 | 15.41% | 24,715 | 687 | 33.07 | credit_card | -5.6% |
+| c33 | rechazar | bueno | D1 | 5,875 | 15.77% | 56,000 | 672 | 25.65 | debt_consolidation | -7.4% |
+| c34 | rechazar | bueno | B4 | 22,000 | 10.99% | 44,000 | 672 | 23.24 | debt_consolidation | -12.0% |

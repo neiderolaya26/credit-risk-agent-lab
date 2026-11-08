@@ -1,0 +1,263 @@
+{
+ "historial": [
+  {
+   "nodo": "cupo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave (USD 8.650 a 15,41 %)**\n- PD de 48,7 % y ROI esperado de -5,6 %, con utilidad esperada de -486,85.\n- Cuota/ingreso de 14,6 %, dentro del límite de 20 %. La capacidad de pago no es el problema.\n- Tasa de mercado estimada de 13,78 %, así que la oferta está 1,63 pts por encima, fuera del rango de 1 pt con evidencia histórica.\n- Tasa de equilibrio de 25 %, también fuera de rango. A 25 % el ROI es solo 0,08 %.\n- No hay monto con ROI ≥ 4 % (máximo objetivo: 0) ni tasa sugerida. El monto máximo con utilidad > 0 es USD 1.000.\n- Con USD 1.000 a 15,41 %: PD 32,1 %, ROI 3,81 %, utilidad 38,10, dentro de rango (mercado 14,62 %).\n- El escenario de estrés no devolvió tasas de equilibrio ni sugeridas, así que no puedo cuantificarlo.\n\n**Mejor oferta:** No aprobar USD 8.650 a 15,41 %. La única alternativa con utilidad positiva y dentro de rango es USD 1.000 a 15,41 %, pero su ROI (3,81 %) queda por debajo del objetivo de 4 %.\n\n**Señal final: desfavorable.**",
+    "herramientas": [
+     {
+      "herramienta": "consultar_cupo_pricing",
+      "entrada": {},
+      "salida": {
+       "monto_pedido": 8650.0,
+       "tasa_ofrecida": 15.41,
+       "tasa_mercado": 13.779984,
+       "pd": 0.486676,
+       "roi_esperado": -0.056284,
+       "utilidad_esperada": -486.853944,
+       "cuota_ingreso": 0.146435,
+       "monto_maximo": 1000.0,
+       "monto_maximo_objetivo": 0.0,
+       "tasa_equilibrio": 25.0,
+       "tasa_sugerida": null,
+       "sugerida_fuera_de_rango": false,
+       "tasa_equilibrio_estres": null,
+       "tasa_sugerida_estres": null,
+       "regla_cuota_max": 0.2,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 8650,
+       "tasa": 15.41
+      },
+      "salida": {
+       "monto": 8650,
+       "tasa": 15.41,
+       "pd": 0.486676,
+       "roi_esperado": -0.056284,
+       "utilidad_esperada": -486.853933,
+       "cuota_ingreso": 0.146435,
+       "cumple_capacidad": true,
+       "tasa_mercado": 13.779984,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 1000,
+       "tasa": 15.41
+      },
+      "salida": {
+       "monto": 1000,
+       "tasa": 15.41,
+       "pd": 0.321052,
+       "roi_esperado": 0.038104,
+       "utilidad_esperada": 38.10387,
+       "cuota_ingreso": 0.016929,
+       "cumple_capacidad": true,
+       "tasa_mercado": 14.619282,
+       "fuera_de_rango": false,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 8650,
+       "tasa": 25
+      },
+      "salida": {
+       "monto": 8650,
+       "tasa": 25,
+       "pd": 0.486676,
+       "roi_esperado": 0.000848,
+       "utilidad_esperada": 7.331141,
+       "cuota_ingreso": 0.166986,
+       "cumple_capacidad": true,
+       "tasa_mercado": 13.779984,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "economia",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave**\n\n- **Rendimiento si sale bien:** 22.40%.\n- **Rendimiento si sale mal:** -35.19% (pérdida económica).\n- **Probabilidad de incumplimiento (PD):** 48.67%.\n- **ROI esperado:** -5.63%, con una utilidad esperada de -486.85 USD.\n- **Prepago:** la probabilidad de prepago antes del mes 30 es 36.89%, y el mes esperado de pago es 28.83.\n- **Capacidad de pago:** la cuota equivale al 14.64% del ingreso. Cumple el criterio de capacidad.\n- **Tasa vs. mercado:** la tasa de mercado estimada es 13.78%, así que la oferta de 15.41% está fuera de rango. Esto significa que no hay evidencia histórica que respalde esa tasa.\n\n**Conclusión:** a 15.41%, el préstamo destruye valor. Con casi una de cada dos probabilidades de impago y una pérdida en el escenario malo más profunda que la ganancia en el bueno, el ROI esperado es negativo.\n\n**Señal final: desfavorable.**",
+    "herramientas": [
+     {
+      "herramienta": "consultar_economia",
+      "entrada": {},
+      "salida": {
+       "r_bueno": 0.22397,
+       "r_malo": -0.351883,
+       "pd": 0.486676,
+       "roi_esperado": -0.056284,
+       "utilidad_esperada": -486.853944,
+       "prob_prepago_antes_mes_30": 0.368867,
+       "mes_esperado_de_pago": 28.82939
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 8650,
+       "tasa": 15.41
+      },
+      "salida": {
+       "monto": 8650,
+       "tasa": 15.41,
+       "pd": 0.486676,
+       "roi_esperado": -0.056284,
+       "utilidad_esperada": -486.853933,
+       "cuota_ingreso": 0.146435,
+       "cumple_capacidad": true,
+       "tasa_mercado": 13.779984,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "riesgo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: desfavorable.**\n\nLa PD del modelo campeón (LightGBM recalibrado) es **48,7%**, frente a un promedio de cartera de **12,9%**, aproximadamente 3,8 veces mayor.\n\nLas cinco razones SHAP que más elevan el riesgo son:\n1. **Consultas de crédito en 6 meses (4):** la mayor contribución individual.\n2. **Antigüedad laboral (sin dato):** el valor faltante también suma riesgo.\n3. **Ingreso anual (USD 24.715):** un ingreso bajo empuja la PD hacia arriba.\n4. **Monto solicitado sobre ingreso (0,35):** el préstamo equivale a una fracción grande del ingreso anual.\n5. **DTI (33,07%):** el nivel de endeudamiento contribuye de forma significativa.\n\nNinguna de las cinco razones reduce el riesgo. Conviene verificar la antigüedad laboral antes de decidir, porque su dato faltante afecta la predicción. Las herramientas no devolvieron la contribución de otras variables, como el uso de rotativo (28%) o la vivienda en alquiler, así que no puedo evaluar su efecto.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_riesgo",
+      "entrada": {},
+      "salida": {
+       "pd": 0.486676,
+       "pd_promedio_cartera": 0.128836,
+       "razones": [
+        {
+         "descripcion": "Consultas de crédito en los últimos 6 meses",
+         "valor": 4.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.398621
+        },
+        {
+         "descripcion": "Antigüedad laboral",
+         "valor": null,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.25137
+        },
+        {
+         "descripcion": "Ingreso anual",
+         "valor": 24715.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.236142
+        },
+        {
+         "descripcion": "Monto solicitado sobre ingreso anual",
+         "valor": 0.34999,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.216052
+        },
+        {
+         "descripcion": "Endeudamiento sobre ingreso (DTI)",
+         "valor": 33.07,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.212182
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 1,
+   "contenido": {
+    "decision": "rechazar",
+    "monto": 0.0,
+    "tasa": 0.0,
+    "razones": [
+     "ROI esperado de -5,63% a USD 8.650 y 15,41%, por debajo del mínimo de 4% de la política.",
+     "La cuota es 14,64% del ingreso, dentro del límite de 20%, pero el ROI no cumple, así que no se aprueba.",
+     "No hay tasa sugerida (null), por lo que la opción 2a no aplica.",
+     "El monto máximo objetivo (ROI ≥ 4% a 15,41%) es 0, por lo que la opción 2b no genera una contraoferta válida.",
+     "Ninguna opción de la política cumple, por lo que corresponde rechazar con monto 0 y tasa 0."
+    ],
+    "memo": "### Resumen\nLa solicitud de USD 8.650 a una tasa ofrecida de 15,41% se rechaza. El ROI esperado es -5,63% y la utilidad esperada es -486,85 USD. La capacidad de pago cumple, pero el riesgo y el precio no.\n\n### Decisión\nPaso 1: a USD 8.650 y 15,41% el ROI es -5,63%, por debajo de 4%. No se aprueba.\nPaso 2a: la herramienta no devuelve tasa sugerida (null), así que no aplica.\nPaso 2b: el monto máximo objetivo es 0, por lo que no hay contraoferta válida.\nPaso 3: se rechaza, con monto 0 y tasa 0.\n\n### Riesgo\nEl especialista de riesgo informa una PD de 48,67% con el modelo campeón (LightGBM recalibrado), frente a un promedio de cartera de 12,88%. Según ese especialista, las cinco razones SHAP que más elevan el riesgo son: consultas de crédito en 6 meses (4, contribución logit 0,398621), antigüedad laboral sin dato (0,25137), ingreso anual de 24.715 (0,236142), monto sobre ingreso de 0,34999 (0,216052) y DTI de 33,07% (0,212182). El especialista indica que ninguna de estas razones reduce el riesgo. No se devolvió la contribución de otras variables, como el uso de rotativo (28%) o la vivienda en alquiler.\n\n### Economía\nEl especialista de economía informa un rendimiento si sale bien de 22,40% y si sale mal de -35,19%. La PD es 48,67%, el ROI esperado -5,63% y la utilidad esperada -486,85 USD. La probabilidad de prepago antes del mes 30 es 36,89% y el mes esperado de pago es 28,83. La cuota es 14,64% del ingreso y cumple el criterio de capacidad. El especialista concluye que, a 15,41%, el préstamo destruye valor.\n\n### Cupo y precio\nLa tasa de mercado estimada es 13,78% para este perfil y monto. La tasa de equilibrio es 25%, que está fuera de rango. A 25% el ROI sería 0,08%. No hay monto con ROI ≥ 4% (monto máximo objetivo 0). El monto máximo con utilidad positiva es USD 1.000 a 15,41%, con PD 32,11%, ROI 3,81% y utilidad 38,10 USD; ese ROI queda por debajo de 4%, por lo que no cumple la política.\n\n### Alertas\n- La tasa ofrecida de 15,41% está fuera de rango: se aleja más de 1 pt de la tasa de mercado de 13,78%, y ahí no hay evidencia histórica.\n- Las tasas de equilibrio y sugerida del escenario de estrés son null, por lo que el especialista de cupo no pudo cuantificar ese escenario.\n- La antigüedad laboral no tiene dato (null) y figura entre las razones que elevan el riesgo.\n- Los tres especialistas dan señal final desfavorable."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 1,
+   "contenido": {
+    "aprobado": true,
+    "hallazgos": [
+     "Menor: el memo y el análisis de riesgo atribuyen la PD al modelo 'LightGBM recalibrado' y las razones a 'SHAP', pero las salidas de las herramientas no identifican el modelo ni el método de contribución. No cambia la decisión, pero es un detalle no respaldado por los datos.",
+     "Verificado: la decisión de rechazo con monto 0 y tasa 0 es la que exige la política. El ROI a USD 8.650 y 15,41% (-5,63%) está por debajo de 4%, la opción 2a no aplica porque la tasa sugerida es null, y la opción 2b da un monto máximo objetivo de 0, que no es una contraoferta válida.",
+     "Verificado: los números del memo coinciden con las herramientas y el redondeo, incluidos PD 48,67%, promedio de cartera 12,88%, ROI -5,63%, utilidad -486,85, cuota 14,64%, rendimientos 22,40% y -35,19%, tasa de mercado 13,78%, tasa de equilibrio 25% con ROI 0,08%, y la alternativa de USD 1.000 con PD 32,11%, ROI 3,81% y utilidad 38,10.",
+     "Verificado: no hay violaciones de reglas duras (cuota 14,64% ≤ 20% y ROI ≥ 0% no aplica al rechazo) y no hay contradicciones entre memo, razones y decisión."
+    ],
+    "oferta": null,
+    "violaciones": []
+   }
+  }
+ ],
+ "final": {
+  "decision": "rechazar",
+  "monto": 0.0,
+  "tasa": 0.0,
+  "razones": [
+   "ROI esperado de -5,63% a USD 8.650 y 15,41%, por debajo del mínimo de 4% de la política.",
+   "La cuota es 14,64% del ingreso, dentro del límite de 20%, pero el ROI no cumple, así que no se aprueba.",
+   "No hay tasa sugerida (null), por lo que la opción 2a no aplica.",
+   "El monto máximo objetivo (ROI ≥ 4% a 15,41%) es 0, por lo que la opción 2b no genera una contraoferta válida.",
+   "Ninguna opción de la política cumple, por lo que corresponde rechazar con monto 0 y tasa 0."
+  ],
+  "memo": "### Resumen\nLa solicitud de USD 8.650 a una tasa ofrecida de 15,41% se rechaza. El ROI esperado es -5,63% y la utilidad esperada es -486,85 USD. La capacidad de pago cumple, pero el riesgo y el precio no.\n\n### Decisión\nPaso 1: a USD 8.650 y 15,41% el ROI es -5,63%, por debajo de 4%. No se aprueba.\nPaso 2a: la herramienta no devuelve tasa sugerida (null), así que no aplica.\nPaso 2b: el monto máximo objetivo es 0, por lo que no hay contraoferta válida.\nPaso 3: se rechaza, con monto 0 y tasa 0.\n\n### Riesgo\nEl especialista de riesgo informa una PD de 48,67% con el modelo campeón (LightGBM recalibrado), frente a un promedio de cartera de 12,88%. Según ese especialista, las cinco razones SHAP que más elevan el riesgo son: consultas de crédito en 6 meses (4, contribución logit 0,398621), antigüedad laboral sin dato (0,25137), ingreso anual de 24.715 (0,236142), monto sobre ingreso de 0,34999 (0,216052) y DTI de 33,07% (0,212182). El especialista indica que ninguna de estas razones reduce el riesgo. No se devolvió la contribución de otras variables, como el uso de rotativo (28%) o la vivienda en alquiler.\n\n### Economía\nEl especialista de economía informa un rendimiento si sale bien de 22,40% y si sale mal de -35,19%. La PD es 48,67%, el ROI esperado -5,63% y la utilidad esperada -486,85 USD. La probabilidad de prepago antes del mes 30 es 36,89% y el mes esperado de pago es 28,83. La cuota es 14,64% del ingreso y cumple el criterio de capacidad. El especialista concluye que, a 15,41%, el préstamo destruye valor.\n\n### Cupo y precio\nLa tasa de mercado estimada es 13,78% para este perfil y monto. La tasa de equilibrio es 25%, que está fuera de rango. A 25% el ROI sería 0,08%. No hay monto con ROI ≥ 4% (monto máximo objetivo 0). El monto máximo con utilidad positiva es USD 1.000 a 15,41%, con PD 32,11%, ROI 3,81% y utilidad 38,10 USD; ese ROI queda por debajo de 4%, por lo que no cumple la política.\n\n### Alertas\n- La tasa ofrecida de 15,41% está fuera de rango: se aleja más de 1 pt de la tasa de mercado de 13,78%, y ahí no hay evidencia histórica.\n- Las tasas de equilibrio y sugerida del escenario de estrés son null, por lo que el especialista de cupo no pudo cuantificar ese escenario.\n- La antigüedad laboral no tiene dato (null) y figura entre las razones que elevan el riesgo.\n- Los tres especialistas dan señal final desfavorable.",
+  "auditoria": {
+   "aprobado": true,
+   "hallazgos": [
+    "Menor: el memo y el análisis de riesgo atribuyen la PD al modelo 'LightGBM recalibrado' y las razones a 'SHAP', pero las salidas de las herramientas no identifican el modelo ni el método de contribución. No cambia la decisión, pero es un detalle no respaldado por los datos.",
+    "Verificado: la decisión de rechazo con monto 0 y tasa 0 es la que exige la política. El ROI a USD 8.650 y 15,41% (-5,63%) está por debajo de 4%, la opción 2a no aplica porque la tasa sugerida es null, y la opción 2b da un monto máximo objetivo de 0, que no es una contraoferta válida.",
+    "Verificado: los números del memo coinciden con las herramientas y el redondeo, incluidos PD 48,67%, promedio de cartera 12,88%, ROI -5,63%, utilidad -486,85, cuota 14,64%, rendimientos 22,40% y -35,19%, tasa de mercado 13,78%, tasa de equilibrio 25% con ROI 0,08%, y la alternativa de USD 1.000 con PD 32,11%, ROI 3,81% y utilidad 38,10.",
+    "Verificado: no hay violaciones de reglas duras (cuota 14,64% ≤ 20% y ROI ≥ 0% no aplica al rechazo) y no hay contradicciones entre memo, razones y decisión."
+   ]
+  },
+  "intentos": 1,
+  "llave_motor": false,
+  "estado": "propuesta sin firma (eval)"
+ },
+ "juez": {
+  "veredicto": {
+   "justifica_con_numeros": true,
+   "coherente": true,
+   "alertas": true,
+   "sin_invenciones": true,
+   "claro": true,
+   "explicacion_justifica_con_numeros": "Justifica el rechazo con cifras concretas: ROI esperado de -5,63 % frente al objetivo de 4 %, utilidad esperada de -486,85 USD, PD de 48,67 % y monto máximo objetivo de 0.",
+   "explicacion_coherente": "El resumen, la sección Decisión y los datos coinciden: rechazar, con monto 0 y tasa 0. La secuencia de pasos es consistente con la ausencia de tasa sugerida y con un monto máximo objetivo de 0.",
+   "explicacion_alertas": "Menciona la tasa fuera de rango (15,41 % frente a 13,78 %), el escenario de estrés sin tasas, el dato faltante de antigüedad laboral y el ROI de 3,81 % de la alternativa, por debajo del 4 %. No señala la cuota como alerta, lo cual es correcto porque 14,6 % está bajo el límite de 20 %.",
+   "explicacion_sin_invenciones": "Todas las cifras (PD, cartera 12,88 %, contribuciones SHAP, prepago, PD de 32,11 % a USD 1.000) salen de las herramientas. No agrega causas ni recomendaciones ajenas a los datos o a la política.",
+   "explicacion_claro": "El resumen da la decisión y su motivo en tres frases, y la sección Decisión explica la lógica paso a paso. Se entiende rápidamente."
+  },
+  "modelo": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 5379,
+   "output_tokens": 882
+  }
+ }
+}

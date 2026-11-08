@@ -1,5 +1,5 @@
-"""Agente de crédito en LangGraph: la IA analiza y propone; un humano firma rechazos y contraofertas
-(decisiones 016 y 021).
+"""Agente de crédito en LangGraph: la IA analiza y propone; un humano firma todo lo que no sea una
+aprobación clara (decisiones 016, 021 y 022).
 
     solicitud ─┬─ especialista de riesgo      (Claude + PD y razones SHAP)
                ├─ especialista de economía    (Claude + prepago y pérdida)
@@ -11,12 +11,13 @@
                       ↓
                auditor (Claude: verifica números y reglas) ── observaciones → comité
                       ↓
-               firma (aprobaciones: automáticas · rechazos y contraofertas: un analista
-                      confirma o devuelve la propuesta, con interrupt de LangGraph)
+               firma (automática solo con doble llave: el comité y el motor aprueban ·
+                      lo demás lo confirma o devuelve un analista, con interrupt de LangGraph)
 
 Los números salen siempre de las herramientas (código sobre los modelos del
 repo); los LLM interpretan, deciden y redactan. Si el auditor no aprueba tras
-INTENTOS rondas, la decisión final es rechazar (conservador).
+INTENTOS rondas, el caso se escala a un analista con la propuesta original
+(decisión 022): el agente no pudo decidir, y eso no es lo mismo que un rechazo.
 
 Registro y observabilidad (decisión 018): cada ejecución se guarda en SQLite
 (credit_lab.registro) con el resultado real del préstamo, y si existe
@@ -25,6 +26,9 @@ LANGSMITH_API_KEY el grafo y cada llamada a Claude se trazan en LangSmith.
 Decisión 021: en crédito, rechazar o cambiar las condiciones exige poder explicar y
 responder por la decisión, así que esos casos quedan como propuesta hasta que un
 analista los firma. Las evals corren sin firma (firma_humana=False) para medir la propuesta.
+
+Decisión 022 (doble llave): una aprobación sale automática solo si el comité dice
+"aprobar" y la política del motor, sin LLM, también aprueba el monto y la tasa pedidos.
 
 Uso:
     python -m credit_lab.agente               # un préstamo de jul–dic 2015
@@ -60,6 +64,7 @@ INTENTOS = 2
 MAX_TURNOS = 6
 MONTO_MAX = 35_000
 TASA_MIN, TASA_MAX = 5.0, 30.0
+NO_OTORGA = {"rechazar", "escalar"}  # decisiones finales que no otorgan crédito (decisión 022)
 
 CAMPOS_SOLICITUD = {
     "loan_amnt": "monto pedido (USD)", "int_rate": "tasa ofrecida por Lending Club (%)",
@@ -135,6 +140,11 @@ class Herramientas:
                        "roi_esperado": ev["roi_esperado"], "utilidad_esperada": ev["utilidad_esperada"],
                        "prob_prepago_antes_mes_30": p[:29].sum(),
                        "mes_esperado_de_pago": float((np.arange(1, 37) * p).sum())})
+
+    def motor_aprueba(self, sol: pd.DataFrame) -> bool:
+        """Regla 1 de la política sin LLM: ROI esperado ≥ objetivo y cuota ≤ máximo con el monto y la tasa pedidos."""
+        ev = self.motor.evaluar(sol).iloc[0]
+        return bool(ev["roi_esperado"] >= ROI_OBJETIVO and ev["cumple_capacidad"])
 
     def cupo_pricing(self, sol: pd.DataFrame) -> dict:
         base, estres = self.motor.recomendar(sol), self.motor_estres.recomendar(sol)
@@ -254,7 +264,7 @@ una violación de reglas o un dato inventado que sostenga la decisión. Las obse
 
 def reglas_duras(decision: dict, oferta: dict | None) -> list[str]:
     """Reglas que ningún LLM puede saltarse. Devuelve la lista de violaciones."""
-    if decision["decision"] == "rechazar":
+    if decision["decision"] in NO_OTORGA:
         return []
     v = []
     if not (0 < decision["monto"] <= MONTO_MAX):
@@ -394,6 +404,7 @@ class Estado(TypedDict, total=False):
     historial: Annotated[list, operator.add]  # cada respuesta de cada nodo, para el registro
 
 FIRMA_AUTOMATICA = {"aprobar"}  # lo demás espera la firma de un analista (decisión 021)
+# además, la aprobación automática exige la llave del motor (decisión 022)
 
 
 def cliente_anthropic():
@@ -447,24 +458,28 @@ def construir(cliente=None, herr: Herramientas | None = None, modelo: str = MODE
 
     def finalizar(estado):
         d = dict(estado["decision"])
-        if not estado["auditoria"]["aprobado"]:
-            d = {"decision": "rechazar", "monto": 0.0, "tasa": 0.0,
-                 "razones": ["La decisión no pasó la auditoría tras {} intentos.".format(estado["intentos"])]
+        llave_motor = herr.motor_aprueba(estado["solicitud"])
+        if not estado["auditoria"]["aprobado"]:  # el agente no pudo decidir: se escala con su propuesta (decisión 022)
+            d = {"decision": "escalar", "monto": d["monto"], "tasa": d["tasa"],
+                 "propuesta_original": {k: d[k] for k in ("decision", "monto", "tasa")},
+                 "razones": ["La propuesta no pasó la auditoría tras {} intentos.".format(estado["intentos"])]
                             + estado["auditoria"]["hallazgos"],
                  "memo": d.get("memo", "")}
-        estado_final = "aprobada automáticamente" if d["decision"] in FIRMA_AUTOMATICA else "pendiente de firma"
+        automatica = d["decision"] in FIRMA_AUTOMATICA and llave_motor  # doble llave (decisión 022)
+        estado_final = "aprobada automáticamente" if automatica else "pendiente de firma"
         if not firma_humana:
             estado_final = "propuesta sin firma (eval)"
-        return {"final": d | {"auditoria": estado["auditoria"], "intentos": estado["intentos"], "estado": estado_final}}
+        return {"final": d | {"auditoria": estado["auditoria"], "intentos": estado["intentos"],
+                              "llave_motor": llave_motor, "estado": estado_final}}
 
     def firma(estado):
         from langgraph.types import interrupt
 
         final = estado["final"]
-        if final["decision"] in FIRMA_AUTOMATICA:
+        if final["estado"] == "aprobada automáticamente":
             return {}
         respuesta = interrupt({"propuesta": {k: final[k] for k in ("decision", "monto", "tasa", "razones")},
-                               "memo": final.get("memo", "")})
+                               "llave_motor": final["llave_motor"], "memo": final.get("memo", "")})
         confirma = bool(respuesta.get("confirma"))
         return {"final": final | {"estado": "firmada por analista" if confirma else "devuelta por analista",
                                   "firma": respuesta},
@@ -501,7 +516,7 @@ def _config(metadatos: dict | None, hilo: str) -> dict:
 
 
 def evaluar_solicitud(grafo, solicitud: pd.DataFrame, metadatos: dict | None = None, hilo: str = "solicitud") -> dict:
-    """Corre el grafo. Si un rechazo o una contraoferta espera firma, devuelve el estado con final['estado'] =
+    """Corre el grafo. Si un caso espera firma (rechazo, contraoferta, escalado o aprobación sin la llave del motor), devuelve el estado con final['estado'] =
     'pendiente de firma' y la propuesta en estado['__interrupt__']; se completa con firmar()."""
     return grafo.invoke({"solicitud": solicitud, "especialistas": {}, "historial": []}, config=_config(metadatos, hilo))
 
