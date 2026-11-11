@@ -73,6 +73,99 @@ def por_grupo(pd_modelo, malo, grupo, tasa_rechazo: float = 0.20, minimo: int = 
     return t[t["prestamos"] >= minimo]
 
 
+# ---------- P&L de la política real, en neto (decisión 023, issue #35) ----------
+
+# SUPUESTOS, no datos: el repo no tiene costos reales. Se reportan con una tabla de sensibilidad.
+COSTOS = {
+    "fondeo_anual": 0.03,       # costo del dinero prestado, sobre el saldo medio
+    "operativo_prestamo": 100,  # USD por préstamo colocado (originación, servicio, cobranza)
+    "capital": 0.10,            # capital que se reserva por cada USD prestado
+    "costo_capital_anual": 0.12,
+    "vida_media_anos": 1.5,     # años de saldo medio de un préstamo a 36 meses con prepago y castigos
+}
+ACEPTACION = [0.0, 0.5, 1.0]  # % de contraofertas que el cliente acepta: no hay datos (issue #36)
+CASTIGO_SELECCION = 0.01      # PD que sube por punto de tasa extra en quien acepta (supuesto del estrés)
+SEVERIDAD = 0.6               # pérdida sobre el monto cuando un préstamo extra cae en mora (supuesto)
+
+
+def _utilidad_politica(b: pd.DataFrame, aceptacion: float) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Utilidad bruta, monto colocado y préstamos por solicitud con la política real.
+    - aprobar: el préstamo tal cual (resultado real);
+    - contraoferta por monto (2b): el rendimiento real del préstamo aplicado al monto ofrecido;
+    - contraoferta por tasa (2a): los intereses reales escalados por la tasa nueva, menos el castigo por
+      selección adversa (PD +1 pt por punto extra, con la severidad supuesta);
+    - las contraofertas se aceptan con probabilidad `aceptacion` (en esperanza); rechazar: nada."""
+    monto_lc, tasa_lc = b["loan_amnt"].to_numpy(float), b["int_rate"].to_numpy(float)
+    u_lc, roi = b["utilidad_real"].to_numpy(float), b["roi_real"].to_numpy(float)
+    regla, monto_of, tasa_of = b["pol_regla"].to_numpy(), b["pol_monto"].to_numpy(float), b["pol_tasa"].to_numpy(float)
+    delta = np.maximum(tasa_of - tasa_lc, 0)
+    extra_int = b["total_rec_int"].to_numpy(float) * np.divide(delta, tasa_lc, out=np.zeros_like(delta), where=tasa_lc > 0)
+    castigo = CASTIGO_SELECCION * delta * SEVERIDAD * monto_lc
+    u = np.select([regla == "1", regla == "2b", regla == "2a"],
+                  [u_lc, roi * monto_of, u_lc + extra_int - castigo], 0.0)
+    peso = np.select([regla == "1", np.isin(regla, ["2a", "2b"])], [1.0, aceptacion], 0.0)
+    monto = np.select([regla == "1", regla == "2b", regla == "2a"], [monto_lc, monto_of, monto_lc], 0.0)
+    return u * peso, monto * peso, peso
+
+
+def _neto(u, monto, prestamos, costos: dict) -> np.ndarray:
+    c = costos
+    costo = monto * c["vida_media_anos"] * (c["fondeo_anual"] + c["capital"] * c["costo_capital_anual"])
+    return u - costo - prestamos * c["operativo_prestamo"]
+
+
+def escenarios(b: pd.DataFrame, costos: dict = COSTOS, replicas: int = REPLICAS, semilla: int = SEMILLA) -> pd.DataFrame:
+    """P&L por cada 10.000 solicitudes de jul–dic 2015: Lending Club aprobando todo, la política real con
+    0/50/100% de aceptación de contraofertas y un corte por subgrado que rechaza el mismo % que la política
+    con 0% de aceptación. IC 95% por bootstrap de solicitudes."""
+    n, rng = len(b), np.random.default_rng(semilla)
+    monto_lc = b["loan_amnt"].to_numpy(float)
+    casos = {"Lending Club aprueba todo": (b["utilidad_real"].to_numpy(float), monto_lc, np.ones(n))}
+    for q in ACEPTACION:
+        casos[f"Política real · acepta {q:.0%} de contraofertas"] = _utilidad_politica(b, q)
+    rechazo = (b["pol_regla"] != "1").mean()
+    orden = b["sub_grade"].rank(method="first")  # los subgrados más riesgosos quedan al final
+    aprueba = (orden <= n * (1 - rechazo)).to_numpy()
+    casos[f"Corte por subgrado (rechaza {rechazo:.0%})"] = (b["utilidad_real"].to_numpy(float) * aprueba,
+                                                           monto_lc * aprueba, aprueba.astype(float))
+    muestras = rng.integers(0, n, size=(replicas, n))
+    filas = {}
+    for nombre, (u, m, k) in casos.items():
+        neto = _neto(u, m, k, costos)
+        boot = neto[muestras].sum(axis=1) * POR_CADA / n
+        filas[nombre] = {"préstamos": k.sum() * POR_CADA / n, "monto colocado": m.sum() * POR_CADA / n,
+                         "utilidad bruta": u.sum() * POR_CADA / n, "utilidad neta": neto.sum() * POR_CADA / n,
+                         "IC bajo": np.percentile(boot, 2.5), "IC alto": np.percentile(boot, 97.5),
+                         "ROI neto sobre lo colocado": neto.sum() / m.sum() if m.sum() else np.nan}
+    return pd.DataFrame(filas).T
+
+
+def sensibilidad_costos(b: pd.DataFrame, fondeos=(0.02, 0.03, 0.05), operativos=(50, 100, 200)) -> pd.DataFrame:
+    """Utilidad neta por 10.000 solicitudes de LC y de la política real (50% de aceptación), según costos."""
+    filas = []
+    for f in fondeos:
+        for o in operativos:
+            e = escenarios(b, COSTOS | {"fondeo_anual": f, "operativo_prestamo": o}, replicas=1)
+            filas.append({"fondeo anual": f, "USD operativos por préstamo": o,
+                          "LC aprueba todo": e.iloc[0]["utilidad neta"],
+                          "política (50% acepta)": e.loc["Política real · acepta 50% de contraofertas", "utilidad neta"]})
+    return pd.DataFrame(filas)
+
+
+def equidad_precio(b: pd.DataFrame, grupo: str, minimo: int = 200) -> pd.DataFrame:
+    """Issue #39: impacto dispar en rechazo y en subida de tasa (contraoferta 2a) por grupo, con la política real.
+    La razón de impacto es la tasa del grupo dividida por la del grupo con menos (umbral fijado antes: 1,25)."""
+    d = b.assign(rechazo=b["pol_regla"].eq("3"), sube_tasa=b["pol_regla"].eq("2a"),
+                 subida=np.where(b["pol_regla"].eq("2a"), b["pol_tasa"] - b["int_rate"], 0.0))
+    t = d.groupby(grupo).agg(solicitudes=("malo", "size"), rechazo=("rechazo", "mean"), sube_tasa=("sube_tasa", "mean"),
+                             subida_media_pts=("subida", "mean"), mora_real=("malo", "mean"))
+    t = t[t["solicitudes"] >= minimo]
+    for c in ("rechazo", "sube_tasa"):
+        base = t[c][t[c] > 0].min() if (t[c] > 0).any() else np.nan
+        t[f"razon_{c}"] = t[c] / base
+    return t
+
+
 def grafico(tabla: pd.DataFrame, ruta) -> None:
     import matplotlib.pyplot as plt
 
@@ -113,8 +206,23 @@ def main() -> None:
     from credit_lab.campeon import recalibrar
 
     pd_campeon = recalibrar(pred["pd_lgbm"], joblib.load(RAIZ / "modelos" / "campeon.joblib")["desplazamiento"])
-    print(por_grupo(pd_campeon, oot["malo"], oot["home_ownership"]))
-    print(por_grupo(pd_campeon, oot["malo"], oot["addr_state"].map(ESTADO_REGION).fillna("Otro")))
+    # issue #24: el desplazamiento se ajustó con ene–jun 2015, así que la calibración se mide solo en jul–dic
+    s2 = (oot["issue_d"] >= "2015-07-01").to_numpy()
+    print(por_grupo(np.asarray(pd_campeon)[s2], oot["malo"][s2], oot["home_ownership"][s2]))
+    print(por_grupo(np.asarray(pd_campeon)[s2], oot["malo"][s2], oot["addr_state"][s2].map(ESTADO_REGION).fillna("Otro")))
+
+    from credit_lab import backtest
+
+    if backtest.RUTA.exists():  # P&L de la política real y equidad en precio (decisión 023)
+        b = backtest.cargar()
+        if "total_rec_int" not in b:
+            jul_dic = df[df["issue_d"] >= "2015-07-01"].reset_index(drop=True)
+            b["total_rec_int"] = jul_dic.loc[b["posicion"], "total_rec_int"].to_numpy()
+        b["region"] = b["addr_state"].map(ESTADO_REGION).fillna("Otro")
+        print(escenarios(b))
+        print(sensibilidad_costos(b))
+        for g in ("home_ownership", "region"):
+            print(equidad_precio(b, g))
 
 
 if __name__ == "__main__":

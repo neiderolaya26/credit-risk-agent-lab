@@ -23,11 +23,12 @@ from credit_lab.poblacion import RAIZ
 from credit_lab.prepago import rendimiento
 
 RUTA = RAIZ / "data" / "interim" / "backtest_politica.parquet"
+RUTA_MUESTRA = RAIZ / "data" / "interim" / "backtest_muestra.parquet"  # las solicitudes de la muestra
 N, SEMILLA = 10_000, 0
 BLOQUE = 500
 EFECTOS = [0.0, 0.005, 0.01, 0.02]  # PD que sube por punto de sobreprecio (supuesto del estrés)
 COLUMNAS = ["loan_amnt", "int_rate", "annual_inc", "sub_grade", "home_ownership", "addr_state", "malo",
-            "issue_d"]
+            "issue_d", "total_rec_int"]
 
 
 def politica_anterior(p: pd.DataFrame, df: pd.DataFrame) -> pd.Series:
@@ -46,30 +47,53 @@ def _por_bloques(f, df: pd.DataFrame, tamano: int = BLOQUE):
     return pd.concat([f(df.iloc[i:i + tamano]) for i in range(0, len(df), tamano)])
 
 
-def calcular(n: int = N, semilla: int = SEMILLA) -> pd.DataFrame:
+def calcular(n: int = N, semilla: int = SEMILLA, etapas: int | None = None) -> pd.DataFrame:
+    """Calcula por etapas y guarda después de cada una: si el proceso se corta, la siguiente corrida retoma
+    donde quedó. `etapas` limita cuántas etapas nuevas se corren en esta llamada (para corridas cortas)."""
     from credit_lab.evals import cargar_muestra
 
-    s2 = cargar_muestra()
-    df = s2.sample(min(n, len(s2)), random_state=semilla)
-    del s2  # solo se necesita la muestra: libera la población completa
-    motor = Motor()
-    base = _por_bloques(lambda x: politica_lote(motor, x), df)
-    out = df.reindex(columns=[c for c in COLUMNAS if c in df]).copy()
-    out["posicion"] = df.index
-    out["antig_credito_meses"] = derivar(df)["antig_credito_meses"].to_numpy()  # proxy de edad (issue #39)
-    out["utilidad_real"] = utilidad_prestamo(df).to_numpy()
-    out["roi_real"] = rendimiento(df).to_numpy()
-    out = out.join(base.add_prefix("pol_"))
-    out["pol_regla_anterior"] = politica_anterior(base, df)
+    if RUTA.exists():
+        out = pd.read_parquet(RUTA)
+    else:
+        s2 = cargar_muestra()
+        df = s2.sample(min(n, len(s2)), random_state=semilla)
+        del s2  # solo se necesita la muestra: libera la población completa
+        out = df.reindex(columns=[c for c in COLUMNAS if c in df]).copy()
+        out["posicion"] = df.index
+        out["antig_credito_meses"] = derivar(df)["antig_credito_meses"].to_numpy()  # proxy de edad (issue #39)
+        out["utilidad_real"] = utilidad_prestamo(df).to_numpy()
+        out["roi_real"] = rendimiento(df).to_numpy()
+        RUTA.parent.mkdir(parents=True, exist_ok=True)
+        df.to_parquet(RUTA_MUESTRA)
+        out.to_parquet(RUTA)
+    df = pd.read_parquet(RUTA_MUESTRA)
+    hechas = 0
+    if "pol_regla" not in out:
+        motor = Motor()
+        base = _por_bloques(lambda x: politica_lote(motor, x), df)
+        out = out.join(base.add_prefix("pol_"))
+        out["pol_regla_anterior"] = politica_anterior(base, df)
+        out.to_parquet(RUTA)
+        print("política base lista", flush=True)
+        hechas += 1
     for e in EFECTOS:
-        m = Motor(estres=True, efecto_estres=e)
         clave = f"{e * 100:g}".replace(".", "_")
-        out[f"estres{clave}_equilibrio"] = _por_bloques(lambda x: pd.Series(tasa_minima_lote(m, x, ROI_EQUILIBRIO), index=x.index), df).to_numpy()
-        out[f"estres{clave}_regla"] = _por_bloques(lambda x: politica_lote(m, x), df)["regla"].to_numpy()
-        print(f"estrés {e:.3f} listo", flush=True)
-    RUTA.parent.mkdir(parents=True, exist_ok=True)
-    out.to_parquet(RUTA)
+        m = Motor(estres=True, efecto_estres=e)
+        pasos = {"equilibrio": lambda x: pd.Series(tasa_minima_lote(m, x, ROI_EQUILIBRIO), index=x.index),
+                 "regla": lambda x: politica_lote(m, x)["regla"]}
+        for nombre, f in pasos.items():  # cada subetapa se guarda aparte: así cabe en una corrida corta
+            col = f"estres{clave}_{nombre}"
+            if col in out or (etapas is not None and hechas >= etapas):
+                continue
+            out[col] = _por_bloques(f, df).to_numpy()
+            out.to_parquet(RUTA)
+            print(f"estrés {e:.3f} · {nombre} listo", flush=True)
+            hechas += 1
     return out
+
+
+def completo(b: pd.DataFrame) -> bool:
+    return "pol_regla" in b and all(f"estres{f'{e * 100:g}'.replace('.', '_')}_regla" in b for e in EFECTOS)
 
 
 def cargar() -> pd.DataFrame:
@@ -108,7 +132,12 @@ def carga_analista(b: pd.DataFrame, minutos=(5, 8), por_cada: int = 10_000) -> d
 
 
 def main() -> None:
-    b = calcular()
+    import sys
+
+    b = calcular(etapas=int(sys.argv[1]) if len(sys.argv) > 1 else None)
+    if not completo(b):
+        print("Faltan etapas: vuelva a correr el comando para continuar.")
+        return
     pd.set_option("display.float_format", "{:,.3f}".format)
     print(b["pol_decision"].value_counts(normalize=True))
     print(cambio_politica(b))

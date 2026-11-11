@@ -26,3 +26,8 @@ jobs:
           pip install -r requirements-ci.txt
       - name: Tests (sin datos ni modelos, con casos sintéticos y clientes simulados)
         run: pytest -q
+      - name: Eval de la versión del agente (issue 40, sin llamar a la API)
+        if: matrix.python-version == '3.14'
+        run: python -m credit_lab.evals verificar
+        env:
+          PYTHONPATH: src

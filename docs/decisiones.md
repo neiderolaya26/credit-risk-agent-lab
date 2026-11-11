@@ -352,3 +352,24 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
   - **Python 3.12 o superior**, con el CI probando 3.12 y 3.14.
 - **Alternativas consideradas:** dejar la aprobación solo en manos del comité; mantener el rechazo conservador cuando falla la auditoría.
 - **Por qué (en mis palabras):** en todos los modelos existe una zona gris. Cuando el comité de IA y el motor no coinciden, o la auditoría no logra validar la propuesta, el caso está en esa zona, y ahí es prudente hacer un doble check con el factor humano, que aporta el diferencial de la experiencia. Un caso que el agente no pudo decidir no es un rechazo.
+
+---
+
+## 023 — El código decide, topes a las contraofertas y P&L de la política real 🟡 borrador
+
+- **Fecha:** 2026-11-10
+- **Contexto:** Sergio Mora Pardo revisó el repo como lo haría un equipo de ciencia de datos y un product manager de crédito de consumo, y dejó 31 issues priorizados (#17–#47). Los más graves:
+  - la firma humana dependía de la etiqueta que elegía el LLM (#17), y el registro contaba como decisiones las propuestas que el analista devolvía (#18);
+  - el valor (+USD 337 mil) medía un corte del 20% que el sistema no aplica, en bruto (#35);
+  - las contraofertas podían subir la tasa sin tope (+311 pb en c13) (#36);
+  - la antigüedad crediticia, un proxy de edad, aparecía como razón (#39);
+  - la v2 se comparaba con una referencia que ya había cambiado (80%, no 83%) (#19), y la versión por defecto no tenía eval (#40).
+- **Decisión (opciones que elegí):**
+  - **Código decide, IA opina (#29):** la política en código (`motor.politica_lote`) decide y arma la oferta; el comité de IA da su opinión, el memo y qué verificar. Si no coincide con la política, el caso va al analista marcado como desacuerdo. La concordancia de la decisión final es 100% por construcción; la de la opinión se sigue midiendo.
+  - **Tope de +2 pts y monto primero (#36):** la contraoferta baja primero el monto y después sube la tasa, como máximo 2 pts y dentro de la banda de mercado. Backtest jul–dic 2015 (10.000 solicitudes): 84,9% aprueba, 13,8% contraoferta, 1,3% rechaza; 1.307 contraofertas pasan de subir la tasa a bajar el monto y 124 pasan a rechazo (rindieron 4,5% real).
+  - **Supuestos + sensibilidad (#35):** P&L neto por cada 10.000 solicitudes con fondeo 3% anual, USD 100 por préstamo y capital 10% al 12%: Lending Club aprobando todo −USD 1,48 M; la política −0,69 M a −1,11 M según cuántas contraofertas se acepten; un corte por subgrado con el mismo rechazo −0,50 M. La política mejora a aprobar todo, pero no a una regla simple por subgrado.
+  - **Fuera de razones + medir (#39):** la antigüedad crediticia y los demás proxies no se dan como razón ni van al memo; quitarla del modelo cuesta −0,0032 de AUC y forzarla monótona −0,0011, así que el campeón no cambia.
+  - Además: firma persistente en SQLite sin pickle y con motivo estructurado (#25, #26, #38); razones al cliente desde un catálogo fijo con carta de aviso (#37); evals con la referencia de cada versión, borradores con violación, nulos del juez y piso de la fidelidad (#19–#23); CI que exige la eval de la versión por defecto (#40); robustez de la decisión 015 con wild cluster bootstrap y dos vías, que confirma que el placebo falla (#44); sensibilidad del estrés (#42).
+- **Alternativas consideradas:** IA decide con candados; código decide e IA solo redacta; costos dados por mí o solo utilidad bruta; tope de +3 pts o sin tope; reentrenar el campeón con restricción monótona o sin la variable.
+- **Pendiente:** la eval de la v4 (pagada); etiquetar a mano 10–15 memos para calibrar el juez (#21); #34, #43 y #46 quedan como investigación opcional.
+- **Por qué (en mis palabras):** _pendiente de Neider._

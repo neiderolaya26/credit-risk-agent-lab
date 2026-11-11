@@ -241,7 +241,7 @@ def fuera_de_rango(tasa, tasa_ref, rango: float = RANGO_OBSERVADO) -> np.ndarray
 def main() -> None:
     """python -m credit_lab.causal: recalcula la tabla de robustez de la decisión 015 (issue #44)."""
     from credit_lab.features import LOGISTICA
-    from credit_lab.poblacion import cargar_poblacion
+    from credit_lab.poblacion import RAIZ, cargar_poblacion
 
     df = preparar(cargar_poblacion())
     tr = df[df["muestra"].eq("train")].reset_index(drop=True)
@@ -250,7 +250,9 @@ def main() -> None:
     pre = preprocesador("logistica").fit(derivar(d)[LOGISTICA], d["malo"])
     perfil = pd.DataFrame(np.asarray(pre.transform(derivar(d)[LOGISTICA])), index=d.index).add_prefix("woe_")
     pd.set_option("display.float_format", "{:+.4f}".format)
-    print(robustez_placebo(d, perfil))
+    t = robustez_placebo(d, perfil)
+    t.to_csv(RAIZ / "data" / "interim" / "robustez_015.csv")
+    print(t.to_string())
 
 
 if __name__ == "__main__":

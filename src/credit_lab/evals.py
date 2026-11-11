@@ -236,9 +236,36 @@ def juzgar(cliente, memo: str, datos: dict) -> dict:
 
 # ---------- CLI ----------
 
+UMBRAL_CONCORDANCIA = 0.80  # umbral acordado para usar una versión del agente (issue #40)
+MODELO_EVAL = "claude-haiku-5-5"
+
+
+def verificar(version: str | None = None, modelo: str = MODELO_EVAL, carpeta: Path = CARPETA) -> list[str]:
+    """Issue #40: ninguna versión del agente por defecto sin su eval. Devuelve los problemas (vacío = pasa).
+    No corre la eval (es pagada): exige que el reporte exista, sea de los casos vigentes y pase el umbral."""
+    from credit_lab.agente import VERSION
+
+    version = version or VERSION
+    ruta = carpeta / modelo / version / "reporte.md"
+    if not ruta.exists():
+        return [f"la versión {version} del agente no tiene eval: falta {ruta.relative_to(carpeta.parent.parent).as_posix()}"]
+    texto = ruta.read_text(encoding="utf-8")
+    problemas = []
+    m = re.search(r"\| concordancia \| (\d+)% \|", texto)
+    if not m or int(m.group(1)) / 100 < UMBRAL_CONCORDANCIA:
+        problemas.append(f"concordancia bajo el umbral de {UMBRAL_CONCORDANCIA:.0%} en {version}")
+    import hashlib
+
+    huella = hashlib.sha256((carpeta / "casos.json").read_bytes()).hexdigest()[:10]
+    if f"casos.json {huella}" not in texto:
+        problemas.append(f"el reporte de {version} no corresponde a los casos vigentes (casos.json {huella})")
+    return problemas
+
+
 def main() -> None:
     p = argparse.ArgumentParser(description="Evals del agente de crédito.")
-    p.add_argument("accion", choices=["casos", "rechazos", "reetiquetar", "correr", "reporte", "recalificar", "rejuzgar"])
+    p.add_argument("accion", choices=["casos", "rechazos", "reetiquetar", "correr", "reporte", "recalificar", "rejuzgar",
+                                      "verificar"])
     p.add_argument("--version", default=None, help="variante a reportar o recalificar (por defecto la actual)")
     p.add_argument("--limite", type=int, default=None)
     p.add_argument("--modelo", default="claude-haiku-5-5")
@@ -250,6 +277,13 @@ def main() -> None:
         guardar_casos(casos, s2)
         print(casos.groupby(["decision_motor", "malo"]).size())
         print(f"Casos guardados en {CARPETA}")
+    elif args.accion == "verificar":
+        problemas = verificar(args.version, args.modelo)
+        for x in problemas:
+            print(f"✗ {x}")
+        if problemas:
+            raise SystemExit(1)
+        print("✓ la versión por defecto del agente tiene su eval y pasa el umbral")
     elif args.accion == "reetiquetar":
         t = reetiquetar(Motor(), cargar_muestra())
         print(pd.crosstab(t["decision_motor_020"], t["decision_motor"]))
