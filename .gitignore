@@ -4,6 +4,8 @@ data/raw/
 data/interim/
 # Registro de ejecuciones del agente (decisión 018)
 data/agente/
+# Carpetas armadas para Hugging Face (credit_lab.publicar_hf)
+data/hf/
 *.zip
 *.gz
 

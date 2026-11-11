@@ -14,9 +14,8 @@ import numpy as np
 import pandas as pd
 from scipy.optimize import brentq
 
-from credit_lab.features import derivar
+from credit_lab.features import ARBOLES, derivar
 from credit_lab.poblacion import RAIZ, cargar_poblacion
-from credit_lab.retadores import predecir
 
 NOMBRE = "lgbm"
 RUTA = RAIZ / "modelos" / "campeon.joblib"
@@ -42,7 +41,8 @@ class Campeon:
         self.pre, self.modelo, self.desplazamiento = pre, modelo, desplazamiento
 
     def pd_sin_calibrar(self, df: pd.DataFrame) -> np.ndarray:
-        return predecir(NOMBRE, self.pre, self.modelo, derivar(df))
+        # sin importar credit_lab.retadores (optuna, xgboost, torch): así el motor corre con pocas dependencias
+        return self.modelo.predict_proba(self.pre.transform(derivar(df)[ARBOLES]))[:, 1]
 
     def pd(self, df: pd.DataFrame) -> np.ndarray:
         return recalibrar(self.pd_sin_calibrar(df), self.desplazamiento)
