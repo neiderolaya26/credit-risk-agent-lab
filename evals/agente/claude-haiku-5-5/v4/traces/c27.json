@@ -1,0 +1,276 @@
+{
+ "historial": [
+  {
+   "nodo": "cupo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave**\n\n- **Oferta actual (8,000 USD a 18.25%):** PD 31.36%, ROI esperado 6.68%, utilidad esperada 534.68 USD, cuota/ingreso 9.67%. Cumple capacidad y está dentro de rango: la tasa de mercado es 17.46%, a menos de 1 pt.\n- **Monto máximo con utilidad > 0:** 16,000 USD. **Monto máximo con ROI ≥ 4%:** 12,000 USD.\n- **Tasa de equilibrio (ROI ≥ 0%):** 11.5%. **Tasa sugerida (ROI ≥ 4%):** 15.5%, pero está fuera de rango (casi 2 pt bajo el mercado), así que no tiene respaldo histórico.\n- **Contraoferta a 15.5%:** ROI 4.15%, utilidad 331.84 USD, también fuera de rango.\n- **Estrés:** la herramienta devuelve los mismos umbrales (equilibrio 11.5%, sugerida 15.5%) y no da el ROI estresado de la oferta actual, así que no puedo cuantificar el margen bajo estrés.\n\n**Mejor oferta:** mantener 8,000 USD a 18.25%. Es la opción dentro de rango que supera el objetivo de ROI.\n\n**Señal final: favorable**, con reservas por la PD de 31.36%.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_cupo_pricing",
+      "entrada": {},
+      "salida": {
+       "monto_pedido": 8000.0,
+       "tasa_ofrecida": 18.25,
+       "tasa_mercado": 17.458015,
+       "pd": 0.31364,
+       "roi_esperado": 0.066835,
+       "utilidad_esperada": 534.67815,
+       "cuota_ingreso": 0.096741,
+       "monto_maximo": 16000.0,
+       "monto_maximo_objetivo": 12000.0,
+       "tasa_equilibrio": 11.5,
+       "tasa_sugerida": 15.5,
+       "sugerida_fuera_de_rango": true,
+       "contraoferta_a_tasa_sugerida": {
+        "monto": 8000.0,
+        "tasa": 15.5,
+        "pd": 0.31364,
+        "roi_esperado": 0.04148,
+        "utilidad_esperada": 331.84213,
+        "cuota_ingreso": 0.093095,
+        "cumple_capacidad": true,
+        "tasa_mercado": 17.458015,
+        "fuera_de_rango": true,
+        "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+        "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+       },
+       "tasa_equilibrio_estres": 11.5,
+       "tasa_sugerida_estres": 15.5,
+       "regla_cuota_max": 0.2,
+       "tope_subida_tasa_pts": 2.0,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 8000,
+       "tasa": 18.25
+      },
+      "salida": {
+       "monto": 8000.0,
+       "tasa": 18.25,
+       "pd": 0.31364,
+       "roi_esperado": 0.066835,
+       "utilidad_esperada": 534.67815,
+       "cuota_ingreso": 0.096741,
+       "cumple_capacidad": true,
+       "tasa_mercado": 17.458015,
+       "fuera_de_rango": false,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ],
+    "agotado": false
+   }
+  },
+  {
+   "nodo": "economia",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Rentabilidad a 18.25 %: moderada, con riesgo alto de impago.**\n\n- **Escenario bueno:** rendimiento de 26.63 %, con prepago esperado antes del mes 30 de 38.95 % (pago esperado en el mes 28.4).\n- **Escenario malo:** pérdida económica de -36.98 %.\n- **Probabilidad de impago (PD):** 31.36 %.\n- **ROI esperado:** 6.68 %, equivalente a una utilidad esperada de 534.68 USD.\n- **Capacidad de pago:** la cuota representa 9.67 % del ingreso y cumple el criterio de capacidad.\n- **Tasa de mercado estimada:** 17.46 %. La oferta está 0.79 pt por encima, dentro del rango de 1 pt, así que no aparece como fuera de rango.\n\nEl ROI es positivo, pero la PD y la pérdida en escenario malo son altas en relación con la utilidad esperada. El margen depende de que el préstamo no caiga en impago.\n\n**Señal final: neutral**",
+    "herramientas": [
+     {
+      "herramienta": "consultar_economia",
+      "entrada": {},
+      "salida": {
+       "r_bueno": 0.266342,
+       "r_malo": -0.369761,
+       "pd": 0.31364,
+       "roi_esperado": 0.066835,
+       "utilidad_esperada": 534.67815,
+       "prob_prepago_antes_mes_30": 0.389491,
+       "mes_esperado_de_pago": 28.433489
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 8000,
+       "tasa": 18.25
+      },
+      "salida": {
+       "monto": 8000.0,
+       "tasa": 18.25,
+       "pd": 0.31364,
+       "roi_esperado": 0.066835,
+       "utilidad_esperada": 534.67815,
+       "cuota_ingreso": 0.096741,
+       "cumple_capacidad": true,
+       "tasa_mercado": 17.458015,
+       "fuera_de_rango": false,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ],
+    "agotado": false
+   }
+  },
+  {
+   "nodo": "politica",
+   "intento": 1,
+   "contenido": {
+    "decision": "aprobar",
+    "regla": "1",
+    "monto": 8000.0,
+    "tasa": 18.25,
+    "roi_esperado_pedido": 0.066835,
+    "tasa_sugerida": 15.5,
+    "monto_maximo_objetivo": 12000.0,
+    "tasa_mercado": 17.458015
+   }
+  },
+  {
+   "nodo": "riesgo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave**\n\n- **PD del modelo: 31.36%**, frente a un promedio de cartera de 12.88%. Es más de 2.4 veces el promedio.\n- **Impulsores de riesgo:**\n  - **FICO de 667** es el factor que más sube el riesgo.\n  - **Cupo total en tarjetas de 1,500 USD** también sube el riesgo.\n  - **Ingreso anual de 36,000 USD** y **propósito \"house\"** suman riesgo, aunque en menor medida.\n- **Factor mitigante:** el **uso de tarjetas** baja el riesgo.\n- **Inconsistencia de datos:** la herramienta reporta uso de tarjetas de 85%, mientras que la solicitud indica 78.7% de uso del crédito rotativo. También reporta un cupo de 1,500 USD que no aparece en la solicitud. Conviene verificar ambos valores antes de decidir, porque podrían cambiar la PD.\n\n**Señal final: desfavorable.** La PD está muy por encima del promedio de la cartera, y el perfil de bajo FICO y alto cupo utilizado en tarjetas explica buena parte del riesgo.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_riesgo",
+      "entrada": {},
+      "salida": {
+       "pd": 0.31364,
+       "pd_promedio_cartera": 0.128836,
+       "razones": [
+        {
+         "descripcion": "Puntaje FICO",
+         "valor": 667.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.292669
+        },
+        {
+         "descripcion": "Cupo total en tarjetas",
+         "valor": 1500.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.248414
+        },
+        {
+         "descripcion": "Uso de tarjetas (%)",
+         "valor": 85.0,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.117495
+        },
+        {
+         "descripcion": "Ingreso anual",
+         "valor": 36000.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.106513
+        },
+        {
+         "descripcion": "Propósito del préstamo",
+         "valor": "house",
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.097503
+        }
+       ]
+      }
+     }
+    ],
+    "agotado": false
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 1,
+   "contenido": {
+    "opinion": "aprobar",
+    "razones": [
+     "La politica aprueba por la regla 1: con 8000 USD a 18.25% el ROI esperado es 6.68%, por encima del minimo de 4%, y la cuota es 9.67% del ingreso, por debajo del tope de 20%.",
+     "Mi opinion coincide con la decision de la politica; no hay desacuerdo.",
+     "La tasa ofrecida de 18.25% queda 0.79 pt por encima de la tasa de mercado estimada de 17.46%, dentro del criterio de 1 pt que usa la herramienta.",
+     "La PD de 31.36% es alta frente al promedio de cartera de 12.88%. El especialista de riesgo la califica como desfavorable, el de economia como neutral y el de cupo como favorable con reservas.",
+     "La herramienta de riesgo reporta uso de tarjetas de 85% y cupo total en tarjetas de 1500 USD, mientras la solicitud indica 78.7% de uso del credito rotativo y no incluye el cupo de 1500 USD. Esta diferencia debe resolverse antes de firmar."
+    ],
+    "que_verificar": [
+     "Confirmar el uso de tarjetas: la solicitud indica 78.699997% y la herramienta de riesgo usa 85%. La PD podria cambiar.",
+     "Confirmar el cupo total en tarjetas de 1500 USD que usa la herramienta de riesgo, dado que no aparece en la solicitud.",
+     "Revisar el escenario malo de economia (rendimiento de -36.98%): es un supuesto de estres y no una estimacion, por lo que se trata como alerta.",
+     "El especialista de cupo indico que la herramienta no entrega el ROI bajo estres de la oferta actual; no hay cuantificacion del margen en ese escenario.",
+     "La tasa de mercado de 17.46% se estima para el perfil y el monto, y cambia si cambia el monto. La oferta esta a 0.79 pt de esa tasa, cerca del limite de 1 pt.",
+     "Confirmar que el FICO de 667 es el punto medio que usa el modelo, como indica la solicitud."
+    ],
+    "memo": "## Resumen\nSolicitud de 8000 USD a 18.25% con propósito house, ingreso anual de 36000 USD y FICO 667 (punto medio del rango). La politica aprueba por la regla 1. Mi opinion coincide: aprobar.\n\n## Decision de la politica\nDecision: aprobar (regla 1). Monto 8000 USD, tasa 18.25%. ROI esperado 6.68% (minimo 4%). Cuota 9.67% del ingreso (tope 20%). El monto maximo objetivo es 12000 USD, por encima del pedido, por lo que no aplica contraoferta por monto.\n\n## Opinion del comite\nAprobar. Cumple las dos condiciones de la regla 1 y las reglas duras (cuota menor o igual a 20% del ingreso y ROI mayor o igual a 0%).\n\n## Riesgo\nSegun el especialista de riesgo, la PD es 31.36%, frente a un promedio de cartera de 12.88%. Señal: desfavorable. La herramienta lista como factores que suben el riesgo el FICO 667, el cupo total en tarjetas de 1500 USD, el ingreso de 36000 USD y el proposito house. Como factor que baja el riesgo lista el uso de tarjetas de 85%.\n\n## Economia\nSegun el especialista de economia, el escenario bueno da un rendimiento de 26.63% con prepago esperado antes del mes 30 de 38.95% (pago esperado en el mes 28.4). El escenario malo da -36.98%. El ROI esperado es 6.68%, equivalente a una utilidad esperada de 534.68 USD. Señal: neutral.\n\n## Cupo y precio\nSegun el especialista de cupo, la oferta actual de 8000 USD a 18.25% es la opcion dentro de rango que supera el objetivo de ROI. Tasa de equilibrio (ROI mayor o igual a 0%): 11.5%. Tasa sugerida (ROI mayor o igual a 4%): 15.5%, fuera de rango. Monto maximo con utilidad mayor a 0: 16000 USD. Monto maximo con ROI mayor o igual a 4%: 12000 USD. Señal: favorable, con reservas por la PD.\n\n## Alertas\n- Inconsistencia de datos: uso de tarjetas 85% en la herramienta frente a 78.7% en la solicitud.\n- Cupo total en tarjetas de 1500 USD en la herramienta, sin respaldo en la solicitud.\n- Escenario malo de -36.98% y escenario de estres: son supuestos, no estimaciones.\n- La oferta esta a 0.79 pt de la tasa de mercado, cerca del limite de 1 pt.\n\n## Que verificar\n- Resolver el uso de tarjetas (78.7% frente a 85%) y el cupo de 1500 USD antes de firmar.\n- Revisar el escenario malo y la ausencia de ROI bajo estres como alerta.\n- Confirmar que el FICO 667 es el punto medio del modelo."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 1,
+   "contenido": {
+    "aprobado": true,
+    "hallazgos": [
+     "Menor: Todos los números del memo (8000 USD, 18.25%, ROI 6.68%, cuota 9.67%, monto máximo objetivo 12000 USD, PD 31.36% frente a 12.88%, tasa de mercado 17.46%, 0.79 pt de diferencia, equilibrio 11.5%, sugerida 15.5%, montos máximos 16000 y 12000 USD, escenarios 26.63% y -36.98%, prepago 38.95%, mes 28.4 y utilidad 534.68 USD) coinciden con las herramientas, con la decisión de la política o con la política.",
+     "Menor: La decisión de la política (aprobar, regla 1) y la opinión del comité (aprobar) están descritas correctamente y son consistentes entre memo y razones. La ausencia de contraoferta por monto está bien explicada porque el monto máximo objetivo supera el pedido.",
+     "Menor: La PD de 31.36% y, por tanto, el ROI que sostiene la aprobación se calculan con un uso de tarjetas de 85% y un cupo de 1500 USD que no aparecen en la solicitud (78.7% de uso). El memo lo marca como alerta y pide resolverlo antes de firmar, pero conviene aclarar que el ROI aprobado podría cambiar si esos datos cambian.",
+     "Menor: El memo mezcla la redacción en primera persona (\"Mi opinión\") con la atribución por especialista. No afecta la decisión, pero podría separarse con más claridad la opinión del auditor de la del comité.",
+     "Menor: El memo y la opinión tratan el escenario malo (-36.98%) y la falta de ROI bajo estrés como supuestos de alerta, no como estimaciones, lo cual es correcto según la política."
+    ],
+    "oferta": {
+     "monto": 8000.0,
+     "tasa": 18.25,
+     "pd": 0.31364,
+     "roi_esperado": 0.066835,
+     "utilidad_esperada": 534.67815,
+     "cuota_ingreso": 0.096741,
+     "cumple_capacidad": true,
+     "tasa_mercado": 17.458015,
+     "fuera_de_rango": false,
+     "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+     "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+    },
+    "violaciones": []
+   }
+  }
+ ],
+ "final": {
+  "decision": "aprobar",
+  "monto": 8000.0,
+  "tasa": 18.25,
+  "regla": "1",
+  "decision_politica": "aprobar",
+  "opinion_comite": "aprobar",
+  "desacuerdo": false,
+  "razones": [
+   "La politica aprueba por la regla 1: con 8000 USD a 18.25% el ROI esperado es 6.68%, por encima del minimo de 4%, y la cuota es 9.67% del ingreso, por debajo del tope de 20%.",
+   "Mi opinion coincide con la decision de la politica; no hay desacuerdo.",
+   "La tasa ofrecida de 18.25% queda 0.79 pt por encima de la tasa de mercado estimada de 17.46%, dentro del criterio de 1 pt que usa la herramienta.",
+   "La PD de 31.36% es alta frente al promedio de cartera de 12.88%. El especialista de riesgo la califica como desfavorable, el de economia como neutral y el de cupo como favorable con reservas.",
+   "La herramienta de riesgo reporta uso de tarjetas de 85% y cupo total en tarjetas de 1500 USD, mientras la solicitud indica 78.7% de uso del credito rotativo y no incluye el cupo de 1500 USD. Esta diferencia debe resolverse antes de firmar."
+  ],
+  "que_verificar": [
+   "Confirmar el uso de tarjetas: la solicitud indica 78.699997% y la herramienta de riesgo usa 85%. La PD podria cambiar.",
+   "Confirmar el cupo total en tarjetas de 1500 USD que usa la herramienta de riesgo, dado que no aparece en la solicitud.",
+   "Revisar el escenario malo de economia (rendimiento de -36.98%): es un supuesto de estres y no una estimacion, por lo que se trata como alerta.",
+   "El especialista de cupo indico que la herramienta no entrega el ROI bajo estres de la oferta actual; no hay cuantificacion del margen en ese escenario.",
+   "La tasa de mercado de 17.46% se estima para el perfil y el monto, y cambia si cambia el monto. La oferta esta a 0.79 pt de esa tasa, cerca del limite de 1 pt.",
+   "Confirmar que el FICO de 667 es el punto medio que usa el modelo, como indica la solicitud."
+  ],
+  "memo": "## Resumen\nSolicitud de 8000 USD a 18.25% con propósito house, ingreso anual de 36000 USD y FICO 667 (punto medio del rango). La politica aprueba por la regla 1. Mi opinion coincide: aprobar.\n\n## Decision de la politica\nDecision: aprobar (regla 1). Monto 8000 USD, tasa 18.25%. ROI esperado 6.68% (minimo 4%). Cuota 9.67% del ingreso (tope 20%). El monto maximo objetivo es 12000 USD, por encima del pedido, por lo que no aplica contraoferta por monto.\n\n## Opinion del comite\nAprobar. Cumple las dos condiciones de la regla 1 y las reglas duras (cuota menor o igual a 20% del ingreso y ROI mayor o igual a 0%).\n\n## Riesgo\nSegun el especialista de riesgo, la PD es 31.36%, frente a un promedio de cartera de 12.88%. Señal: desfavorable. La herramienta lista como factores que suben el riesgo el FICO 667, el cupo total en tarjetas de 1500 USD, el ingreso de 36000 USD y el proposito house. Como factor que baja el riesgo lista el uso de tarjetas de 85%.\n\n## Economia\nSegun el especialista de economia, el escenario bueno da un rendimiento de 26.63% con prepago esperado antes del mes 30 de 38.95% (pago esperado en el mes 28.4). El escenario malo da -36.98%. El ROI esperado es 6.68%, equivalente a una utilidad esperada de 534.68 USD. Señal: neutral.\n\n## Cupo y precio\nSegun el especialista de cupo, la oferta actual de 8000 USD a 18.25% es la opcion dentro de rango que supera el objetivo de ROI. Tasa de equilibrio (ROI mayor o igual a 0%): 11.5%. Tasa sugerida (ROI mayor o igual a 4%): 15.5%, fuera de rango. Monto maximo con utilidad mayor a 0: 16000 USD. Monto maximo con ROI mayor o igual a 4%: 12000 USD. Señal: favorable, con reservas por la PD.\n\n## Alertas\n- Inconsistencia de datos: uso de tarjetas 85% en la herramienta frente a 78.7% en la solicitud.\n- Cupo total en tarjetas de 1500 USD en la herramienta, sin respaldo en la solicitud.\n- Escenario malo de -36.98% y escenario de estres: son supuestos, no estimaciones.\n- La oferta esta a 0.79 pt de la tasa de mercado, cerca del limite de 1 pt.\n\n## Que verificar\n- Resolver el uso de tarjetas (78.7% frente a 85%) y el cupo de 1500 USD antes de firmar.\n- Revisar el escenario malo y la ausencia de ROI bajo estres como alerta.\n- Confirmar que el FICO 667 es el punto medio del modelo.",
+  "razones_cliente": [],
+  "carta_cliente": "",
+  "auditoria": {
+   "aprobado": true,
+   "hallazgos": [
+    "Menor: Todos los números del memo (8000 USD, 18.25%, ROI 6.68%, cuota 9.67%, monto máximo objetivo 12000 USD, PD 31.36% frente a 12.88%, tasa de mercado 17.46%, 0.79 pt de diferencia, equilibrio 11.5%, sugerida 15.5%, montos máximos 16000 y 12000 USD, escenarios 26.63% y -36.98%, prepago 38.95%, mes 28.4 y utilidad 534.68 USD) coinciden con las herramientas, con la decisión de la política o con la política.",
+    "Menor: La decisión de la política (aprobar, regla 1) y la opinión del comité (aprobar) están descritas correctamente y son consistentes entre memo y razones. La ausencia de contraoferta por monto está bien explicada porque el monto máximo objetivo supera el pedido.",
+    "Menor: La PD de 31.36% y, por tanto, el ROI que sostiene la aprobación se calculan con un uso de tarjetas de 85% y un cupo de 1500 USD que no aparecen en la solicitud (78.7% de uso). El memo lo marca como alerta y pide resolverlo antes de firmar, pero conviene aclarar que el ROI aprobado podría cambiar si esos datos cambian.",
+    "Menor: El memo mezcla la redacción en primera persona (\"Mi opinión\") con la atribución por especialista. No afecta la decisión, pero podría separarse con más claridad la opinión del auditor de la del comité.",
+    "Menor: El memo y la opinión tratan el escenario malo (-36.98%) y la falta de ROI bajo estrés como supuestos de alerta, no como estimaciones, lo cual es correcto según la política."
+   ]
+  },
+  "intentos": 1,
+  "violaciones": [],
+  "estado": "propuesta sin firma (eval)",
+  "decision_final": "aprobar"
+ },
+ "juez": {
+  "veredicto": null,
+  "modelo": null,
+  "usage": null,
+  "omitido": true
+ }
+}

@@ -131,6 +131,8 @@ def a_dict(sol: pd.DataFrame) -> dict:
             out[k] = v.item()
         else:
             out[k] = v
+    # los tipos viajan con la fila: una columna de texto vacía volvería como número y rompería el codificador
+    out["__tipos__"] = {k: str(t) for k, t in sol.dtypes.items() if not str(t).startswith("datetime")}
     return out
 
 
@@ -138,8 +140,13 @@ def a_df(sol) -> pd.DataFrame:
     """Reconstruye la fila que esperan los modelos a partir del dict del estado (o la deja si ya es DataFrame)."""
     if isinstance(sol, pd.DataFrame):
         return sol
-    fila = {k: pd.Timestamp(v["__fecha__"]) if isinstance(v, dict) and "__fecha__" in v else v for k, v in sol.items()}
-    return pd.DataFrame([fila])
+    fila = {k: pd.Timestamp(v["__fecha__"]) if isinstance(v, dict) and "__fecha__" in v else v
+            for k, v in sol.items() if k != "__tipos__"}
+    df = pd.DataFrame([fila])
+    for c, tipo in sol.get("__tipos__", {}).items():
+        if c in df:
+            df[c] = df[c].astype(tipo)
+    return df
 
 
 def resumen_solicitud(fila) -> dict:

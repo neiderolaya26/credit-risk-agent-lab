@@ -25,7 +25,7 @@
 | Prepago y severidad | La supervivencia en tiempo discreto predice el rendimiento mejor que las alternativas (RMSE 0,0497); la LGD clásica no tiene señal | 011 |
 | Cupo y precio | Los préstamos que Lending Club cobró por debajo de la tasa sugerida rindieron 2,8% frente a 6,7%; los que pidieron más que el monto máximo, 1,8% con 30% de mora | 012–013 |
 | Inferencia causal | La correlación tasa–mora (+1,51 pts por punto) se explica por el subgrado; el efecto causal de la tasa **no se pudo identificar**, porque el placebo falla con todos los métodos (también con wild cluster bootstrap y agrupando en dos vías: p < 0,001). El motor no supone ningún efecto y agrega un escenario de estrés, que es un supuesto: si la PD sube 0; 0,5; 1 o 2 pts por punto de sobreprecio, queda sin tasa de equilibrio el 0,1%, 0,4%, 1,6% o 2,2% de las solicitudes, con mora real de 67%, 40%, 37% y 36% | 014–015, 023 |
-| Agente | Con Haiku 5.5, versión v3, en 35 casos con resultado real: coincide con la política en el 100%, 0 de 35 borradores del comité violan una regla dura, respalda con herramientas el 94% de las cifras del memo (un número al azar pasaría el 12% de las veces), pasa la auditoría al primer intento en el 100% y saca 98% en el juez (Opus 5.5), a USD 0,007 por solicitud. Con las mismas referencias, la v2 coincidía en el 80%: las evals mostraron que rechazaba contraofertas válidas y la regla 2b lo corrigió. **La v4 (el código decide) no tiene eval todavía**, y el CI lo marca | 016–023 |
+| Agente | Con Haiku 5.5, versión v3, en 35 casos con resultado real: coincide con la política en el 100%, 0 de 35 borradores del comité violan una regla dura, respalda con herramientas el 94% de las cifras del memo (un número al azar pasaría el 12% de las veces), pasa la auditoría al primer intento en el 100% y saca 98% en el juez (Opus 5.5), a USD 0,007 por solicitud. Con las mismas referencias, la v2 coincidía en el 80%: las evals mostraron que rechazaba contraofertas válidas y la regla 2b lo corrigió. En la v4 decide el código: la opinión del comité coincide con la política en 34 de 35 casos (97%, los 6 rechazos incluidos), 0 de 37 borradores violan una regla, fidelidad 94% y auditoría al primer intento 94%, a USD 0,008 por solicitud. El único desacuerdo (c07) iría al analista marcado. El juez de la v4 queda pendiente | 016–023 |
 
 ## Límites y equidad
 
@@ -216,7 +216,7 @@ Resultados, reportes y trazas de v0 a v3 publicados en [evals/agente](evals/agen
 | 15 ✅ | Regla 2b con ROI ≥ 4%, contraofertas verificables (v3), demo y publicación | Notebook 11, página del proyecto y release v1.0.0, decisión 020 |
 | 16 ✅ | Revisión de cierre: firma humana en rechazos y contraofertas, valor en dinero, equidad, reproducibilidad y CI | Decisión 021 |
 | 17 ✅ | Segunda revisión: doble llave en la aprobación, "escalar" ante auditoría fallida, evals de la v3, contexto del valor y Python 3.12 | Decisión 022 |
-| 18 🟡 | Revisión técnica y de producto (issues #17–#47): el código decide, topes a las contraofertas, firma persistente, razones para el cliente, P&L neto, equidad en precio, robustez causal | Decisión 023; falta la eval de la v4 |
+| 18 🟡 | Revisión técnica y de producto (issues #17–#47): el código decide, topes a las contraofertas, firma persistente, razones para el cliente, P&L neto, equidad en precio, robustez causal | Decisión 023; eval v4 sin juez |
 
 ## Decisiones y trade-offs
 

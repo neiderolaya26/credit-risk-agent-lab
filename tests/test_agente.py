@@ -183,6 +183,8 @@ def test_la_solicitud_viaja_como_dict_y_vuelve_igual():
     d = a_dict(SOLICITUD)
     assert d["issue_d"] == {"__fecha__": "2015-08-01T00:00:00"}
     pd.testing.assert_frame_equal(a_df(d), SOLICITUD, check_dtype=False)
+    vacia = pd.DataFrame({"emp_length": pd.Series([None], dtype="str"), "dti": pd.Series([1.5], dtype="float32")})
+    assert a_df(a_dict(vacia)).dtypes.equals(vacia.dtypes)  # la columna de texto vacía sigue siendo texto
 
 
 def test_modo_eval_registra_la_propuesta_sin_firma():

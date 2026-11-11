@@ -40,7 +40,7 @@ Documentación corta, al estilo de un inventario de modelos (SR 11-7): qué hace
 | v1 | Política compartida, auditor por materialidad | 5 casos · 80% | política 020 |
 | v2 | Memo sin invenciones | 30 casos · 80% · juez 97% | política 020 |
 | v3 | Regla 2b con ROI ≥ 4% (decisión 020) | 35 casos · 100% · juez 98% | política 020 |
-| **v4** | El código decide; el comité opina y redacta (decisión 023) | **pendiente** | política 023 |
+| **v4** | El código decide; el comité opina y redacta (decisión 023) | 35 casos · opinión del comité 97% (decisión final 100% por construcción) · juez pendiente | política 023 |
 
 - **Qué hace:** tres especialistas analizan con herramientas, el comité da su opinión y redacta el memo, un auditor lo revisa. La decisión y las razones para el cliente salen del código.
 - **Control humano:** se aprueba sola solo si la política aprueba, el comité coincide y la auditoría pasa; lo demás lo firma un analista con un motivo de una lista cerrada (decisiones 021–023).

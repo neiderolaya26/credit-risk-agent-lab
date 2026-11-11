@@ -270,6 +270,7 @@ def main() -> None:
     p.add_argument("--limite", type=int, default=None)
     p.add_argument("--modelo", default="claude-haiku-5-5")
     p.add_argument("--ids", nargs="*", default=None, help="solo estos casos (piloto)")
+    p.add_argument("--sin-juez", action="store_true", help="corre solo el agente; el juez después con rejuzgar")
     args = p.parse_args()
     if args.accion == "casos":
         s2 = cargar_muestra()
@@ -293,7 +294,7 @@ def main() -> None:
     elif args.accion == "correr":
         from credit_lab.evals_runner import correr
 
-        correr(limite=args.limite, modelo=args.modelo, ids=args.ids)
+        correr(limite=args.limite, modelo=args.modelo, ids=args.ids, con_juez=not args.sin_juez)
     else:
         from credit_lab import evals_runner
 

@@ -92,7 +92,7 @@ def calificar(estado: dict, caso: dict, herr) -> dict:
     }, sin_respaldo
 
 
-def correr_caso(caso: dict, s2: pd.DataFrame, herr, cliente, modelo: str, carpeta) -> dict:
+def correr_caso(caso: dict, s2: pd.DataFrame, herr, cliente, modelo: str, carpeta, con_juez: bool = True) -> dict:
     sol = s2.iloc[[caso["posicion"]]]
     medidor = Medidor(cliente, modelo)
     inicio = time.perf_counter()
@@ -101,7 +101,10 @@ def correr_caso(caso: dict, s2: pd.DataFrame, herr, cliente, modelo: str, carpet
     segundos = time.perf_counter() - inicio
     nota, sin_respaldo = calificar(estado, caso, herr)
     final = estado["final"]
-    juez = juzgar(cliente, final.get("memo", ""), datos_juez(estado["historial"], final, resumen_solicitud(sol)))
+    if con_juez:
+        juez = juzgar(cliente, final.get("memo", ""), datos_juez(estado["historial"], final, resumen_solicitud(sol)))
+    else:  # el juez se puede correr después con `rejuzgar`
+        juez = {"veredicto": None, "modelo": None, "usage": None, "omitido": True}
     v = juez["veredicto"]
     nota["juez"] = float(np.mean([v.get(k, False) for k in RUBRICA])) if v else None
     with registro.conectar() as con:
@@ -126,16 +129,16 @@ def correr_caso(caso: dict, s2: pd.DataFrame, herr, cliente, modelo: str, carpet
 
 
 def correr(limite: int | None = None, modelo: str = "claude-haiku-5-5", hilos: int = HILOS,
-           ids: list[str] | None = None) -> None:
+           ids: list[str] | None = None, con_juez: bool = True) -> None:
     carpeta = CARPETA / modelo / VERSION
     carpeta.mkdir(parents=True, exist_ok=True)
     resultados, errores = carpeta / "results.jsonl", carpeta / "errors.jsonl"
     casos = json.loads((CARPETA / "casos.json").read_text(encoding="utf-8"))
     pendientes = [c for c in casos if c["id"] not in _hechos(resultados) and (not ids or c["id"] in ids)][:limite]
-    print(f"{len(pendientes)} casos por correr con {modelo} (juez {JUEZ})", flush=True)
+    print(f"{len(pendientes)} casos por correr con {modelo} ({'juez ' + JUEZ if con_juez else 'sin juez'})", flush=True)
     s2, herr, cliente = cargar_muestra(), Herramientas(), cliente_anthropic()
     with ThreadPoolExecutor(hilos) as ex:
-        futuros = {ex.submit(correr_caso, c, s2, herr, cliente, modelo, carpeta): c for c in pendientes}
+        futuros = {ex.submit(correr_caso, c, s2, herr, cliente, modelo, carpeta, con_juez): c for c in pendientes}
         for f in as_completed(futuros):
             c = futuros[f]
             try:
@@ -216,6 +219,8 @@ def rejuzgar(modelo: str = "claude-haiku-5-5", version: str = VERSION) -> None:
 def _costo_juez(f) -> float:
     entrada, salida = PRECIOS[JUEZ]
     u = f["judge_usage"]
+    if not u:
+        return 0.0
     return (u["input_tokens"] * entrada + u["output_tokens"] * salida) / 1e6
 
 
@@ -229,7 +234,8 @@ def reporte(modelo: str = "claude-haiku-5-5", version: str = VERSION) -> pd.Data
     criterios = {k: df[f"juez_criterios.{k}"].mean() for k in RUBRICA if f"juez_criterios.{k}" in df}
     otorga_agente = ~df["decision_agente"].isin(NO_OTORGA)  # un caso escalado no otorga hasta que lo firme un analista
     otorga_motor = df["decision_motor"].ne("rechazar")
-    juez_nulos = int(df["grade.juez"].isna().sum())  # issue #21: formatos inválidos del juez, contados aparte
+    sin_juez = int(sum(f.get("judge_model") is None for f in filas))
+    juez_nulos = int(df["grade.juez"].isna().sum()) - sin_juez  # issue #21: formatos inválidos del juez, contados aparte
     borr = [f.get("borradores") or [0, 0] for f in filas]
     auditados, con_violacion = sum(b[0] for b in borr), sum(b[1] for b in borr)
     escalados = int(df.get("decision_final", df["decision_agente"]).eq("escalar").sum())
@@ -252,10 +258,12 @@ def reporte(modelo: str = "claude-haiku-5-5", version: str = VERSION) -> pd.Data
               f"Latencia media {df['latency_s'].mean():.0f} s · {df['llamadas'].mean():.1f} llamadas por caso",
               f"Referencia: política {POLITICA_DE_VERSION.get(version, '023')} · casos.json {huella_casos()}", "",
               "## Notas (promedio por caso)", "", "| Métrica | Valor |", "|---|---|"]
-    lineas += [f"| {k} | {v:.0%} |" for k, v in notas.items()]
+    lineas += [f"| {k} | {v:.0%} |" if pd.notna(v) else f"| {k} | sin dato |" for k, v in notas.items()]
     lineas += [f"| borradores del comité con violación de reglas duras | {con_violacion} de {auditados} |",
                f"| casos escalados por no pasar la auditoría | {escalados} |",
                f"| notas del juez inválidas (excluidas del promedio) | {juez_nulos} |"]
+    if sin_juez:
+        lineas += [f"| casos sin juez (se corre después con `rejuzgar`) | {sin_juez} |"]
     if piso:
         lineas += [f"| piso de la fidelidad: % al azar que pasaría / montos al azar | "
                    f"{piso['porcentajes']:.0%} / {piso['montos']:.0%} |"]
