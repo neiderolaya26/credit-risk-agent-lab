@@ -8,7 +8,7 @@
 - **The whole decision, not just a score:** prepayment with a discrete-time survival model, economic loss, limit and pricing under a 20% payment-to-income cap, and a causal analysis of the effect of the rate on default, reported as a negative result.
 - **AI agent with human control:** the decision is made by the credit policy in code. A LangGraph graph with three Claude specialists analyzes the case, an AI committee gives its opinion and writes the memo, and an auditor reviews it. Only cases the policy approves and the committee confirms go through on their own; everything else, including disagreements, is signed by an analyst. Reasons for the applicant come from a fixed catalog, not from the LLM.
 
-**Try it:** [engine demo](demo/) (Streamlit, no LLM) · [models and model card on Hugging Face](https://huggingface.co/neiderolaya26/credit-risk-lending-club)
+**Try it:** [live demo of the engine](https://credit-risk-agent-lab.streamlit.app/) (Streamlit, no LLM) · [models and model card on Hugging Face](https://huggingface.co/neiderolaya26/credit-risk-lending-club)
 
 ![Extra profit of the champion model versus Lending Club's score](docs/img/valor_campeon.png)
 

@@ -15,7 +15,7 @@ metrics:
 
 # Credit risk · Lending Club (campeón LightGBM y modelos del motor)
 
-Modelos del repositorio [credit-risk-agent-lab](https://github.com/neiderolaya26/credit-risk-agent-lab), un sistema de decisión de crédito de punta a punta construido solo con datos públicos de Lending Club. Demo en vivo: [motor de decisión en Streamlit](https://github.com/neiderolaya26/credit-risk-agent-lab/tree/main/demo).
+Modelos del repositorio [credit-risk-agent-lab](https://github.com/neiderolaya26/credit-risk-agent-lab), un sistema de decisión de crédito de punta a punta construido solo con datos públicos de Lending Club. Demo en vivo: [motor de decisión en Streamlit](https://credit-risk-agent-lab.streamlit.app/).
 
 ## Archivos
 
