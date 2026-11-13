@@ -229,7 +229,7 @@ Resultados, reportes y trazas de v0 a v3 publicados en [evals/agente](evals/agen
 | 15 ✅ | Regla 2b con ROI ≥ 4%, contraofertas verificables (v3), demo y publicación | Notebook 11, página del proyecto y release v1.0.0, decisión 020 |
 | 16 ✅ | Revisión de cierre: firma humana en rechazos y contraofertas, valor en dinero, equidad, reproducibilidad y CI | Decisión 021 |
 | 17 ✅ | Segunda revisión: doble llave en la aprobación, "escalar" ante auditoría fallida, evals de la v3, contexto del valor y Python 3.12 | Decisión 022 |
-| 18 🟡 | Revisión técnica y de producto (issues #17–#47): el código decide, topes a las contraofertas, firma persistente, razones para el cliente, P&L neto, equidad en precio, robustez causal | Decisión 023; eval v4 sin juez |
+| 18 ✅ | Revisión técnica y de producto (issues #17–#47): el código decide, topes a las contraofertas, firma persistente, razones para el cliente, P&L neto, equidad en precio, robustez causal | Decisión 023; eval v4 sin juez |
 
 ## Decisiones y trade-offs
 
