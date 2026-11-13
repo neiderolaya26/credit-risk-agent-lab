@@ -1,6 +1,6 @@
 # credit-risk-agent-lab · English summary
 
-> v1.1.0 · An end-to-end credit decision system built only on public Lending Club data. The full documentation, notebooks and the 23 design decisions are in Spanish: [README.md](README.md) · [docs/decisiones.md](docs/decisiones.md).
+> v1.2.0 · An end-to-end credit decision system built only on public Lending Club data. The full documentation, notebooks and the 23 design decisions are in Spanish: [README.md](README.md) · [docs/decisiones.md](docs/decisiones.md).
 
 **In 30 seconds:**
 

@@ -1,6 +1,6 @@
 # credit-risk-agent-lab
 
-> ✅ v1.1.0 · Proyecto construido sesión a sesión, con cada decisión registrada en [docs/decisiones.md](docs/decisiones.md). · [English summary](README.en.md)
+> ✅ v1.2.0 · Proyecto construido sesión a sesión, con cada decisión registrada en [docs/decisiones.md](docs/decisiones.md). · [English summary](README.en.md)
 
 **En 30 segundos:**
 
