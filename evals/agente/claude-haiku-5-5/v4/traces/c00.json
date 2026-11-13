@@ -1,0 +1,264 @@
+{
+ "historial": [
+  {
+   "nodo": "cupo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Recomendación: mantener la tasa de 13.33% por USD 5,000.**\n\n**Hallazgos clave**\n- **Oferta actual:** PD 11.47%, ROI esperado 11.61%, utilidad esperada USD 580.49, cuota/ingreso 4.06%. Cumple capacidad y no está fuera de rango (tasa de mercado 12.39%).\n- **Cupo:** monto máximo con utilidad > 0 y con ROI ≥ 4% de USD 24,000, según la herramienta de pricing.\n- **Tasas:** equilibrio 5.0%; sugerida (ROI ≥ 4%) 6.5%. Ambas se estresan igual en la herramienta (5.0% y 6.5%).\n- **Contraoferta a 6.5%:** ROI 4.30%, pero queda fuera de rango (más de 1 pt de la tasa de mercado), sin evidencia histórica. No la recomiendo.\n\n**Señal final: favorable.** El precio actual genera ROI positivo y dentro del rango verificable.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_cupo_pricing",
+      "entrada": {},
+      "salida": {
+       "monto_pedido": 5000.0,
+       "tasa_ofrecida": 13.33,
+       "tasa_mercado": 12.390742,
+       "pd": 0.114726,
+       "roi_esperado": 0.116099,
+       "utilidad_esperada": 580.494305,
+       "cuota_ingreso": 0.040624,
+       "monto_maximo": 24000.0,
+       "monto_maximo_objetivo": 24000.0,
+       "tasa_equilibrio": 5.0,
+       "tasa_sugerida": 6.5,
+       "sugerida_fuera_de_rango": true,
+       "contraoferta_a_tasa_sugerida": {
+        "monto": 5000.0,
+        "tasa": 6.5,
+        "pd": 0.114726,
+        "roi_esperado": 0.042991,
+        "utilidad_esperada": 214.953331,
+        "cuota_ingreso": 0.036779,
+        "cumple_capacidad": true,
+        "tasa_mercado": 12.390742,
+        "fuera_de_rango": true,
+        "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+        "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+       },
+       "tasa_equilibrio_estres": 5.0,
+       "tasa_sugerida_estres": 6.5,
+       "regla_cuota_max": 0.2,
+       "tope_subida_tasa_pts": 2.0,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 5000,
+       "tasa": 13.33
+      },
+      "salida": {
+       "monto": 5000.0,
+       "tasa": 13.33,
+       "pd": 0.114726,
+       "roi_esperado": 0.116099,
+       "utilidad_esperada": 580.49431,
+       "cuota_ingreso": 0.040624,
+       "cumple_capacidad": true,
+       "tasa_mercado": 12.390742,
+       "fuera_de_rango": false,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ],
+    "agotado": false
+   }
+  },
+  {
+   "nodo": "economia",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave (5,000 USD a 13.33%)**\n\n- **Escenario bueno:** rendimiento de 17.21%.\n- **Escenario malo:** pérdida económica de -31.63%.\n- **Probabilidad de incumplimiento (PD):** 11.47%.\n- **ROI esperado:** 11.61%, con utilidad esperada de 580.49 USD.\n- **Prepago:** 56.28% de probabilidad de prepagar antes del mes 30; mes esperado de pago 24.29.\n- **Capacidad de pago:** cuota/ingreso de 4.06%, dentro de capacidad.\n- **Tasa de mercado estimada:** 12.39%. La oferta está 0.94 puntos por encima, así que no queda fuera del rango de evidencia histórica.\n\n**Lectura:** A la tasa ofrecida el préstamo es rentable en valor esperado, pero el riesgo es alto. Una PD de 11.47% con pérdida de -31.63% en el escenario malo significa que la utilidad depende de que el perfil se comporte como se espera. El buen perfil de capacidad de pago (cuota/ingreso bajo) ayuda a sostener esa expectativa.\n\n**Señal final: favorable**, con reservas por la PD y la severidad de la pérdida.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_economia",
+      "entrada": {},
+      "salida": {
+       "r_bueno": 0.172129,
+       "r_malo": -0.316252,
+       "pd": 0.114726,
+       "roi_esperado": 0.116099,
+       "utilidad_esperada": 580.494305,
+       "prob_prepago_antes_mes_30": 0.562806,
+       "mes_esperado_de_pago": 24.28507
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 5000,
+       "tasa": 13.33
+      },
+      "salida": {
+       "monto": 5000.0,
+       "tasa": 13.33,
+       "pd": 0.114726,
+       "roi_esperado": 0.116099,
+       "utilidad_esperada": 580.49431,
+       "cuota_ingreso": 0.040624,
+       "cumple_capacidad": true,
+       "tasa_mercado": 12.390742,
+       "fuera_de_rango": false,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ],
+    "agotado": false
+   }
+  },
+  {
+   "nodo": "politica",
+   "intento": 1,
+   "contenido": {
+    "decision": "aprobar",
+    "regla": "1",
+    "monto": 5000.0,
+    "tasa": 13.33,
+    "roi_esperado_pedido": 0.116099,
+    "tasa_sugerida": 6.5,
+    "monto_maximo_objetivo": 24000.0,
+    "tasa_mercado": 12.390742
+   }
+  },
+  {
+   "nodo": "riesgo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**PD del modelo: 11.47%**, frente a un promedio de cartera de 12.88%. Queda ligeramente por debajo del promedio.\n\n**Qué sube el riesgo:**\n- **FICO de 662:** es el factor más relevante (contribución logit +0.313).\n- **10 cuentas rotativas activas** (+0.179).\n- **66.7% de las tarjetas con uso superior al 75%** (+0.128).\n\n**Qué lo reduce:**\n- **DTI de 10.59%** (−0.218).\n- **0 consultas de crédito en 6 meses** (−0.121).\n\nEl perfil combina un score medio y un uso alto de tarjetas rotativas, que empujan la PD hacia arriba, con un nivel de deuda sobre ingreso bajo y ausencia de consultas recientes, que la compensan. La diferencia con el promedio de cartera es moderada, por lo que el riesgo no es alarmante.\n\n**Señal final: neutral**, con leve inclinación favorable. El uso del crédito rotativo es el punto a vigilar.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_riesgo",
+      "entrada": {},
+      "salida": {
+       "pd": 0.114726,
+       "pd_promedio_cartera": 0.128836,
+       "razones": [
+        {
+         "descripcion": "Puntaje FICO",
+         "valor": 662.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.313012
+        },
+        {
+         "descripcion": "Endeudamiento sobre ingreso (DTI)",
+         "valor": 10.59,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.217981
+        },
+        {
+         "descripcion": "Cuentas rotativas activas",
+         "valor": 10.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.179233
+        },
+        {
+         "descripcion": "% de tarjetas con uso mayor al 75%",
+         "valor": 66.699997,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.128026
+        },
+        {
+         "descripcion": "Consultas de crédito en los últimos 6 meses",
+         "valor": 0.0,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.120911
+        }
+       ]
+      }
+     }
+    ],
+    "agotado": false
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 1,
+   "contenido": {
+    "opinion": "aprobar",
+    "razones": [
+     "ROI esperado de 11.61% (≥ 4%) al monto y la tasa pedidos, según la regla 1 de la política.",
+     "Cuota/ingreso de 4.06% (≤ 20%), con cumple_capacidad en true.",
+     "PD de 11.47%, por debajo del promedio de cartera de 12.88%.",
+     "Tasa ofrecida de 13.33%, a 0.94 pts de la tasa de mercado de 12.39%; no queda fuera del criterio de 1 pt.",
+     "La opinión coincide con la decisión de la política (aprobar, monto 5000.0, tasa 13.33); no hay desacuerdo."
+    ],
+    "que_verificar": [
+     "El escenario malo (r_malo de -31.63%) es un supuesto de estrés, no una estimación; debe tratarse como alerta al firmar.",
+     "La tasa de mercado de 12.39% se estima para el perfil y el monto de 5,000; si el monto cambia (por ejemplo hacia el monto máximo objetivo de 24,000), hay que recalcular si la tasa sigue dentro de rango.",
+     "Probabilidad de prepago antes del mes 30 de 56.28% y mes esperado de pago de 24.29; revisar que el plazo esperado sea consistente con la utilidad esperada de 580.49.",
+     "Uso del crédito rotativo de 65% en la solicitud y 66.7% de tarjetas con uso superior al 75% según la herramienta de riesgo; el especialista de riesgo lo señala como punto a vigilar."
+    ],
+    "memo": "## Resumen\nEl comité opina aprobar. Coincide con la política: préstamo de USD 5,000 a una tasa de 13.33%.\n\n## Decisión de la política\nAprobar, por la regla 1. Monto 5000.0 y tasa 13.33.\n\n## Opinión del comité\nAprobar. ROI esperado de 11.61% (≥ 4%) y cuota/ingreso de 4.06% (≤ 20%). La oferta no queda fuera de rango frente a la tasa de mercado de 12.39%.\n\n## Riesgo\nPD de 11.47%, frente a un promedio de cartera de 12.88%. El especialista de riesgo dio señal neutral con leve inclinación favorable. Según su análisis, el FICO de 662 sube el riesgo (contribución logit +0.313), el uso de tarjetas superior al 75% en 66.7% también lo sube (+0.128) y el DTI de 10.59% lo baja (−0.218). Señala el uso del crédito rotativo como punto a vigilar.\n\n## Economía\nEl especialista de economía dio señal favorable con reservas. Utilidad esperada de USD 580.49. Escenario bueno de 17.21%; escenario malo de -31.63%, que es un supuesto de estrés. Probabilidad de prepago antes del mes 30 de 56.28%; mes esperado de pago de 24.29.\n\n## Cupo y precio\nMonto máximo objetivo de USD 24,000 a 13.33%. Tasa de equilibrio de 5.0% y tasa sugerida de 6.5%. A 6.5% sobre 5,000 el ROI sería 4.30%, pero queda fuera de rango; el especialista de cupo no la recomienda. Se sugiere mantener 13.33% por 5,000.\n\n## Alertas\n- El escenario de estrés (r_malo de -31.63%) es un supuesto, no una estimación.\n- La tasa de mercado de 12.39% se estima para el perfil y el monto, y cambia si cambia el monto.\n- Si la tasa se aleja más de 1 pt de la tasa de mercado, no hay evidencia histórica.\n\n## Qué verificar\n- Confirmar que el monto final y la tasa de mercado siguen siendo consistentes si el monto se modifica.\n- Revisar el supuesto de prepago (56.28%) y el mes esperado de pago (24.29).\n- Vigilar el uso del crédito rotativo (65% en la solicitud; 66.7% de tarjetas con uso superior al 75%)."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 1,
+   "contenido": {
+    "aprobado": true,
+    "hallazgos": [
+     "Menor: el memo presenta el FICO de 662 como dato de la solicitud, pero es el punto medio del rango usado por el modelo; conviene indicarlo para no confundirlo con un dato verificado."
+    ],
+    "oferta": {
+     "monto": 5000.0,
+     "tasa": 13.33,
+     "pd": 0.114726,
+     "roi_esperado": 0.116099,
+     "utilidad_esperada": 580.49431,
+     "cuota_ingreso": 0.040624,
+     "cumple_capacidad": true,
+     "tasa_mercado": 12.390742,
+     "fuera_de_rango": false,
+     "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+     "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+    },
+    "violaciones": []
+   }
+  }
+ ],
+ "final": {
+  "decision": "aprobar",
+  "monto": 5000.0,
+  "tasa": 13.33,
+  "regla": "1",
+  "decision_politica": "aprobar",
+  "opinion_comite": "aprobar",
+  "desacuerdo": false,
+  "razones": [
+   "ROI esperado de 11.61% (≥ 4%) al monto y la tasa pedidos, según la regla 1 de la política.",
+   "Cuota/ingreso de 4.06% (≤ 20%), con cumple_capacidad en true.",
+   "PD de 11.47%, por debajo del promedio de cartera de 12.88%.",
+   "Tasa ofrecida de 13.33%, a 0.94 pts de la tasa de mercado de 12.39%; no queda fuera del criterio de 1 pt.",
+   "La opinión coincide con la decisión de la política (aprobar, monto 5000.0, tasa 13.33); no hay desacuerdo."
+  ],
+  "que_verificar": [
+   "El escenario malo (r_malo de -31.63%) es un supuesto de estrés, no una estimación; debe tratarse como alerta al firmar.",
+   "La tasa de mercado de 12.39% se estima para el perfil y el monto de 5,000; si el monto cambia (por ejemplo hacia el monto máximo objetivo de 24,000), hay que recalcular si la tasa sigue dentro de rango.",
+   "Probabilidad de prepago antes del mes 30 de 56.28% y mes esperado de pago de 24.29; revisar que el plazo esperado sea consistente con la utilidad esperada de 580.49.",
+   "Uso del crédito rotativo de 65% en la solicitud y 66.7% de tarjetas con uso superior al 75% según la herramienta de riesgo; el especialista de riesgo lo señala como punto a vigilar."
+  ],
+  "memo": "## Resumen\nEl comité opina aprobar. Coincide con la política: préstamo de USD 5,000 a una tasa de 13.33%.\n\n## Decisión de la política\nAprobar, por la regla 1. Monto 5000.0 y tasa 13.33.\n\n## Opinión del comité\nAprobar. ROI esperado de 11.61% (≥ 4%) y cuota/ingreso de 4.06% (≤ 20%). La oferta no queda fuera de rango frente a la tasa de mercado de 12.39%.\n\n## Riesgo\nPD de 11.47%, frente a un promedio de cartera de 12.88%. El especialista de riesgo dio señal neutral con leve inclinación favorable. Según su análisis, el FICO de 662 sube el riesgo (contribución logit +0.313), el uso de tarjetas superior al 75% en 66.7% también lo sube (+0.128) y el DTI de 10.59% lo baja (−0.218). Señala el uso del crédito rotativo como punto a vigilar.\n\n## Economía\nEl especialista de economía dio señal favorable con reservas. Utilidad esperada de USD 580.49. Escenario bueno de 17.21%; escenario malo de -31.63%, que es un supuesto de estrés. Probabilidad de prepago antes del mes 30 de 56.28%; mes esperado de pago de 24.29.\n\n## Cupo y precio\nMonto máximo objetivo de USD 24,000 a 13.33%. Tasa de equilibrio de 5.0% y tasa sugerida de 6.5%. A 6.5% sobre 5,000 el ROI sería 4.30%, pero queda fuera de rango; el especialista de cupo no la recomienda. Se sugiere mantener 13.33% por 5,000.\n\n## Alertas\n- El escenario de estrés (r_malo de -31.63%) es un supuesto, no una estimación.\n- La tasa de mercado de 12.39% se estima para el perfil y el monto, y cambia si cambia el monto.\n- Si la tasa se aleja más de 1 pt de la tasa de mercado, no hay evidencia histórica.\n\n## Qué verificar\n- Confirmar que el monto final y la tasa de mercado siguen siendo consistentes si el monto se modifica.\n- Revisar el supuesto de prepago (56.28%) y el mes esperado de pago (24.29).\n- Vigilar el uso del crédito rotativo (65% en la solicitud; 66.7% de tarjetas con uso superior al 75%).",
+  "razones_cliente": [],
+  "carta_cliente": "",
+  "auditoria": {
+   "aprobado": true,
+   "hallazgos": [
+    "Menor: el memo presenta el FICO de 662 como dato de la solicitud, pero es el punto medio del rango usado por el modelo; conviene indicarlo para no confundirlo con un dato verificado."
+   ]
+  },
+  "intentos": 1,
+  "violaciones": [],
+  "estado": "propuesta sin firma (eval)",
+  "decision_final": "aprobar"
+ },
+ "juez": {
+  "veredicto": null,
+  "modelo": null,
+  "usage": null,
+  "omitido": true
+ }
+}

@@ -1,0 +1,239 @@
+{
+ "historial": [
+  {
+   "nodo": "cupo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave**\n\n- **Oferta actual (22.000 USD a 10,99%):** PD 42,8%, ROI esperado -12,0%, utilidad esperada -2.639 USD. Cuota/ingreso 19,6% (cumple la regla de 20%). Está fuera de rango: la tasa de mercado es 18,81%, a más de 1 pt, y no hay evidencia histórica.\n- **Monto máximo con utilidad > 0:** 1.000 USD. **Monto objetivo (ROI ≥ 4%):** 0 USD, es decir, no hay monto que cumpla.\n- **Tasa de equilibrio (ROI ≥ 0%):** 30%, el límite superior del rango. **Tasa sugerida (ROI ≥ 4%):** no existe.\n- **Escenario de estrés:** la herramienta no devolvió tasa de equilibrio ni sugerida bajo estrés (null).\n- **Alternativa simulada (1.000 USD a 30%):** PD 17,7%, ROI 17,3%, utilidad 173 USD. Pero la tasa queda fuera de rango frente a la de mercado (18,37%), así que no tiene respaldo histórico.\n\n**Mejor oferta:** no aprobar 22.000 USD al 10,99%. Si se quiere avanzar, el único escenario con utilidad positiva que devolvió el modelo es 1.000 USD a 30%, y debe tratarse como exploratorio.\n\n**Señal final: desfavorable.**",
+    "herramientas": [
+     {
+      "herramienta": "consultar_cupo_pricing",
+      "entrada": {},
+      "salida": {
+       "monto_pedido": 22000.0,
+       "tasa_ofrecida": 10.99,
+       "tasa_mercado": 18.805316,
+       "pd": 0.427787,
+       "roi_esperado": -0.119949,
+       "utilidad_esperada": -2638.883925,
+       "cuota_ingreso": 0.196404,
+       "monto_maximo": 1000.0,
+       "monto_maximo_objetivo": 0.0,
+       "tasa_equilibrio": 30.0,
+       "tasa_sugerida": null,
+       "sugerida_fuera_de_rango": false,
+       "tasa_equilibrio_estres": null,
+       "tasa_sugerida_estres": null,
+       "regla_cuota_max": 0.2,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 22000,
+       "tasa": 10.99
+      },
+      "salida": {
+       "monto": 22000,
+       "tasa": 10.99,
+       "pd": 0.427787,
+       "roi_esperado": -0.119949,
+       "utilidad_esperada": -2638.883885,
+       "cuota_ingreso": 0.196404,
+       "cumple_capacidad": true,
+       "tasa_mercado": 18.805316,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 1000,
+       "tasa": 30
+      },
+      "salida": {
+       "monto": 1000,
+       "tasa": 30,
+       "pd": 0.177044,
+       "roi_esperado": 0.173047,
+       "utilidad_esperada": 173.046685,
+       "cuota_ingreso": 0.011578,
+       "cumple_capacidad": true,
+       "tasa_mercado": 18.366804,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "economia",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: desfavorable.**\n\n**Hallazgos clave**\n\n- **Escenario bueno:** rendimiento de 14.61% si el préstamo se paga y prepaga; el prepago esperado ocurre alrededor del mes 25.2.\n- **Escenario malo:** pérdida económica de -47.58% si incumple.\n- **Probabilidad de incumplimiento (PD):** 42.78%, muy alta para esta operación.\n- **ROI esperado:** -11.99%, con una utilidad esperada de -2,638.88 USD.\n- **Capacidad de pago:** la cuota representa 19.64% del ingreso y cumple el criterio de capacidad.\n- **Tasa de mercado estimada:** 18.81%. La tasa ofrecida de 10.99% está más de 1 punto por debajo, por lo que cae fuera de rango y no hay evidencia histórica que la respalde.\n\n**Conclusión:** a 10.99% el préstamo destruye valor. La PD elevada y la tasa muy por debajo del mercado hacen que la pérdida esperada supere el rendimiento del escenario bueno. Solo sería viable con una tasa sustancialmente mayor o con un perfil de riesgo mejor documentado.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_economia",
+      "entrada": {},
+      "salida": {
+       "r_bueno": 0.146073,
+       "r_malo": -0.475783,
+       "pd": 0.427787,
+       "roi_esperado": -0.119949,
+       "utilidad_esperada": -2638.883925,
+       "prob_prepago_antes_mes_30": 0.5607,
+       "mes_esperado_de_pago": 25.200457
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 22000,
+       "tasa": 10.99
+      },
+      "salida": {
+       "monto": 22000,
+       "tasa": 10.99,
+       "pd": 0.427787,
+       "roi_esperado": -0.119949,
+       "utilidad_esperada": -2638.883885,
+       "cuota_ingreso": 0.196404,
+       "cumple_capacidad": true,
+       "tasa_mercado": 18.805316,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "riesgo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: desfavorable**\n\n**Hallazgos clave**\n- La PD del modelo campeón (LightGBM recalibrado) es **42.8%**, frente a un promedio de cartera de **12.9%**.\n- **Monto sobre ingreso (0.5)** es el factor que más sube el riesgo.\n- **FICO de 672** sube el riesgo.\n- **Dos consultas de crédito en 6 meses** suben el riesgo.\n- **Uso de tarjetas de 99.8%** sube el riesgo. Es casi el máximo de utilización.\n- **Dos cuentas rotativas activas** son el único factor que reduce el riesgo.\n\n**Nota de datos:** la solicitud indica un uso del crédito rotativo de 99.3%, pero la herramienta usó 99.8%. Conviene verificar cuál es el valor correcto, aunque la diferencia es pequeña y no cambia la señal.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_riesgo",
+      "entrada": {},
+      "salida": {
+       "pd": 0.427787,
+       "pd_promedio_cartera": 0.128836,
+       "razones": [
+        {
+         "descripcion": "Monto solicitado sobre ingreso anual",
+         "valor": 0.5,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.359889
+        },
+        {
+         "descripcion": "Puntaje FICO",
+         "valor": 672.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.259392
+        },
+        {
+         "descripcion": "Consultas de crédito en los últimos 6 meses",
+         "valor": 2.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.251139
+        },
+        {
+         "descripcion": "Uso de tarjetas (%)",
+         "valor": 99.800003,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.223094
+        },
+        {
+         "descripcion": "Cuentas rotativas activas",
+         "valor": 2.0,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.176835
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 1,
+   "contenido": {
+    "decision": "rechazar",
+    "monto": 0.0,
+    "tasa": 0.0,
+    "razones": [
+     "ROI esperado de -11.99% a 22000 USD y 10.99%, por debajo del 4% exigido por la politica",
+     "No existe tasa sugerida con ROI >= 4% (tasa_sugerida null), por lo que la opcion 2a no aplica",
+     "El monto maximo objetivo a la tasa ofrecida es 0 USD, por lo que la opcion 2b no ofrece un monto util y la politica lleva al rechazo",
+     "La cuota es 19.64% del ingreso, dentro del limite de 20%, pero el ROI negativo impide otorgar el credito"
+    ],
+    "memo": "## Resumen\nLa solicitud de 22000 USD a 10.99% no cumple la politica. El ROI esperado es -11.99% y la utilidad esperada es -2638.88 USD. La cuota es 19.64% del ingreso, dentro del limite. No hay contraoferta util, por lo que se rechaza.\n\n## Decision\nRechazar, con monto 0 USD y tasa 0%.\n- Paso 1: no se cumple, ya que el ROI esperado (-11.99%) es menor que 4%.\n- Paso 2a: no existe tasa sugerida con ROI >= 4% (tasa_sugerida null).\n- Paso 2b: el monto maximo objetivo a la tasa ofrecida es 0 USD. No hay monto que cumpla ROI >= 4%, por lo que una contraoferta de 0 USD equivale a no otorgar credito y se aplica el paso 3.\n\n## Riesgo\nEl especialista de riesgo reporta una PD de 42.8% con el modelo campeon (LightGBM recalibrado), frente a un promedio de cartera de 12.9%. Los factores que suben el riesgo son el monto sobre ingreso (0.5), el FICO de 672, dos consultas de credito en 6 meses y el uso de tarjetas de 99.8%. Las dos cuentas rotativas activas son el unico factor que baja el riesgo. Su senal es desfavorable.\n\n## Economia\nEl especialista de economia reporta un rendimiento de 14.61% si el prestamo se paga y se prepaga, con prepago esperado alrededor del mes 25.2. En caso de incumplimiento, la perdida economica es de -47.58%. El ROI esperado es -11.99% y la utilidad esperada es -2638.88 USD. Su senal es desfavorable. Su conclusion es que a 10.99% el prestamo destruye valor y que solo seria viable con una tasa sustancialmente mayor o con un perfil de riesgo mejor documentado.\n\n## Cupo y precio\nEl especialista de cupo estima una tasa de mercado de 18.81%. La tasa ofrecida queda mas de 1 punto por debajo, fuera de rango y sin evidencia historica.\n- Tasa de equilibrio (ROI >= 0%): 30%, el limite superior del rango.\n- Tasa sugerida (ROI >= 4%): no existe.\n- Escenario de estres: la herramienta no devolvio tasa de equilibrio ni sugerida (null).\n- Monto maximo con utilidad positiva: 1000 USD. Monto maximo objetivo (ROI >= 4%): 0 USD.\n- Simulacion de 1000 USD a 30%: PD 17.7%, ROI 17.3%, utilidad 173.05 USD. La tasa queda fuera de rango frente a la de mercado (18.37%). El especialista de cupo la describe como exploratoria y sin respaldo historico. No corresponde a ninguna de las opciones de contraoferta de la politica, por lo que no cambia la decision.\n\n## Alertas\n- La tasa ofrecida de 10.99% esta fuera de rango: se aleja mas de 1 punto de la tasa de mercado y no hay evidencia historica.\n- El escenario de estres no devolvio tasa de equilibrio ni tasa sugerida.\n- Diferencia de datos: la solicitud indica uso del credito rotativo de 99.3%, mientras que la herramienta de riesgo uso 99.8%. Segun el especialista de riesgo, la diferencia es pequena y no cambia la senal.\n- La tasa de mercado se estima para el perfil y el monto, por lo que cambia si cambia el monto."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 1,
+   "contenido": {
+    "aprobado": true,
+    "hallazgos": [
+     "Menor: el memo toma el uso de tarjetas de 99.8% de la herramienta de riesgo, mientras la solicitud indica 99.3%. El memo lo señala en Alertas y el dato no cambia la decisión, pero conviene verificarlo.",
+     "Menor: la afirmación de que la simulación de 1000 USD a 30% no corresponde a ninguna opción de contraoferta es una interpretación razonable de la política y no altera el resultado.",
+     "Verificado: ROI -11.99%, utilidad -2638.88 USD, cuota 19.64%, PD 42.8%, promedio de cartera 12.9%, rendimiento bueno 14.61%, pérdida mala -47.58%, tasa de mercado 18.81%, tasa de equilibrio 30%, monto máximo 1000 USD y monto objetivo 0 USD coinciden con las herramientas."
+    ],
+    "oferta": null,
+    "violaciones": []
+   }
+  }
+ ],
+ "final": {
+  "decision": "rechazar",
+  "monto": 0.0,
+  "tasa": 0.0,
+  "razones": [
+   "ROI esperado de -11.99% a 22000 USD y 10.99%, por debajo del 4% exigido por la politica",
+   "No existe tasa sugerida con ROI >= 4% (tasa_sugerida null), por lo que la opcion 2a no aplica",
+   "El monto maximo objetivo a la tasa ofrecida es 0 USD, por lo que la opcion 2b no ofrece un monto util y la politica lleva al rechazo",
+   "La cuota es 19.64% del ingreso, dentro del limite de 20%, pero el ROI negativo impide otorgar el credito"
+  ],
+  "memo": "## Resumen\nLa solicitud de 22000 USD a 10.99% no cumple la politica. El ROI esperado es -11.99% y la utilidad esperada es -2638.88 USD. La cuota es 19.64% del ingreso, dentro del limite. No hay contraoferta util, por lo que se rechaza.\n\n## Decision\nRechazar, con monto 0 USD y tasa 0%.\n- Paso 1: no se cumple, ya que el ROI esperado (-11.99%) es menor que 4%.\n- Paso 2a: no existe tasa sugerida con ROI >= 4% (tasa_sugerida null).\n- Paso 2b: el monto maximo objetivo a la tasa ofrecida es 0 USD. No hay monto que cumpla ROI >= 4%, por lo que una contraoferta de 0 USD equivale a no otorgar credito y se aplica el paso 3.\n\n## Riesgo\nEl especialista de riesgo reporta una PD de 42.8% con el modelo campeon (LightGBM recalibrado), frente a un promedio de cartera de 12.9%. Los factores que suben el riesgo son el monto sobre ingreso (0.5), el FICO de 672, dos consultas de credito en 6 meses y el uso de tarjetas de 99.8%. Las dos cuentas rotativas activas son el unico factor que baja el riesgo. Su senal es desfavorable.\n\n## Economia\nEl especialista de economia reporta un rendimiento de 14.61% si el prestamo se paga y se prepaga, con prepago esperado alrededor del mes 25.2. En caso de incumplimiento, la perdida economica es de -47.58%. El ROI esperado es -11.99% y la utilidad esperada es -2638.88 USD. Su senal es desfavorable. Su conclusion es que a 10.99% el prestamo destruye valor y que solo seria viable con una tasa sustancialmente mayor o con un perfil de riesgo mejor documentado.\n\n## Cupo y precio\nEl especialista de cupo estima una tasa de mercado de 18.81%. La tasa ofrecida queda mas de 1 punto por debajo, fuera de rango y sin evidencia historica.\n- Tasa de equilibrio (ROI >= 0%): 30%, el limite superior del rango.\n- Tasa sugerida (ROI >= 4%): no existe.\n- Escenario de estres: la herramienta no devolvio tasa de equilibrio ni sugerida (null).\n- Monto maximo con utilidad positiva: 1000 USD. Monto maximo objetivo (ROI >= 4%): 0 USD.\n- Simulacion de 1000 USD a 30%: PD 17.7%, ROI 17.3%, utilidad 173.05 USD. La tasa queda fuera de rango frente a la de mercado (18.37%). El especialista de cupo la describe como exploratoria y sin respaldo historico. No corresponde a ninguna de las opciones de contraoferta de la politica, por lo que no cambia la decision.\n\n## Alertas\n- La tasa ofrecida de 10.99% esta fuera de rango: se aleja mas de 1 punto de la tasa de mercado y no hay evidencia historica.\n- El escenario de estres no devolvio tasa de equilibrio ni tasa sugerida.\n- Diferencia de datos: la solicitud indica uso del credito rotativo de 99.3%, mientras que la herramienta de riesgo uso 99.8%. Segun el especialista de riesgo, la diferencia es pequena y no cambia la senal.\n- La tasa de mercado se estima para el perfil y el monto, por lo que cambia si cambia el monto.",
+  "auditoria": {
+   "aprobado": true,
+   "hallazgos": [
+    "Menor: el memo toma el uso de tarjetas de 99.8% de la herramienta de riesgo, mientras la solicitud indica 99.3%. El memo lo señala en Alertas y el dato no cambia la decisión, pero conviene verificarlo.",
+    "Menor: la afirmación de que la simulación de 1000 USD a 30% no corresponde a ninguna opción de contraoferta es una interpretación razonable de la política y no altera el resultado.",
+    "Verificado: ROI -11.99%, utilidad -2638.88 USD, cuota 19.64%, PD 42.8%, promedio de cartera 12.9%, rendimiento bueno 14.61%, pérdida mala -47.58%, tasa de mercado 18.81%, tasa de equilibrio 30%, monto máximo 1000 USD y monto objetivo 0 USD coinciden con las herramientas."
+   ]
+  },
+  "intentos": 1,
+  "llave_motor": false,
+  "estado": "propuesta sin firma (eval)"
+ },
+ "juez": {
+  "veredicto": {
+   "justifica_con_numeros": true,
+   "coherente": true,
+   "alertas": true,
+   "sin_invenciones": true,
+   "claro": true,
+   "explicacion_justifica_con_numeros": "Justifica el rechazo con varias cifras concretas: ROI esperado -11.99% frente al umbral de 4%, utilidad esperada -2638.88 USD, PD 42.8% frente a 12.9% de la cartera y monto máximo objetivo de 0 USD.",
+   "explicacion_coherente": "El resumen y la sección Decisión indican rechazar con monto 0 y tasa 0%, lo que coincide con la decisión de los datos (rechazar, 0, 0).",
+   "explicacion_alertas": "Menciona las señales de cautela relevantes: tasa fuera de rango, estrés sin tasa viable (null) y discrepancia en el uso rotativo. La cuota de 19.64%, cercana al límite de 20%, aparece en el resumen como dentro del límite, aunque no se destaca como alerta. No inventa alertas.",
+   "explicacion_sin_invenciones": "Las cifras, causas y conclusiones provienen de los especialistas y de la lógica de pasos de la política. No se observan datos ni recomendaciones ajenas a las fuentes.",
+   "explicacion_claro": "El resumen expone en pocas líneas la decisión y su motivo (ROI negativo, sin contraoferta viable), y el resto del memo está bien estructurado por secciones."
+  },
+  "modelo": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 5295,
+   "output_tokens": 887
+  }
+ }
+}

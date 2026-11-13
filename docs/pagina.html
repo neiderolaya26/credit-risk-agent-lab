@@ -16,7 +16,8 @@
   --rojo: #ad3329;
   --s1: #c9e3da;
   --s2: #79b8a3;
-  --s3: #0f6b55;
+  --s3: #2f8a6f;
+  --s4: #0b4a3b;
   --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --texto: "Literata", Georgia, "Times New Roman", serif;
   --cifra: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
@@ -24,13 +25,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --papel: #101715; --hoja: #16201d; --tinta: #e5ece8; --tinta-2: #a2b2ab; --regla: #2b3833;
-    --acento: #57c3a0; --ambar: #e3a14d; --rojo: #e47d73; --s1: #24453b; --s2: #2f7f66; --s3: #57c3a0;
+    --acento: #57c3a0; --ambar: #e3a14d; --rojo: #e47d73; --s1: #24453b; --s2: #2f7f66; --s3: #57c3a0; --s4: #a6e6cf;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --papel: #101715; --hoja: #16201d; --tinta: #e5ece8; --tinta-2: #a2b2ab; --regla: #2b3833;
-  --acento: #57c3a0; --ambar: #e3a14d; --rojo: #e47d73; --s1: #24453b; --s2: #2f7f66; --s3: #57c3a0;
+  --acento: #57c3a0; --ambar: #e3a14d; --rojo: #e47d73; --s1: #24453b; --s2: #2f7f66; --s3: #57c3a0; --s4: #a6e6cf;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -118,9 +119,9 @@ footer { border-top: 1px solid var(--regla); padding-top: 1.5rem; display: flex;
 
 <main class="hoja-ancha">
   <header class="encabezado">
-    <span class="etiqueta">Portafolio de IA · repo 1 de 6 · v1.0.0</span>
+    <span class="etiqueta">Portafolio de IA · repo 1 de 6 · v1.2.0</span>
     <h1>Credit Risk Agent Lab</h1>
-    <p class="lead">Un sistema de decisión de crédito construido de punta a punta con datos públicos de Lending Club: modelos de riesgo, prepago y pérdida, un motor de cupo y precio validado con inferencia causal, y un agente de IA que analiza, decide y se audita; aprueba los casos claros y deja los rechazos y contraofertas para la firma de un analista.</p>
+    <p class="lead">Un sistema de decisión de crédito construido de punta a punta con datos públicos de Lending Club: modelos de riesgo, prepago y pérdida, un motor de cupo y precio validado con inferencia causal, y un agente de IA que analiza, opina y redacta mientras la decisión la toma la política en código; lo que no es una aprobación clara lo firma un analista.</p>
     <div class="pila" aria-label="Tecnologías">
       <span>LightGBM · XGBoost · PyTorch</span><span>Supervivencia</span><span>Efectos fijos · DML</span><span>LangGraph</span><span>Claude Haiku 5.5</span><span>Firma humana</span><span>MCP</span><span>LangSmith</span><span>Evals</span>
     </div>
@@ -180,9 +181,10 @@ footer { border-top: 1px solid var(--regla); padding-top: 1.5rem; display: flex;
           <tr><td>Aprobación</td><td>Política por utilidad esperada: la misma utilidad que un corte por PD, con mejor ROI (6,30%) y menos mora</td><td>008</td></tr>
           <tr><td>Prepago y pérdida</td><td>Supervivencia en tiempo discreto, la mejor en todas las métricas (RMSE 0,0497); la LGD clásica no tiene señal</td><td>011</td></tr>
           <tr><td>Cupo y precio</td><td>Lo que Lending Club cobró por debajo de la tasa sugerida rindió 2,8% frente a 6,7%; lo que pidió más del monto máximo, 1,8% con 30% de mora</td><td>012–013</td></tr>
-          <tr><td>Inferencia causal</td><td>La relación tasa–mora es selección; el placebo falla y el efecto no se identifica. El escenario de estrés aísla un 4,9% sin tasa viable que rindió −1,3% con 31,5% de mora</td><td>014–015</td></tr>
-          <tr><td>Valor del modelo</td><td>Con la misma tasa de rechazo (20%), ordenar por el campeón y no por la tasa de Lending Club suma +USD 337 mil de utilidad real por cada 10.000 solicitudes (IC 95% [272; 408] mil)</td><td>021</td></tr>
-          <tr><td>Agente</td><td>En 30 casos con resultado real: coincide con la política en el 83%, 100% de reglas duras, 94% de números respaldados y 97% en el juez, a USD 0,007 por solicitud. Rechazos y contraofertas esperan la firma de un analista</td><td>016–021</td></tr>
+          <tr><td>Inferencia causal</td><td>La correlación tasa–mora se explica por el subgrado; el efecto causal no se pudo identificar (el placebo falla, también con wild bootstrap y agrupando en dos vías). El motor no supone efecto y agrega un estrés, que es un supuesto con sensibilidad de 0 a 2 pts</td><td>014–015, 023</td></tr>
+          <tr><td>Valor del modelo</td><td>Con la misma tasa de rechazo (20%), ordenar por el campeón y no por la tasa de Lending Club suma +USD 337 mil de utilidad real por cada 10.000 solicitudes (IC 95% [272; 408] mil): 0,32% de los USD 104 M colocados y 4,7% más utilidad que la regla de Lending Club</td><td>021</td></tr>
+          <tr><td>Política real, en neto</td><td>Backtest en 10.000 solicitudes de jul–dic 2015: 84,9% aprueba, 13,8% contraoferta, 1,3% rechaza. Con costos supuestos, la política pierde USD 0,8 M menos que aprobar todo por cada 10.000 solicitudes, pero no le gana a un corte simple por subgrado</td><td>023</td></tr>
+          <tr><td>Agente</td><td>Versión v3 en 35 casos con resultado real (16 aprobaciones, 14 contraofertas y 5 rechazos del motor): coincide con la política en el 100% (la v2 en el 80% con las mismas referencias), 94% de números respaldados, 100% de auditorías al primer intento y 98% en el juez, a USD 0,007 por solicitud. En la v4 decide el código: el comité coincide en 34 de 35 casos y el único desacuerdo iría al analista marcado</td><td>016–023</td></tr>
         </tbody>
       </table>
     </div>
@@ -192,9 +194,9 @@ footer { border-top: 1px solid var(--regla); padding-top: 1.5rem; display: flex;
     <div style="display:grid;gap:.6rem">
       <span class="etiqueta">Evals del agente · Claude Haiku 5.5 · juez Claude Opus 5.5</span>
       <h2 id="t-evals">La mejora vino de corregir el diseño, no de cambiar de modelo</h2>
-      <p class="nota">El mismo modelo en tres versiones. v0 y v1 son pilotos de 5 casos; v2 corrió los 30. De v0 a v1 se le dio al comité y al auditor la misma política y los mismos datos.</p>
+      <p class="nota">El mismo modelo en cuatro versiones. v0 y v1 son pilotos de 5 casos; v2 corrió los 30 y v3 los 35 (con 5 rechazos del motor). De v0 a v1 se le dio al comité y al auditor la misma política y los mismos datos; de v2 a v3 se corrigió la regla de contraoferta que las evals mostraron mal resuelta.</p>
     </div>
-    <div class="leyenda" aria-hidden="true"><span><i style="background:var(--s1)"></i>v0 · 5 casos</span><span><i style="background:var(--s2)"></i>v1 · 5 casos</span><span><i style="background:var(--s3)"></i>v2 · 30 casos</span></div>
+    <div class="leyenda" aria-hidden="true"><span><i style="background:var(--s1)"></i>v0 · 5 casos</span><span><i style="background:var(--s2)"></i>v1 · 5 casos</span><span><i style="background:var(--s3)"></i>v2 · 30 casos</span><span><i style="background:var(--s4)"></i>v3 · 35 casos</span></div>
     <div class="metricas" id="metricas" role="list"></div>
   </section>
 
@@ -250,18 +252,19 @@ flowchart TB
 
     subgraph AGENTE["7 · Agente LangGraph (Claude Haiku 5.5)"]
         direction LR
-        ESP["3 especialistas en paralelo&lt;br/&gt;riesgo · economía · cupo y pricing&lt;br/&gt;tool use con esquemas estrictos"] --> COM["Comité IA&lt;br/&gt;salida estructurada (Pydantic)"]
+        ESP["3 especialistas en paralelo&lt;br/&gt;riesgo · economía · cupo y pricing&lt;br/&gt;tool use con esquemas estrictos"] --> COM["Comité IA: opinión, memo&lt;br/&gt;y qué verificar (Pydantic)"]
+        POL["Política en código&lt;br/&gt;decide y arma la oferta"] --> COM
         COM --> RD["Reglas duras en código&lt;br/&gt;cuota ≤ 20% · ROI ≥ 0%"]
         RD --> AUD["Auditor IA&lt;br/&gt;por materialidad"]
         AUD -. "observaciones (máx. 2)" .-> COM
-        AUD --> FIR["Firma: aprobación automática&lt;br/&gt;rechazo o contraoferta → analista"]
-        FIR --> MEMO["Decisión + memo"]
+        AUD --> FIR["Firma: automática solo si la política aprueba y el comité coincide&lt;br/&gt;lo demás → analista"]
+        FIR --> MEMO["Decisión + memo&lt;br/&gt;+ razones y carta para el cliente"]
     end
 
     subgraph OPS["8 · Operación y evaluación"]
         direction LR
         MCP["Servidor MCP&lt;br/&gt;5 herramientas + política"]
-        REG["SQLite&lt;br/&gt;ejecuciones, pasos y resultado real"] --> EVA["Evals: 30 casos estratificados&lt;br/&gt;reglas, fidelidad y juez Opus 5.5"]
+        REG["SQLite&lt;br/&gt;ejecuciones, pasos y resultado real"] --> EVA["Evals: 35 casos estratificados&lt;br/&gt;reglas, fidelidad y juez Opus 5.5"]
         LS["LangSmith&lt;br/&gt;trazas del grafo"]
         CI["GitHub Actions&lt;br/&gt;63 tests"]
     end
@@ -293,14 +296,14 @@ flowchart TB
 
 <script>
 const metricas = [
-  ["Decide como la política", [20, 100, 83]],
-  ["Reglas duras", [100, 100, 100]],
-  ["Números respaldados", [93, 93, 94]],
-  ["Auditoría al 1er intento", [0, 80, 93]],
-  ["Juez Opus 5.5", [56, 76, 97]],
+  ["Decide como la política", [0, 80, 80, 100]],
+  ["Reglas duras", [100, 100, 100, 100]],
+  ["Números respaldados", [93, 93, 94, 94]],
+  ["Auditoría al 1er intento", [0, 80, 93, 100]],
+  ["Juez Opus 5.5", [56, 76, 97, 98]],
 ];
-const versiones = ["v0", "v1", "v2"];
-const colores = ["var(--s1)", "var(--s2)", "var(--s3)"];
+const versiones = ["v0", "v1", "v2", "v3"];
+const colores = ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)"];
 const cont = document.getElementById("metricas");
 for (const [nombre, valores] of metricas) {
   const fila = document.createElement("div");

@@ -1,0 +1,261 @@
+{
+ "historial": [
+  {
+   "nodo": "cupo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave**\n\n- **Oferta solicitada (5.000 USD a 8,18%):** desfavorable. ROI esperado de -0,48% y utilidad de -23,84 USD, con PD de 21,87%.\n- **Tasa de mercado:** 14,38%. La tasa de 8,18% queda a más de 1 pt de ese valor, así que está fuera de rango y no tiene evidencia histórica.\n- **Tasa de equilibrio:** 9,0%. Con ROI ≥ 4%, la tasa sugerida es 14,0%.\n- **Monto máximo con utilidad > 0:** 4.000 USD. **Monto objetivo con ROI ≥ 4%:** 1.000 USD, pero a 8,18% ese caso también queda fuera de rango.\n- **Contraoferta a 5.000 USD y 14%:** ROI de 4,22%, utilidad de 211,19 USD, cuota/ingreso de 4,02% (cumple la regla de 20%) y dentro de rango. La herramienta indica que se mantiene con la tasa de equilibrio y sugerida de estrés (9,0% y 14,0%).\n\n**Mejor oferta:** 5.000 USD a 14%, condicionada a que el cliente acepte esa tasa.\n\n**Señal final: desfavorable** para los términos solicitados (8,18%). Con la contraoferta a 14% la señal sería favorable.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_cupo_pricing",
+      "entrada": {},
+      "salida": {
+       "monto_pedido": 5000.0,
+       "tasa_ofrecida": 8.18,
+       "tasa_mercado": 14.379408,
+       "pd": 0.218712,
+       "roi_esperado": -0.004768,
+       "utilidad_esperada": -23.842304,
+       "cuota_ingreso": 0.036964,
+       "monto_maximo": 4000.0,
+       "monto_maximo_objetivo": 1000.0,
+       "tasa_equilibrio": 9.0,
+       "tasa_sugerida": 14.0,
+       "sugerida_fuera_de_rango": false,
+       "contraoferta_a_tasa_sugerida": {
+        "monto": 5000.0,
+        "tasa": 14.0,
+        "pd": 0.218712,
+        "roi_esperado": 0.042238,
+        "utilidad_esperada": 211.190711,
+        "cuota_ingreso": 0.040209,
+        "cumple_capacidad": true,
+        "tasa_mercado": 14.379408,
+        "fuera_de_rango": false,
+        "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+        "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+       },
+       "contraoferta_b_monto_objetivo": {
+        "monto": 1000.0,
+        "tasa": 8.18,
+        "pd": 0.11806,
+        "roi_esperado": 0.042912,
+        "utilidad_esperada": 42.912426,
+        "cuota_ingreso": 0.007393,
+        "cumple_capacidad": true,
+        "tasa_mercado": 15.435609,
+        "fuera_de_rango": true,
+        "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+        "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+       },
+       "tasa_equilibrio_estres": 9.0,
+       "tasa_sugerida_estres": 14.0,
+       "regla_cuota_max": 0.2,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 5000,
+       "tasa": 8.18
+      },
+      "salida": {
+       "monto": 5000,
+       "tasa": 8.18,
+       "pd": 0.218712,
+       "roi_esperado": -0.004768,
+       "utilidad_esperada": -23.84232,
+       "cuota_ingreso": 0.036964,
+       "cumple_capacidad": true,
+       "tasa_mercado": 14.379408,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "economia",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: desfavorable.**\n\n- **Rendimiento si sale bien:** 10,44% anual.\n- **Rendimiento si sale mal:** -39,48%, es decir, pérdida económica.\n- **Probabilidad de incumplimiento (PD):** 21,87%.\n- **ROI esperado:** -0,48%, con una utilidad esperada de -23,84 USD sobre 5.000 USD.\n- **Prepago:** hay 55,8% de probabilidad de prepagar antes del mes 30, y el mes esperado de pago es 24,5.\n- **Tasa de mercado estimada:** 14,38%. La tasa ofrecida de 8,18% queda más de 1 punto por debajo, así que la oferta está fuera de rango y no hay evidencia histórica que la respalde.\n- **Capacidad de pago:** la cuota es 3,70% del ingreso y sí cumple.\n\nA 8,18% el préstamo es no rentable: el riesgo de impago y la tasa baja pesan más que el interés cobrado. La capacidad de pago no es el problema. El precio es el problema, porque la tasa está muy por debajo de la de mercado.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_economia",
+      "entrada": {},
+      "salida": {
+       "r_bueno": 0.104421,
+       "r_malo": -0.394819,
+       "pd": 0.218712,
+       "roi_esperado": -0.004768,
+       "utilidad_esperada": -23.842304,
+       "prob_prepago_antes_mes_30": 0.558064,
+       "mes_esperado_de_pago": 24.530542
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 5000,
+       "tasa": 8.18
+      },
+      "salida": {
+       "monto": 5000,
+       "tasa": 8.18,
+       "pd": 0.218712,
+       "roi_esperado": -0.004768,
+       "utilidad_esperada": -23.84232,
+       "cuota_ingreso": 0.036964,
+       "cumple_capacidad": true,
+       "tasa_mercado": 14.379408,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "riesgo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: desfavorable**\n\n- **PD estimada: 21.9%**, frente a una PD promedio de cartera de 12.9%.\n- **Antigüedad laboral (sin dato):** es el factor que más sube el riesgo. Conviene verificarla antes de decidir.\n- **Propósito médico:** sube el riesgo de forma relevante.\n- **DTI de 25.84%:** sube el riesgo.\n- **FICO de 687:** sube el riesgo en menor medida.\n- **Monto sobre ingreso (9.8%):** es el único factor que reduce el riesgo.\n\nEl perfil combina una PD bastante por encima del promedio con un dato laboral faltante. Si se aprueba, sería recomendable completar la antigüedad laboral y revisar la capacidad de pago.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_riesgo",
+      "entrada": {},
+      "salida": {
+       "pd": 0.218712,
+       "pd_promedio_cartera": 0.128836,
+       "razones": [
+        {
+         "descripcion": "Antigüedad laboral",
+         "valor": null,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.278604
+        },
+        {
+         "descripcion": "Propósito del préstamo",
+         "valor": "medical",
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.269856
+        },
+        {
+         "descripcion": "Endeudamiento sobre ingreso (DTI)",
+         "valor": 25.84,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.211558
+        },
+        {
+         "descripcion": "Monto solicitado sobre ingreso anual",
+         "valor": 0.098039,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.105476
+        },
+        {
+         "descripcion": "Puntaje FICO",
+         "valor": 687.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.096446
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 1,
+   "contenido": {
+    "decision": "contraoferta",
+    "monto": 5000.0,
+    "tasa": 14.0,
+    "razones": [
+     "La solicitud de 5.000 USD a 8,18% tiene ROI esperado de -0,48%, por debajo del 4% que exige la política (paso 1 no cumple).",
+     "La contraoferta a la tasa sugerida (5.000 USD a 14%) tiene ROI esperado de 4,22%, cumple el mínimo de 4% y corresponde al criterio 2a.",
+     "La cuota de la contraoferta es 4,02% del ingreso, dentro del límite de 20%.",
+     "La herramienta de cupo no marca la contraoferta a 14% como fuera de rango (fuera_de_rango: false).",
+     "Como el criterio 2a se cumple, no se usa el monto objetivo de 1.000 USD del criterio 2b."
+    ],
+    "memo": "## Resumen\nLa solicitud de 5.000 USD a 8,18% no cumple la política porque el ROI esperado es -0,48%. Se propone una contraoferta de 5.000 USD a 14%, que cumple el criterio 2a.\n\n## Decisión\nContraoferta por criterio 2a: 5.000 USD a 14%. ROI esperado de 4,22% (mínimo 4%) y cuota de 4,02% del ingreso (máximo 20%). Monto 5000 y tasa 14.\n\n## Riesgo\nSegún el especialista de riesgo, la PD estimada es 21,87%, frente a una PD promedio de cartera de 12,88%. Señaló que la antigüedad laboral, que no tiene dato, es el factor que más sube el riesgo. También indicó que el propósito médico sube el riesgo, que el DTI de 25,84% lo sube y que el FICO de 687 lo sube en menor medida. Según el mismo especialista, el monto sobre ingreso de 9,8% es el único factor que lo reduce.\n\n## Economía\nSegún el especialista de economía, con 8,18% el rendimiento si sale bien es 10,44% y si sale mal es -39,48%. La utilidad esperada es -23,84 USD sobre 5.000 USD. La probabilidad de prepagar antes del mes 30 es 55,8% y el mes esperado de pago es 24,5. El especialista indicó que la capacidad de pago no es el problema, porque la cuota es 3,70% del ingreso, y que el precio sí lo es. Estos resultados corresponden a la oferta de 8,18%.\n\n## Cupo y precio\nLa tasa de equilibrio es 9,0% y la tasa sugerida es 14,0%. La tasa de mercado estimada para el perfil y el monto es 14,38%. El monto máximo con utilidad positiva es 4.000 USD, y el monto objetivo con ROI de al menos 4% a la tasa ofrecida es 1.000 USD. La contraoferta a 5.000 USD y 14% tiene ROI esperado de 4,22%, utilidad esperada de 211,19 USD, cuota de 4,02% del ingreso y cumple capacidad.\n\n## Alertas\n- La tasa ofrecida de 8,18% está fuera de rango: queda a más de 1 pt de la tasa de mercado de 14,38%, y no hay evidencia histórica para ese punto.\n- La contraoferta b (1.000 USD a 8,18%) también está fuera de rango, con tasa de mercado de 15,44%. No se usa en la decisión.\n- Escenario de estrés: tasa de equilibrio de estrés 9,0% y tasa sugerida de estrés 14,0%. La herramienta indica que se mantiene con esas tasas. Estas alertas no cambian la decisión.\n- La antigüedad laboral no tiene dato (valor nulo).\n- La tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 1,
+   "contenido": {
+    "aprobado": true,
+    "hallazgos": [
+     "Menor: el memo y el análisis de cupo afirman que la herramienta indica que la oferta 'se mantiene' con las tasas de estrés de 9,0% y 14,0%, pero la salida de la herramienta solo entrega esos valores y no esa conclusión; no cambia la decisión.",
+     "Menor: el criterio 2a 'monto entre 5% y 30%' no queda explicitado en la salida de la herramienta; la decisión lo trata como cumplido con la tasa sugerida de 14% (fuera_de_rango: false), lo que es consistente con los datos.",
+     "Menor: la PD promedio de cartera aparece como 12,9% en el análisis de riesgo y como 12,88% en el memo; es redondeo consistente con 0,128836.",
+     "Verificado: ROI de 8,18% (-0,48%), contraoferta a 14% (ROI 4,22%, utilidad 211,19 USD, cuota 4,02%), tasas de equilibrio y sugerida, tasa de mercado (14,38%), montos máximo (4.000) y objetivo (1.000), r_bueno (10,44%), r_malo (-39,48%), prepago (55,8%), mes esperado (24,5) y factores de riesgo coinciden con las herramientas; la decisión de contraoferta 5.000 USD a 14% corresponde al criterio 2a y no hay violaciones de reglas duras."
+    ],
+    "oferta": {
+     "monto": 5000.0,
+     "tasa": 14.0,
+     "pd": 0.218712,
+     "roi_esperado": 0.042238,
+     "utilidad_esperada": 211.190711,
+     "cuota_ingreso": 0.040209,
+     "cumple_capacidad": true,
+     "tasa_mercado": 14.379408,
+     "fuera_de_rango": false,
+     "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+     "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+    },
+    "violaciones": []
+   }
+  }
+ ],
+ "final": {
+  "decision": "contraoferta",
+  "monto": 5000.0,
+  "tasa": 14.0,
+  "razones": [
+   "La solicitud de 5.000 USD a 8,18% tiene ROI esperado de -0,48%, por debajo del 4% que exige la política (paso 1 no cumple).",
+   "La contraoferta a la tasa sugerida (5.000 USD a 14%) tiene ROI esperado de 4,22%, cumple el mínimo de 4% y corresponde al criterio 2a.",
+   "La cuota de la contraoferta es 4,02% del ingreso, dentro del límite de 20%.",
+   "La herramienta de cupo no marca la contraoferta a 14% como fuera de rango (fuera_de_rango: false).",
+   "Como el criterio 2a se cumple, no se usa el monto objetivo de 1.000 USD del criterio 2b."
+  ],
+  "memo": "## Resumen\nLa solicitud de 5.000 USD a 8,18% no cumple la política porque el ROI esperado es -0,48%. Se propone una contraoferta de 5.000 USD a 14%, que cumple el criterio 2a.\n\n## Decisión\nContraoferta por criterio 2a: 5.000 USD a 14%. ROI esperado de 4,22% (mínimo 4%) y cuota de 4,02% del ingreso (máximo 20%). Monto 5000 y tasa 14.\n\n## Riesgo\nSegún el especialista de riesgo, la PD estimada es 21,87%, frente a una PD promedio de cartera de 12,88%. Señaló que la antigüedad laboral, que no tiene dato, es el factor que más sube el riesgo. También indicó que el propósito médico sube el riesgo, que el DTI de 25,84% lo sube y que el FICO de 687 lo sube en menor medida. Según el mismo especialista, el monto sobre ingreso de 9,8% es el único factor que lo reduce.\n\n## Economía\nSegún el especialista de economía, con 8,18% el rendimiento si sale bien es 10,44% y si sale mal es -39,48%. La utilidad esperada es -23,84 USD sobre 5.000 USD. La probabilidad de prepagar antes del mes 30 es 55,8% y el mes esperado de pago es 24,5. El especialista indicó que la capacidad de pago no es el problema, porque la cuota es 3,70% del ingreso, y que el precio sí lo es. Estos resultados corresponden a la oferta de 8,18%.\n\n## Cupo y precio\nLa tasa de equilibrio es 9,0% y la tasa sugerida es 14,0%. La tasa de mercado estimada para el perfil y el monto es 14,38%. El monto máximo con utilidad positiva es 4.000 USD, y el monto objetivo con ROI de al menos 4% a la tasa ofrecida es 1.000 USD. La contraoferta a 5.000 USD y 14% tiene ROI esperado de 4,22%, utilidad esperada de 211,19 USD, cuota de 4,02% del ingreso y cumple capacidad.\n\n## Alertas\n- La tasa ofrecida de 8,18% está fuera de rango: queda a más de 1 pt de la tasa de mercado de 14,38%, y no hay evidencia histórica para ese punto.\n- La contraoferta b (1.000 USD a 8,18%) también está fuera de rango, con tasa de mercado de 15,44%. No se usa en la decisión.\n- Escenario de estrés: tasa de equilibrio de estrés 9,0% y tasa sugerida de estrés 14,0%. La herramienta indica que se mantiene con esas tasas. Estas alertas no cambian la decisión.\n- La antigüedad laboral no tiene dato (valor nulo).\n- La tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto.",
+  "auditoria": {
+   "aprobado": true,
+   "hallazgos": [
+    "Menor: el memo y el análisis de cupo afirman que la herramienta indica que la oferta 'se mantiene' con las tasas de estrés de 9,0% y 14,0%, pero la salida de la herramienta solo entrega esos valores y no esa conclusión; no cambia la decisión.",
+    "Menor: el criterio 2a 'monto entre 5% y 30%' no queda explicitado en la salida de la herramienta; la decisión lo trata como cumplido con la tasa sugerida de 14% (fuera_de_rango: false), lo que es consistente con los datos.",
+    "Menor: la PD promedio de cartera aparece como 12,9% en el análisis de riesgo y como 12,88% en el memo; es redondeo consistente con 0,128836.",
+    "Verificado: ROI de 8,18% (-0,48%), contraoferta a 14% (ROI 4,22%, utilidad 211,19 USD, cuota 4,02%), tasas de equilibrio y sugerida, tasa de mercado (14,38%), montos máximo (4.000) y objetivo (1.000), r_bueno (10,44%), r_malo (-39,48%), prepago (55,8%), mes esperado (24,5) y factores de riesgo coinciden con las herramientas; la decisión de contraoferta 5.000 USD a 14% corresponde al criterio 2a y no hay violaciones de reglas duras."
+   ]
+  },
+  "intentos": 1,
+  "llave_motor": false,
+  "estado": "propuesta sin firma (eval)"
+ },
+ "juez": {
+  "veredicto": {
+   "justifica_con_numeros": true,
+   "coherente": true,
+   "alertas": false,
+   "sin_invenciones": true,
+   "claro": true,
+   "explicacion_justifica_con_numeros": "Usa varias cifras concretas: ROI de -0,48% a 8,18%, ROI de 4,22% frente al mínimo de 4%, cuota de 4,02% frente al máximo de 20%, PD de 21,87% y utilidad de 211,19 USD.",
+   "explicacion_coherente": "La decisión es contraoferta por 5.000 USD a 14%. Coincide en el Resumen, en la sección Decisión y en los datos de la decisión (contraoferta, 5000, 14,0).",
+   "explicacion_alertas": "Menciona bien que la tasa está fuera de rango, el dato laboral faltante y el escenario de estrés. Pero no señala como cautela que el ROI de la contraoferta (4,22%) queda apenas 0,22 pt sobre el mínimo de 4%. Tampoco destaca como alerta la PD alta (21,87% frente a 12,88% de la cartera).",
+   "explicacion_sin_invenciones": "Todas las cifras y afirmaciones coinciden con los datos de los especialistas y sus herramientas. No agrega causas ni recomendaciones ajenas a los datos.",
+   "explicacion_claro": "El resumen y la sección Decisión dejan clara la contraoferta y su razón (ROI negativo a 8,18% y ROI ≥ 4% a 14%) en pocas líneas."
+  },
+  "modelo": "claude-opus-5-5",
+  "usage": {
+   "input_tokens": 5210,
+   "output_tokens": 1031
+  }
+ }
+}

@@ -1,0 +1,346 @@
+{
+ "historial": [
+  {
+   "nodo": "cupo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave**\n\n- **Oferta original (5,000 USD al 8.18%):** ROI esperado de -0.48% y utilidad de -23.84 USD. La PD es 21.87% y la tasa de equilibrio es 9%, así que la oferta está por debajo. La tasa de mercado estimada es 14.38%, por lo que la oferta queda fuera de rango.\n- **Monto máximo con utilidad > 0:** 4,000 USD. **Monto máximo con ROI ≥ 4%:** 1,000 USD.\n- **Tasa sugerida (ROI ≥ 4%):** 14%. A 5,000 USD da ROI de 4.22%, utilidad de 211.19 USD, PD de 21.87% y cuota/ingreso de 4.02%. No está fuera de rango.\n- **Estrés:** la tasa de equilibrio bajo estrés es 9% y la sugerida bajo estrés es 14%.\n- **Contraoferta de 1,000 USD al 8.18%:** ROI de 4.29%, pero la tasa queda fuera de rango frente a la de mercado (15.44%), sin evidencia histórica.\n\n**Mejor oferta:** 5,000 USD al 14%. Cumple el ROI objetivo y no está fuera de rango. La tasa de mercado depende del monto, así que conviene recalcularla si cambia.\n\n**Señal final: desfavorable** para la oferta de 8.18%. Con la tasa de 14% el perfil sería favorable.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_cupo_pricing",
+      "entrada": {},
+      "salida": {
+       "monto_pedido": 5000.0,
+       "tasa_ofrecida": 8.18,
+       "tasa_mercado": 14.379408,
+       "pd": 0.218712,
+       "roi_esperado": -0.004768,
+       "utilidad_esperada": -23.842304,
+       "cuota_ingreso": 0.036964,
+       "monto_maximo": 4000.0,
+       "monto_maximo_objetivo": 1000.0,
+       "tasa_equilibrio": 9.0,
+       "tasa_sugerida": 14.0,
+       "sugerida_fuera_de_rango": false,
+       "contraoferta_b_monto_objetivo": {
+        "monto": 1000.0,
+        "tasa": 8.18,
+        "pd": 0.11806,
+        "roi_esperado": 0.042912,
+        "utilidad_esperada": 42.912426,
+        "cuota_ingreso": 0.007393,
+        "cumple_capacidad": true,
+        "tasa_mercado": 15.435609,
+        "fuera_de_rango": true,
+        "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+        "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+       },
+       "contraoferta_a_tasa_sugerida": {
+        "monto": 5000.0,
+        "tasa": 14.0,
+        "pd": 0.218712,
+        "roi_esperado": 0.042238,
+        "utilidad_esperada": 211.190711,
+        "cuota_ingreso": 0.040209,
+        "cumple_capacidad": true,
+        "tasa_mercado": 14.379408,
+        "fuera_de_rango": false,
+        "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+        "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+       },
+       "tasa_equilibrio_estres": 9.0,
+       "tasa_sugerida_estres": 14.0,
+       "regla_cuota_max": 0.2,
+       "tope_subida_tasa_pts": 2.0,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 5000,
+       "tasa": 8.18
+      },
+      "salida": {
+       "monto": 5000.0,
+       "tasa": 8.18,
+       "pd": 0.218712,
+       "roi_esperado": -0.004768,
+       "utilidad_esperada": -23.84232,
+       "cuota_ingreso": 0.036964,
+       "cumple_capacidad": true,
+       "tasa_mercado": 14.379408,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ],
+    "agotado": false
+   }
+  },
+  {
+   "nodo": "economia",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Hallazgos clave (monto USD 5,000, tasa 8.18%)**\n\n- **Escenario bueno:** rendimiento de 10.44% si el préstamo se paga bien.\n- **Escenario malo:** pérdida de -39.48% si incumple.\n- **Probabilidad de incumplimiento (PD):** 21.87%.\n- **ROI esperado:** -0.48%, equivalente a una utilidad esperada de USD -23.84.\n- **Prepago:** 55.8% de probabilidad de prepagar antes del mes 30; mes esperado de pago 24.5.\n- **Capacidad de pago:** la cuota equivale a 3.7% del ingreso, dentro del límite.\n- **Tasa de mercado estimada:** 14.38%. La oferta está más de 1 punto por debajo, así que queda fuera de rango y no hay evidencia histórica que la respalde.\n\n**Conclusión:** a 8.18% el préstamo no es rentable. La PD alta y la pérdida severa en incumplimiento superan el rendimiento del escenario bueno, y el ROI esperado es ligeramente negativo. Solo sería viable con una tasa más alta, cercana a la de mercado.\n\n**Señal final: desfavorable**",
+    "herramientas": [
+     {
+      "herramienta": "consultar_economia",
+      "entrada": {},
+      "salida": {
+       "r_bueno": 0.104421,
+       "r_malo": -0.394819,
+       "pd": 0.218712,
+       "roi_esperado": -0.004768,
+       "utilidad_esperada": -23.842304,
+       "prob_prepago_antes_mes_30": 0.558064,
+       "mes_esperado_de_pago": 24.530542
+      }
+     },
+     {
+      "herramienta": "simular_oferta",
+      "entrada": {
+       "monto": 5000,
+       "tasa": 8.18
+      },
+      "salida": {
+       "monto": 5000.0,
+       "tasa": 8.18,
+       "pd": 0.218712,
+       "roi_esperado": -0.004768,
+       "utilidad_esperada": -23.84232,
+       "cuota_ingreso": 0.036964,
+       "cumple_capacidad": true,
+       "tasa_mercado": 14.379408,
+       "fuera_de_rango": true,
+       "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+       "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+      }
+     }
+    ],
+    "agotado": false
+   }
+  },
+  {
+   "nodo": "politica",
+   "intento": 1,
+   "contenido": {
+    "decision": "contraoferta",
+    "regla": "2b",
+    "monto": 1000.0,
+    "tasa": 8.18,
+    "roi_esperado_pedido": -0.004768,
+    "tasa_sugerida": 14.0,
+    "monto_maximo_objetivo": 1000.0,
+    "tasa_mercado": 14.379408
+   }
+  },
+  {
+   "nodo": "riesgo",
+   "intento": 1,
+   "contenido": {
+    "analisis": "**Señal final: desfavorable**\n\n**Hallazgos clave**\n\n- **PD del modelo: 21.87%**, frente a un promedio de cartera de 12.88%, unas 1.7 veces mayor.\n- **Antigüedad laboral no informada (null)**: es el factor que más sube el riesgo. Falta este dato, y el modelo lo penaliza.\n- **Propósito médico**: sube el riesgo de forma relevante.\n- **DTI de 25.84%**: eleva la PD.\n- **FICO de 687**: contribuye modestamente al alza.\n- **Monto sobre ingreso de 9.8%** (5,000 / 51,000): es el único factor que reduce el riesgo, aunque su efecto es menor que los anteriores.\n\n**Lectura:** el perfil de ingreso y el monto solicitado son razonables, pero la falta de antigüedad laboral, combinada con el propósito médico y un endeudamiento moderado, empuja la PD por encima del promedio. Verificar la antigüedad laboral podría cambiar la evaluación, aunque no tengo datos de cuánto cambiaría la PD si se confirmara.",
+    "herramientas": [
+     {
+      "herramienta": "consultar_riesgo",
+      "entrada": {},
+      "salida": {
+       "pd": 0.218712,
+       "pd_promedio_cartera": 0.128836,
+       "razones": [
+        {
+         "descripcion": "Antigüedad laboral",
+         "valor": null,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.278604
+        },
+        {
+         "descripcion": "Propósito del préstamo",
+         "valor": "medical",
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.269856
+        },
+        {
+         "descripcion": "Endeudamiento sobre ingreso (DTI)",
+         "valor": 25.84,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.211558
+        },
+        {
+         "descripcion": "Monto solicitado sobre ingreso anual",
+         "valor": 0.098039,
+         "efecto": "baja el riesgo",
+         "contribucion_logit": -0.105476
+        },
+        {
+         "descripcion": "Puntaje FICO",
+         "valor": 687.0,
+         "efecto": "sube el riesgo",
+         "contribucion_logit": 0.096446
+        }
+       ]
+      }
+     }
+    ],
+    "agotado": false
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 1,
+   "contenido": {
+    "opinion": "contraoferta",
+    "razones": [
+     "La política rechaza aprobar: a 5,000 USD y 8.18% el ROI esperado es -0.48%, por debajo del 4% exigido, según consultar_cupo_pricing y simular_oferta.",
+     "La regla 2b aplica porque el monto máximo objetivo a 8.18% es 1,000 USD, menor que los 5,000 pedidos. La contraoferta de 1,000 USD a 8.18% da ROI 4.29%, utilidad 42.91 USD, cuota 0.74% del ingreso y cumple capacidad según la herramienta.",
+     "Mi opinión coincide con la decisión de la política, así que no hay desacuerdo.",
+     "La herramienta marca la contraoferta de 1,000 USD a 8.18% como fuera de rango: la tasa de mercado para ese monto es 15.44% y la diferencia supera 1 punto. La regla 2b, tal como está escrita, no condiciona la oferta a ese criterio; la regla 2a sí lo hace. Conviene que el analista lo revise.",
+     "El especialista de cupo recomienda 5,000 USD al 14%, que cumple ROI 4.22%, utilidad 211.19 USD y no está fuera de rango. Esa es la opción 2a. La política no la elige porque 2b aparece primero y sí cumple."
+    ],
+    "que_verificar": [
+     "Antigüedad laboral: el dato viene nulo en la solicitud y en la herramienta de riesgo. Es el factor con mayor contribución al alza de la PD (0.278604 en logit). La herramienta no dice cuánto cambiaría la PD si se confirmara.",
+     "Rango de la contraoferta de 1,000 USD a 8.18%: la herramienta la marca fuera de rango (tasa de mercado 15.44%). La política no lo bloquea en la regla 2b, así que el analista debe decidir si la acepta.",
+     "PD según monto: el especialista de riesgo usa 21.87%, que corresponde al monto de 5,000 USD. La herramienta da PD 11.81% para 1,000 USD. Confirmar qué PD aplica a la oferta final.",
+     "Economía de la oferta final: los escenarios de rendimiento y pérdida (10.44% y -39.48%) y la probabilidad de prepago (55.8%) están calculados para 5,000 USD al 8.18%, no para 1,000 USD.",
+     "Tasa de mercado: es una estimación que depende del monto. Si cambia el monto, hay que recalcularla.",
+     "Escenario de estrés: es un supuesto, no una estimación. Bajo estrés la tasa de equilibrio es 9% y la sugerida es 14%.",
+     "FICO 687: es el punto medio del rango que usa el modelo, no un valor verificado de la solicitud."
+    ],
+    "memo": "## Resumen\nSolicitud de 5,000 USD al 8.18% con propósito médico, ingreso anual de 51,000 USD y deuda/ingreso de 25.84%. La política propone una contraoferta de 1,000 USD al 8.18%. La opinión del comité es contraoferta, en línea con la política.\n\n## Decisión de la política\nRegla 2b. El monto máximo objetivo a 8.18% es 1,000 USD, menor que el pedido, y el ROI de 5,000 USD es -0.48%, por debajo del 4%. La oferta resultante es 1,000 USD a 8.18%.\n\n## Opinión del comité\nContraoferta, igual que la política. Razones: el ROI del monto pedido no alcanza el mínimo; 1,000 USD a 8.18% da ROI 4.29%, utilidad 42.91 USD, PD 11.81% y cuota 0.74% del ingreso según consultar_cupo_pricing. La oferta de 1,000 USD queda marcada como fuera de rango, lo que el analista debe revisar.\n\n## Riesgo\nEl especialista de riesgo reporta PD 21.87% para 5,000 USD, frente a un promedio de cartera de 12.88%. Según consultar_riesgo, los factores que más suben la PD son antigüedad laboral nula (0.278604 en logit), propósito médico (0.269856) y DTI 25.84 (0.211558). El monto sobre ingreso de 0.098039 reduce el riesgo (-0.105476). El FICO de 687 suma 0.096446.\n\n## Economía\nPara 5,000 USD al 8.18%, el especialista de economía reporta escenario bueno de 10.44%, escenario malo de -39.48%, ROI esperado -0.48% y utilidad esperada -23.84 USD. La probabilidad de prepagar antes del mes 30 es 55.8% y el mes esperado de pago es 24.5. La cuota es 3.70% del ingreso. Estos cálculos no cubren la oferta de 1,000 USD.\n\n## Cupo y precio\n- Monto máximo con utilidad positiva: 4,000 USD. Monto máximo con ROI de al menos 4%: 1,000 USD.\n- Tasa de equilibrio: 9%.\n- Oferta de 1,000 USD a 8.18%: ROI 4.29%, tasa de mercado 15.44%, fuera de rango.\n- Opción 2a, 5,000 USD a 14%: ROI 4.22%, utilidad 211.19 USD, cuota 4.02%, tasa de mercado 14.38%, dentro de rango. El especialista de cupo la presenta como la mejor oferta. La política no la elige porque 2b tiene prioridad.\n\n## Alertas\n- Antigüedad laboral nula.\n- Oferta de 1,000 USD a 8.18% fuera de rango frente a la tasa de mercado.\n- Tasa de mercado dependiente del monto.\n- Escenario de estrés: supuesto, no estimación. Tasa de equilibrio bajo estrés 9%, tasa sugerida bajo estrés 14%.\n\n## Qué verificar\n1. Confirmar la antigüedad laboral.\n2. Decidir si la oferta de 1,000 USD fuera de rango es aceptable.\n3. Confirmar la PD que aplica al monto final.\n4. Recalcular economía y tasa de mercado para el monto final.\n5. Revisar si conviene la opción 2a (5,000 USD a 14%) frente a la contraoferta 2b.\n6. Tener presente que el FICO 687 es un punto medio del rango."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 1,
+   "contenido": {
+    "aprobado": false,
+    "hallazgos": [
+     "Los números del memo coinciden con las herramientas y con la decisión de la política (regla 2b, 1,000 USD a 8.18%). La mayoría de las cifras de riesgo, economía y cupo cuadran con el redondeo correcto.",
+     "Material: el memo y las razones del comité dicen que la opción 2a (5,000 USD a 14%) cumple y que la política no la elige solo porque 2b aparece primero. Eso es incorrecto. La regla 2a exige que la tasa sugerida suba como máximo 2 puntos sobre la ofrecida (tope_subida_tasa_pts = 2.0 en la herramienta), y aquí la suba es de 5.82 puntos (14 - 8.18). La opción 2a no es elegible por la política, así que el memo describe mal el razonamiento de la decisión y sugiere al analista evaluar una alternativa que la política no admite.",
+     "Menor: el memo no menciona el tope de 2 puntos de la regla 2a, que es la razón por la que esa opción queda descartada."
+    ],
+    "oferta": {
+     "monto": 1000.0,
+     "tasa": 8.18,
+     "pd": 0.11806,
+     "roi_esperado": 0.042912,
+     "utilidad_esperada": 42.912422,
+     "cuota_ingreso": 0.007393,
+     "cumple_capacidad": true,
+     "tasa_mercado": 15.435609,
+     "fuera_de_rango": true,
+     "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+     "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+    },
+    "violaciones": []
+   }
+  },
+  {
+   "nodo": "comite",
+   "intento": 2,
+   "contenido": {
+    "opinion": "contraoferta",
+    "razones": [
+     "La solicitud de 5,000 USD a 8.18% tiene un ROI esperado de -0.48%, por debajo del 4% que exige la regla 1, así que no se aprueba.",
+     "La regla 2b aplica: el monto máximo objetivo es 1,000 USD a 8.18%, con ROI esperado de 4.29% y cuota de 0.74% del ingreso. Coincide con la decisión de la política.",
+     "La regla 2a no es elegible. La tasa sugerida es 14%, que sube 5.82 puntos sobre la ofrecida de 8.18%, y el tope de la regla 2a es 2 puntos (tope_subida_tasa_pts = 2.0). Por eso la opción de 5,000 USD a 14% queda descartada por la política, aunque tenga ROI de 4.22% y no esté fuera de rango. No se descarta por el orden de las reglas.",
+     "El especialista de cupo presentó 5,000 USD a 14% como 'mejor oferta'. Esa recomendación no es elegible según la política, así que no debe tomarse como alternativa."
+    ],
+    "que_verificar": [
+     "La contraoferta de 1,000 USD a 8.18% queda fuera de rango: la tasa de mercado para ese monto es 15.44% y la herramienta marca fuera_de_rango = true. La regla 2b no condiciona por rango, pero el analista debe decidir con este dato a la vista.",
+     "La antigüedad laboral no está informada (null). Es el factor que más sube la PD (contribución logit 0.278604) y la herramienta de riesgo no cuantifica cuánto bajaría la PD si se confirmara.",
+     "La tasa de mercado se estima para el perfil y el monto. Si el monto cambia, hay que recalcularla.",
+     "El escenario de estrés es un supuesto, no una estimación. Bajo estrés la tasa de equilibrio es 9% y la sugerida es 14%; no deben usarse como respaldo de la oferta."
+    ],
+    "memo": "## Resumen\n\nSolicitud de 5,000 USD a una tasa ofrecida de 8.18% (propósito médico, ingreso anual de 51,000 USD, FICO de 687). La política emite contraoferta por la regla 2b: 1,000 USD a 8.18%. El comité coincide con la contraoferta.\n\n## Decisión de la política\n\n- Decisión: contraoferta, regla 2b.\n- Monto ofrecido: 1,000 USD. Tasa: 8.18%.\n- Monto pedido (5,000 USD a 8.18%): ROI esperado de -0.48%, por debajo de 4%.\n- Monto máximo objetivo: 1,000 USD, con ROI esperado de 4.29% y cuota de 0.74% del ingreso.\n- La regla 2a no es elegible. La tasa sugerida es 14%, que sube 5.82 puntos sobre la ofrecida (8.18%). El tope de la regla 2a es 2 puntos (tope_subida_tasa_pts = 2.0). Por eso la oferta de 5,000 USD a 14% (ROI de 4.22%, no fuera de rango) queda descartada por la política. No se descarta por el orden de las reglas: la regla 2b se aplica porque es la primera opción que cumple.\n\n## Opinión del comité\n\nContraoferta. Coincide con la política. El monto pedido no cumple el ROI mínimo de 4% a 8.18%, y la regla 2a no es elegible por el tope de 2 puntos.\n\n## Riesgo\n\n- PD del monto pedido: 21.87%, frente a un promedio de cartera de 12.88%.\n- Factores que suben el riesgo, según la herramienta de riesgo: antigüedad laboral no informada (null, contribución logit 0.278604), propósito médico (0.269856), DTI de 25.84% (0.211558) y FICO de 687 (0.096446).\n- Factor que baja el riesgo: monto sobre ingreso de 9.8% (contribución logit -0.105476).\n- El especialista de riesgo señaló que verificar la antigüedad laboral podría cambiar la evaluación, pero no tiene datos de cuánto cambiaría la PD.\n\n## Economía\n\nMonto pedido de 5,000 USD a 8.18%:\n\n- Rendimiento si el préstamo se paga bien: 10.44%.\n- Pérdida si incumple: -39.48%.\n- PD: 21.87%. ROI esperado: -0.48%. Utilidad esperada: -23.84 USD.\n- Probabilidad de prepago antes del mes 30: 55.8%. Mes esperado de pago: 24.5.\n- El especialista de economía concluyó que el préstamo no es rentable a 8.18% y que solo sería viable con una tasa más alta, cercana a la de mercado.\n\n## Cupo y precio\n\n- Contraoferta de 1,000 USD a 8.18%: ROI esperado de 4.29%, utilidad de 42.91 USD, PD de 11.81%, cuota de 0.74% del ingreso. Tasa de mercado para ese monto: 15.44%, fuera de rango.\n- Monto máximo con ROI ≥ 4%: 1,000 USD. Monto máximo con utilidad positiva: 4,000 USD. Tasa de equilibrio: 9%.\n- Alternativa 5,000 USD a 14%: ROI de 4.22%, utilidad de 211.19 USD, cuota de 4.02% del ingreso, no fuera de rango. El especialista de cupo la presentó como mejor oferta, pero no es elegible por la política, porque la suba de 5.82 puntos supera el tope de 2 puntos de la regla 2a.\n\n## Alertas\n\n- La contraoferta de 1,000 USD a 8.18% está fuera de rango frente a la tasa de mercado de 15.44%. La política no lo condiciona en la regla 2b.\n- La antigüedad laboral no está informada (null).\n- El escenario de estrés es un supuesto: tasa de equilibrio bajo estrés de 9% y tasa sugerida bajo estrés de 14%.\n- La tasa de mercado depende del monto.\n\n## Qué verificar\n\n- Confirmar la antigüedad laboral, que no está informada y es el factor que más sube la PD.\n- Decidir la contraoferta con conocimiento de que 1,000 USD a 8.18% queda fuera de rango frente a la tasa de mercado.\n- Recalcular la tasa de mercado si cambia el monto.\n- No tomar la opción de 5,000 USD a 14% como alternativa: no es elegible por la regla 2a."
+   }
+  },
+  {
+   "nodo": "auditor",
+   "intento": 2,
+   "contenido": {
+    "aprobado": true,
+    "hallazgos": [
+     "Menor: el memo llama 'monto máximo con utilidad positiva' a 4,000 USD, pero la herramienta devuelve ese valor en el campo 'monto_maximo' sin nombrar el criterio; la correspondencia es razonable pero conviene citar el campo.",
+     "Menor: la utilidad de la contraoferta de 1,000 USD figura como 42.91 USD en el memo; el motor devuelve 42.912422 y 42.912426, que redondean igual.",
+     "Menor: el memo describe correctamente la regla 2a como no elegible (suba de 5.82 puntos frente al tope de 2 puntos) y la regla 2b como aplicable; la decisión de contraoferta por 2b coincide con la política y con la opinión del comité."
+    ],
+    "oferta": {
+     "monto": 1000.0,
+     "tasa": 8.18,
+     "pd": 0.11806,
+     "roi_esperado": 0.042912,
+     "utilidad_esperada": 42.912422,
+     "cuota_ingreso": 0.007393,
+     "cumple_capacidad": true,
+     "tasa_mercado": 15.435609,
+     "fuera_de_rango": true,
+     "criterio_fuera_de_rango": "la tasa se aleja más de 1 pt de la tasa de mercado; ahí no hay evidencia histórica",
+     "nota_tasa_mercado": "la tasa de mercado se estima para el perfil y el monto, así que cambia si cambia el monto"
+    },
+    "violaciones": []
+   }
+  }
+ ],
+ "final": {
+  "decision": "contraoferta",
+  "monto": 1000.0,
+  "tasa": 8.18,
+  "regla": "2b",
+  "decision_politica": "contraoferta",
+  "opinion_comite": "contraoferta",
+  "desacuerdo": false,
+  "razones": [
+   "La solicitud de 5,000 USD a 8.18% tiene un ROI esperado de -0.48%, por debajo del 4% que exige la regla 1, así que no se aprueba.",
+   "La regla 2b aplica: el monto máximo objetivo es 1,000 USD a 8.18%, con ROI esperado de 4.29% y cuota de 0.74% del ingreso. Coincide con la decisión de la política.",
+   "La regla 2a no es elegible. La tasa sugerida es 14%, que sube 5.82 puntos sobre la ofrecida de 8.18%, y el tope de la regla 2a es 2 puntos (tope_subida_tasa_pts = 2.0). Por eso la opción de 5,000 USD a 14% queda descartada por la política, aunque tenga ROI de 4.22% y no esté fuera de rango. No se descarta por el orden de las reglas.",
+   "El especialista de cupo presentó 5,000 USD a 14% como 'mejor oferta'. Esa recomendación no es elegible según la política, así que no debe tomarse como alternativa."
+  ],
+  "que_verificar": [
+   "La contraoferta de 1,000 USD a 8.18% queda fuera de rango: la tasa de mercado para ese monto es 15.44% y la herramienta marca fuera_de_rango = true. La regla 2b no condiciona por rango, pero el analista debe decidir con este dato a la vista.",
+   "La antigüedad laboral no está informada (null). Es el factor que más sube la PD (contribución logit 0.278604) y la herramienta de riesgo no cuantifica cuánto bajaría la PD si se confirmara.",
+   "La tasa de mercado se estima para el perfil y el monto. Si el monto cambia, hay que recalcularla.",
+   "El escenario de estrés es un supuesto, no una estimación. Bajo estrés la tasa de equilibrio es 9% y la sugerida es 14%; no deben usarse como respaldo de la oferta."
+  ],
+  "memo": "## Resumen\n\nSolicitud de 5,000 USD a una tasa ofrecida de 8.18% (propósito médico, ingreso anual de 51,000 USD, FICO de 687). La política emite contraoferta por la regla 2b: 1,000 USD a 8.18%. El comité coincide con la contraoferta.\n\n## Decisión de la política\n\n- Decisión: contraoferta, regla 2b.\n- Monto ofrecido: 1,000 USD. Tasa: 8.18%.\n- Monto pedido (5,000 USD a 8.18%): ROI esperado de -0.48%, por debajo de 4%.\n- Monto máximo objetivo: 1,000 USD, con ROI esperado de 4.29% y cuota de 0.74% del ingreso.\n- La regla 2a no es elegible. La tasa sugerida es 14%, que sube 5.82 puntos sobre la ofrecida (8.18%). El tope de la regla 2a es 2 puntos (tope_subida_tasa_pts = 2.0). Por eso la oferta de 5,000 USD a 14% (ROI de 4.22%, no fuera de rango) queda descartada por la política. No se descarta por el orden de las reglas: la regla 2b se aplica porque es la primera opción que cumple.\n\n## Opinión del comité\n\nContraoferta. Coincide con la política. El monto pedido no cumple el ROI mínimo de 4% a 8.18%, y la regla 2a no es elegible por el tope de 2 puntos.\n\n## Riesgo\n\n- PD del monto pedido: 21.87%, frente a un promedio de cartera de 12.88%.\n- Factores que suben el riesgo, según la herramienta de riesgo: antigüedad laboral no informada (null, contribución logit 0.278604), propósito médico (0.269856), DTI de 25.84% (0.211558) y FICO de 687 (0.096446).\n- Factor que baja el riesgo: monto sobre ingreso de 9.8% (contribución logit -0.105476).\n- El especialista de riesgo señaló que verificar la antigüedad laboral podría cambiar la evaluación, pero no tiene datos de cuánto cambiaría la PD.\n\n## Economía\n\nMonto pedido de 5,000 USD a 8.18%:\n\n- Rendimiento si el préstamo se paga bien: 10.44%.\n- Pérdida si incumple: -39.48%.\n- PD: 21.87%. ROI esperado: -0.48%. Utilidad esperada: -23.84 USD.\n- Probabilidad de prepago antes del mes 30: 55.8%. Mes esperado de pago: 24.5.\n- El especialista de economía concluyó que el préstamo no es rentable a 8.18% y que solo sería viable con una tasa más alta, cercana a la de mercado.\n\n## Cupo y precio\n\n- Contraoferta de 1,000 USD a 8.18%: ROI esperado de 4.29%, utilidad de 42.91 USD, PD de 11.81%, cuota de 0.74% del ingreso. Tasa de mercado para ese monto: 15.44%, fuera de rango.\n- Monto máximo con ROI ≥ 4%: 1,000 USD. Monto máximo con utilidad positiva: 4,000 USD. Tasa de equilibrio: 9%.\n- Alternativa 5,000 USD a 14%: ROI de 4.22%, utilidad de 211.19 USD, cuota de 4.02% del ingreso, no fuera de rango. El especialista de cupo la presentó como mejor oferta, pero no es elegible por la política, porque la suba de 5.82 puntos supera el tope de 2 puntos de la regla 2a.\n\n## Alertas\n\n- La contraoferta de 1,000 USD a 8.18% está fuera de rango frente a la tasa de mercado de 15.44%. La política no lo condiciona en la regla 2b.\n- La antigüedad laboral no está informada (null).\n- El escenario de estrés es un supuesto: tasa de equilibrio bajo estrés de 9% y tasa sugerida bajo estrés de 14%.\n- La tasa de mercado depende del monto.\n\n## Qué verificar\n\n- Confirmar la antigüedad laboral, que no está informada y es el factor que más sube la PD.\n- Decidir la contraoferta con conocimiento de que 1,000 USD a 8.18% queda fuera de rango frente a la tasa de mercado.\n- Recalcular la tasa de mercado si cambia el monto.\n- No tomar la opción de 5,000 USD a 14% como alternativa: no es elegible por la regla 2a.",
+  "razones_cliente": [
+   {
+    "variable": "emp_length",
+    "texto": "Su antigüedad laboral es corta."
+   },
+   {
+    "variable": "purpose",
+    "texto": "El propósito del préstamo tiene un riesgo mayor en nuestra experiencia."
+   },
+   {
+    "variable": "dti",
+    "texto": "Su nivel de endeudamiento frente a su ingreso es alto."
+   },
+   {
+    "variable": "fico_medio",
+    "texto": "Su puntaje de crédito es bajo para las condiciones solicitadas."
+   }
+  ],
+  "carta_cliente": "No podemos aprobar el crédito en las condiciones solicitadas. Podemos ofrecerle USD 1,000 a una tasa anual de 8.18%.\n\nLas razones principales son:\n1. Su antigüedad laboral es corta.\n2. El propósito del préstamo tiene un riesgo mayor en nuestra experiencia.\n3. Su nivel de endeudamiento frente a su ingreso es alto.\n4. Su puntaje de crédito es bajo para las condiciones solicitadas.\n\nTiene derecho a conocer la información de crédito usada en esta decisión y a pedir su revisión.",
+  "auditoria": {
+   "aprobado": true,
+   "hallazgos": [
+    "Menor: el memo llama 'monto máximo con utilidad positiva' a 4,000 USD, pero la herramienta devuelve ese valor en el campo 'monto_maximo' sin nombrar el criterio; la correspondencia es razonable pero conviene citar el campo.",
+    "Menor: la utilidad de la contraoferta de 1,000 USD figura como 42.91 USD en el memo; el motor devuelve 42.912422 y 42.912426, que redondean igual.",
+    "Menor: el memo describe correctamente la regla 2a como no elegible (suba de 5.82 puntos frente al tope de 2 puntos) y la regla 2b como aplicable; la decisión de contraoferta por 2b coincide con la política y con la opinión del comité."
+   ]
+  },
+  "intentos": 2,
+  "violaciones": [],
+  "estado": "propuesta sin firma (eval)",
+  "decision_final": null
+ },
+ "juez": {
+  "veredicto": null,
+  "modelo": null,
+  "usage": null,
+  "omitido": true
+ }
+}
