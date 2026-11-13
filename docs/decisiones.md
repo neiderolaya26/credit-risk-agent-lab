@@ -355,7 +355,7 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
 
 ---
 
-## 023 — El código decide, topes a las contraofertas y P&L de la política real 🟡 borrador
+## 023 — El código decide, topes a las contraofertas y P&L de la política real
 
 - **Fecha:** 2026-11-10
 - **Contexto:** Sergio Mora Pardo revisó el repo como lo haría un equipo de ciencia de datos y un product manager de crédito de consumo, y dejó 31 issues priorizados (#17–#47). Los más graves:
@@ -373,4 +373,4 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
 - **Alternativas consideradas:** IA decide con candados; código decide e IA solo redacta; costos dados por mí o solo utilidad bruta; tope de +3 pts o sin tope; reentrenar el campeón con restricción monótona o sin la variable.
 - **Eval v4 (Haiku 5.5, sin juez por saldo):** la opinión del comité coincide con la política en 34 de 35 casos (97%), con los 6 rechazos; 0 de 37 borradores violan una regla; fidelidad 94%; auditoría al primer intento 94%; USD 0,29 en total. El desacuerdo (c07: el comité proponía contraoferta y la política aprobaba) iría al analista.
 - **Pendiente:** el juez de la v4 (`rejuzgar`, ~USD 1,40); etiquetar a mano 10–15 memos para calibrar el juez (#21); #34, #43 y #46 quedan como investigación opcional.
-- **Por qué (en mis palabras):** _pendiente de Neider._
+- **Por qué (en mis palabras):** en crédito la decisión tiene que ser explicable y repetible: el mismo caso debe dar el mismo resultado, y eso lo garantiza el código, no un LLM. La IA es buena para analizar y redactar, así que la dejé opinando y que sus desacuerdos vayan a un analista. Preferí bajar el monto antes que subir la tasa porque cobrarle más a un cliente riesgoso aumenta su carga y su mora. Y publiqué que la política no le gana a un corte por subgrado porque un resultado honesto vale más que uno maquillado.
