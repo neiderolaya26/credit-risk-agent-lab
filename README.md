@@ -22,7 +22,7 @@
 |---|---|---|
 | Riesgo | El campeón LightGBM (AUC 0,6823) le gana al score de Lending Club (0,6784) solo con variables públicas de la solicitud; IC 95% de la diferencia [+0,0016; +0,0063] | 006–007 |
 | Valor del modelo | Con la misma tasa de rechazo, ordenar por el campeón y no por la tasa de Lending Club suma +USD 195 mil (10% de rechazo), +337 mil (20%) y +447 mil (30%) de utilidad real por cada 10.000 solicitudes. La mora baja poco (11,7% frente a 11,9% al 20%): el valor viene de no rechazar préstamos caros pero buenos. En contexto: al 20% se colocan unos USD 104 M por cada 10.000 solicitudes (monto medio USD 12.806), así que +337 mil son 0,32% del monto colocado y 4,7% más utilidad que la regla de Lending Club (USD 7,16 M). El IC solo mide el ruido de la muestra de 2015, no un cambio de ciclo | 021 |
-| Política real, en neto | Backtest en 10.000 solicitudes de jul–dic 2015: la política aprueba el 84,9%, contraoferta el 13,8% y rechaza el 1,3%. Con costos supuestos (fondeo 3% anual, USD 100 por préstamo, capital 10% al 12%), por cada 10.000 solicitudes: Lending Club aprobando todo −USD 1,48 M; la política −0,69 M si nadie acepta las contraofertas y −0,90 M si las acepta la mitad; un corte por subgrado con el mismo 15% de rechazo −0,50 M. La política mejora a aprobar todo, pero no a una regla simple por subgrado; con fondeo de 2% y USD 50 por préstamo todas quedan positivas. Los costos y la aceptación son supuestos (`credit_lab.valor`) | 023 |
+| Política real, en neto | Backtest en 10.000 solicitudes de jul–dic 2015: la política aprueba el 84,9%, contraoferta el 13,8% y rechaza el 1,3%. Con costos dummy, ilustrativos y no reales (fondeo 3% anual, USD 100 por préstamo, capital 10% al 12%), por cada 10.000 solicitudes: Lending Club aprobando todo −USD 1,48 M; la política −0,69 M si nadie acepta las contraofertas y −0,90 M si las acepta la mitad; un corte por subgrado con el mismo 15% de rechazo −0,50 M. La política mejora a aprobar todo, pero no a una regla simple por subgrado; con fondeo de 2% y USD 50 por préstamo todas quedan positivas. Los costos y la aceptación son supuestos (`credit_lab.valor`) | 023 |
 | Aprobación | La política por utilidad esperada logra la misma utilidad que un corte por PD, con mejor ROI (6,30%) y menos mora | 008 |
 | Prepago y severidad | La supervivencia en tiempo discreto predice el rendimiento mejor que las alternativas (RMSE 0,0497); la LGD clásica no tiene señal | 011 |
 | Cupo y precio | Los préstamos que Lending Club cobró por debajo de la tasa sugerida rindieron 2,8% frente a 6,7%; los que pidieron más que el monto máximo, 1,8% con 30% de mora | 012–013 |
@@ -40,8 +40,16 @@
   - Antigüedad crediticia (proxy de edad): no se usa como razón. Quitarla del modelo cuesta −0,0032 de AUC, casi toda la ventaja sobre el score de Lending Club; forzarla monótona (más antigüedad no sube el riesgo) cuesta −0,0011 (`python -m credit_lab.proxies`).
 - **Datos:** préstamos aprobados por Lending Club entre 2012 y 2015. No hay rechazados ni datos de aceptación de ofertas, así que no se modela la demanda ni el sesgo de selección de la originación.
 - **Evals pequeñas:** 35 casos sirven para detectar errores grandes, no para declarar diferencias finas entre versiones o modelos.
-- **Costos supuestos:** el repo no tiene costos reales de fondeo, operación ni capital, ni datos de aceptación de contraofertas. El P&L neto usa supuestos explícitos con una tabla de sensibilidad; la tasa sugerida exige ROI ≥ 4% para cubrirlos (decisión 013).
+- **Costos dummy:** los costos del P&L son valores ilustrativos, no de una entidad real. El repo no tiene costos reales de fondeo, operación ni capital, ni datos de aceptación de contraofertas. El P&L neto usa supuestos explícitos con una tabla de sensibilidad; la tasa sugerida exige ROI ≥ 4% para cubrirlos (decisión 013).
 - **Evals:** el juez no está calibrado con etiquetas humanas y la auditoría la hace el mismo modelo que redacta, así que no es una revisión independiente. Las fichas de los modelos y del agente están en [docs/fichas.md](docs/fichas.md).
+
+## Lo que aprendí
+
+1. **El valor se mide en la decisión que se aplica, y en neto.** Mi primer número (+USD 337 mil) venía de un corte que el sistema no aplicaba. Medido sobre la política real y con costos, la política no le gana a un corte simple por subgrado, y prefiero mostrarlo.
+2. **En agentes, el diseño pesa más que el modelo.** Con el mismo Haiku, dar a todos la misma política y los mismos datos llevó la concordancia de 0% a 100%.
+3. **En crédito, el LLM no debe decidir.** El código decide porque es explicable y repetible, la IA analiza y redacta, y la zona gris la firma una persona.
+4. **Un resultado negativo bien documentado también es un resultado.** El efecto causal de la tasa no se pudo identificar. Lo reporté y lo cubrí con un escenario de estrés en vez de inventar un número.
+5. **Una revisión externa encuentra lo que uno no ve.** La revisión de Sergio dejó 31 issues, varios críticos, y me obligó a medir mejor: evals con referencias fijas, en CI y con un piso al azar.
 
 ## Diagrama
 

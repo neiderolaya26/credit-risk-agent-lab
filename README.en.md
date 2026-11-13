@@ -21,7 +21,7 @@
 | Approval | An expected-utility policy matches the profit of a PD cutoff with a better ROI (6.30%) and lower default |
 | Prepayment and loss | Discrete-time survival beats the alternatives (RMSE 0.0497); classic LGD has no signal |
 | Limit and pricing | Loans Lending Club priced below the suggested rate returned 2.8% vs 6.7% for the rest |
-| Real policy, net | Backtest on 10,000 applications (Jul–Dec 2015): the policy approves 84.9%, counteroffers 13.8% and rejects 1.3%. With assumed costs (3% funding, USD 100 per loan, 10% capital at 12%), per 10,000 applications: Lending Club approving everything −USD 1.48M; the policy −0.69M to −1.11M depending on counteroffer acceptance; a subgrade cut with the same rejection rate −0.50M |
+| Real policy, net | Backtest on 10,000 applications (Jul–Dec 2015): the policy approves 84.9%, counteroffers 13.8% and rejects 1.3%. With dummy, illustrative costs (3% funding, USD 100 per loan, 10% capital at 12%), per 10,000 applications: Lending Club approving everything −USD 1.48M; the policy −0.69M to −1.11M depending on counteroffer acceptance; a subgrade cut with the same rejection rate −0.50M |
 | Causal inference | The rate–default correlation is explained by subgrade; the causal effect of the rate **could not be identified**, because the placebo fails with every method (also with wild cluster bootstrap and two-way clustering, p < 0.001). The engine assumes no effect and adds a stress scenario, which is an assumption: with 0, 0.5, 1 or 2 pts of PD per point of overpricing, 0.1%, 0.4%, 1.6% or 2.2% of applications have no break-even rate |
 | Agent | Claude Haiku 5.5 (version v3) on 35 cases with real outcomes: agrees with the policy in 100% of cases (v2: 80% on the same references), 0 of 35 committee drafts break a hard rule, 94% of memo figures backed by a tool (a random number would pass 12% of the time), 100% of audits passed on the first try and 98% on an Opus 5.5 judge, at USD 0.007 per application. In v4 the code decides: the committee's opinion matches the policy in 34 of 35 cases (97%, all 6 rejections included), 0 of 37 drafts break a rule, 94% fidelity and 94% first-try audits, at USD 0.008 per application. The one disagreement would go to an analyst, flagged. The v4 judge run is pending |
 
@@ -30,8 +30,16 @@
 - **The agent does not decide alone on cases that hurt the applicant.** The policy in code decides; a case goes through on its own only if the policy approves, the AI committee agrees and the audit passes. Everything else pauses the graph (LangGraph `interrupt`) until an analyst signs or returns it with a reason from a closed list; the sign-off is stored in SQLite and can happen later, from another process. In the backtest 15.1% of applications would go to an analyst: 126–202 analyst hours per 10,000 applications.
 - **Fairness:** the public data has no sex, age or race, so direct discrimination cannot be measured. Proxy checks at a 20% rejection cut, measured on Jul–Dec 2015 only, show calibration within ±0.7 points for every housing and region group, even rejection across regions (19.6%–20.2%), and disparate impact by housing (29% of renters rejected vs 11% of mortgage holders), in line with their real default (17.4% vs 12.0%). Credit history length, an age proxy, is never given as a reason; dropping it costs −0.0032 AUC and a monotone constraint −0.0011.
 - **Data:** only loans Lending Club approved (2012–2015); no rejected applications or offer acceptance data.
-- **Assumed costs:** there are no real funding, operating or capital costs, nor counteroffer acceptance data; the net P&L uses explicit assumptions with a sensitivity table.
+- **Dummy costs:** the P&L costs are illustrative values, not those of a real lender; there are no real funding, operating or capital costs, nor counteroffer acceptance data; the net P&L uses explicit assumptions with a sensitivity table.
 - **Small evals:** 35 cases catch large errors, not fine differences between versions.
+
+## What I learned
+
+1. **Value is measured on the decision actually applied, and net.** My first number (+USD 337k) came from a cut the system did not apply. Measured on the real policy and with costs, the policy does not beat a simple subgrade cut, and I would rather show it.
+2. **In agents, design matters more than the model.** With the same Haiku, giving everyone the same policy and the same data took agreement from 0% to 100%.
+3. **In credit, the LLM should not decide.** Code decides because it is explainable and repeatable, the AI analyzes and writes, and a person signs off the gray zone.
+4. **A well-documented negative result is still a result.** The causal effect of the rate could not be identified. I reported it and covered it with a stress scenario instead of inventing a number.
+5. **An external review finds what you cannot see.** The review by Sergio left 31 issues, several of them critical, and pushed me to measure better: evals with fixed references, in CI and with a random floor.
 
 ## Stack
 

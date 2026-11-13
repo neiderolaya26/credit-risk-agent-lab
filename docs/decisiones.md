@@ -84,7 +84,7 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
 - **Contexto:** el campeón ordena bien, pero su PD media en 2015 fue 13,1% frente a 14,9% real (−1,75 puntos), de forma pareja en todos los deciles y en ambos semestres. Aprendió con 2012–2014 (13,2% de mora) y 2015 fue un año más riesgoso.
 - **Decisión:** recalibrar con un **desplazamiento del intercepto en escala logit** (+0,1432, que equivale a odds ×1,15), aprendido con el **1er semestre de 2015** y evaluado en el **2º semestre**. Resultado en el 2º semestre: PD media de 12,9% a 14,5% (real 14,7%), Brier de 0,1189 a 0,1185, AUC sin cambio (0,6852). Código: `src/credit_lab/campeon.py`.
 - **Alternativas consideradas:** no recalibrar y documentar la subestimación; recalibración isotónica o de Platt (cambian la forma de la curva y piden más datos).
-- **Por qué (en mis palabras):** recalibra el campeón.
+- **Por qué (en mis palabras):** un modelo que ordena bien pero subestima la PD lleva a cobrar de menos. Preferí un ajuste simple del intercepto, que corrige el nivel sin tocar el orden, a métodos que piden más datos.
 
 ---
 
@@ -108,7 +108,7 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
   - **Severidad:** el 82,6% de los malos tiene alguna recuperación (7,4% del monto en promedio) → modelo de **LGD**.
 - **Decisión:** construir todo. Sesión 8: prepago + LGD; sesión 9: cupo óptimo + pricing; sesión 10: agente LangGraph con especialistas en paralelo (riesgo, prepago, cupo) y un consolidador que redacta el memo, con aprobación humana; sesión 11: MCP, evals y publicación.
 - **Alternativas consideradas:** B) sin LGD; C) solo cupo y pricing, sin prepago.
-- **Por qué (en mis palabras):** A, para tener un motor de decisión completo.
+- **Por qué (en mis palabras):** una PD sola no decide un crédito: el negocio necesita saber cuánto prestar, a qué precio y cuánto se pierde si sale mal.
 
 ---
 
@@ -147,7 +147,7 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
   - **Regresiones de referencia:** monto que pediría el cliente (demanda) y tasa que cobraría Lending Club (precio de mercado), para comparar con lo recomendado.
 - **Supuestos documentados:** la PD no reacciona a la tasa (el modelo de riesgo excluye `int_rate` por diseño, decisión 001); no hay datos de aceptación, así que el precio se calcula sin la elasticidad del cliente.
 - **Alternativas consideradas:** solo las regresiones (replican demanda y precio de Lending Club); solo el optimizador.
-- **Por qué (en mis palabras):** A, con límite de cuota sobre ingreso del 20%.
+- **Por qué (en mis palabras):** copiar a Lending Club no dice cuánto es seguro prestar. El simulador decide con utilidad esperada y capacidad de pago, y el 20% de cuota sobre ingreso es un estándar prudente de la industria.
 
 ---
 
@@ -163,7 +163,7 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
 
 - **Decisión:** dos umbrales. **Tasa de equilibrio** (ROI esperado ≥ 0%) como piso de rechazo: por debajo, el préstamo pierde dinero esperado. **Tasa sugerida** (ROI esperado ≥ **4%**) como precio: cubre lo que la utilidad bruta no descuenta.
 - **Alternativas consideradas:** objetivo de 3% (31% de clientes en el piso) o de 5% (marca a 1 de cada 4 préstamos).
-- **Por qué (en mis palabras):** B, ROI objetivo del 4%.
+- **Por qué (en mis palabras):** el 4% deja margen para cubrir fondeo y operación, que la utilidad bruta no descuenta, sin marcar como caros a demasiados clientes.
 
 ---
 
@@ -179,7 +179,7 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
   - El agente LangGraph pasa a la sesión 11 y la publicación a la 12.
 - **Limitaciones documentadas:** no hay datos de aceptación (no se observa a quien rechazó la oferta), así que el efecto mezcla el impacto directo de la cuota con la selección adversa; para el motor ambos importan igual. EconML y DoubleML no están instalados: el DML se programa a mano.
 - **Alternativas consideradas:** solo DML (B); dejarlo para después (C).
-- **Por qué (en mis palabras):** A, sesión 10 completa.
+- **Por qué (en mis palabras):** si la tasa empuja la mora, el precio sugerido subestima el riesgo. Valía la pena una sesión completa antes de confiar en el motor.
 
 ---
 
@@ -207,7 +207,7 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
   - **Bandera "fuera de rango"**: la tasa se aleja más de 1 pt de la de mercado; las tablas solo movieron la tasa ±0,74 pts.
   - No se estima heterogeneidad (sin identificación no tiene sentido) ni la "tasa que maximiza el ROI" (requiere datos de aceptación). Ver `notebooks/10_inferencia_causal.ipynb`.
 - **Alternativas consideradas:** buscar otro diseño (event study, B); integrar igual la estimación del DML (C).
-- **Por qué (en mis palabras):** A, resultado negativo + estrés.
+- **Por qué (en mis palabras):** prefiero reportar que no se pudo identificar el efecto a meter en el motor un número que no es causal. El escenario de estrés cubre el riesgo sin inventar una estimación.
 
 ---
 
@@ -237,7 +237,7 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
   - **Las mismas herramientas que usan los especialistas del agente:** son código puro y no necesitan API key.
   - **Datos:** préstamos de la muestra pública de jul–dic 2015, identificados por su posición en esa muestra, nunca por un id de Lending Club.
 - **Alternativas consideradas:** evals, README final + release, demo sin API. Quedan para la sesión 13.
-- **Por qué (en mis palabras):** servidor MCP.
+- **Por qué (en mis palabras):** con MCP las herramientas del motor las pueden usar Claude Code u otros agentes, no solo mi grafo. Además no dependía del saldo de la API.
 
 ---
 
@@ -253,7 +253,7 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
   - **LangSmith:** se activa solo si existe `LANGSMITH_API_KEY` (proyecto `credit-risk-agent-lab`). Traza el grafo de LangGraph y cada llamada a Claude (`wrap_anthropic`); sin la key, el agente corre igual.
   - **La base no se sube a git;** más adelante se puede publicar un resumen agregado de las evals.
 - **Alternativas consideradas:** solo SQLite; solo LangSmith; publicar la base.
-- **Por qué (en mis palabras):** SQLite + LangSmith, fuera de git y en una sesión aparte.
+- **Por qué (en mis palabras):** como en 2015 se conoce el resultado real de cada préstamo, puedo medir si las decisiones del agente rinden, no solo si redacta bien. La base queda fuera de git por privacidad.
 - **Prueba real (2026-10-31):** 3 préstamos de jul–dic 2015 registrados en SQLite y trazados en LangSmith (región US). Cada solicitud usa 8 llamadas, cuesta ~USD 0,07 y tarda ~30 s. En un caso el auditor rechazó el primer memo por inconsistencias de argumentación (no de números) y el comité lo corrigió.
 
 ---
@@ -367,7 +367,7 @@ Cada decisión importante del proyecto queda aquí, **escrita por Neider**: qué
 - **Decisión (opciones que elegí):**
   - **Código decide, IA opina (#29):** la política en código (`motor.politica_lote`) decide y arma la oferta; el comité de IA da su opinión, el memo y qué verificar. Si no coincide con la política, el caso va al analista marcado como desacuerdo. La concordancia de la decisión final es 100% por construcción; la de la opinión se sigue midiendo.
   - **Tope de +2 pts y monto primero (#36):** la contraoferta baja primero el monto y después sube la tasa, como máximo 2 pts y dentro de la banda de mercado. Backtest jul–dic 2015 (10.000 solicitudes): 84,9% aprueba, 13,8% contraoferta, 1,3% rechaza; 1.307 contraofertas pasan de subir la tasa a bajar el monto y 124 pasan a rechazo (rindieron 4,5% real).
-  - **Supuestos + sensibilidad (#35):** P&L neto por cada 10.000 solicitudes con fondeo 3% anual, USD 100 por préstamo y capital 10% al 12%: Lending Club aprobando todo −USD 1,48 M; la política −0,69 M a −1,11 M según cuántas contraofertas se acepten; un corte por subgrado con el mismo rechazo −0,50 M. La política mejora a aprobar todo, pero no a una regla simple por subgrado.
+  - **Supuestos + sensibilidad (#35):** P&L neto por cada 10.000 solicitudes con costos dummy, ilustrativos y no reales (fondeo 3% anual, USD 100 por préstamo y capital 10% al 12%): Lending Club aprobando todo −USD 1,48 M; la política −0,69 M a −1,11 M según cuántas contraofertas se acepten; un corte por subgrado con el mismo rechazo −0,50 M. La política mejora a aprobar todo, pero no a una regla simple por subgrado.
   - **Fuera de razones + medir (#39):** la antigüedad crediticia y los demás proxies no se dan como razón ni van al memo; quitarla del modelo cuesta −0,0032 de AUC y forzarla monótona −0,0011, así que el campeón no cambia.
   - Además: firma persistente en SQLite sin pickle y con motivo estructurado (#25, #26, #38); razones al cliente desde un catálogo fijo con carta de aviso (#37); evals con la referencia de cada versión, borradores con violación, nulos del juez y piso de la fidelidad (#19–#23); CI que exige la eval de la versión por defecto (#40); robustez de la decisión 015 con wild cluster bootstrap y dos vías, que confirma que el placebo falla (#44); sensibilidad del estrés (#42).
 - **Alternativas consideradas:** IA decide con candados; código decide e IA solo redacta; costos dados por mí o solo utilidad bruta; tope de +3 pts o sin tope; reentrenar el campeón con restricción monótona o sin la variable.
