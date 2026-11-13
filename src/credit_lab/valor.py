@@ -75,7 +75,7 @@ def por_grupo(pd_modelo, malo, grupo, tasa_rechazo: float = 0.20, minimo: int = 
 
 # ---------- P&L de la política real, en neto (decisión 023, issue #35) ----------
 
-# SUPUESTOS, no datos: el repo no tiene costos reales. Se reportan con una tabla de sensibilidad.
+# SUPUESTOS: valores dummy ilustrativos, no datos; el repo no tiene costos reales. Se reportan con una tabla de sensibilidad.
 COSTOS = {
     "fondeo_anual": 0.03,       # costo del dinero prestado, sobre el saldo medio
     "operativo_prestamo": 100,  # USD por préstamo colocado (originación, servicio, cobranza)

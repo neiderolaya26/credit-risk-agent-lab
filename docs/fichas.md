@@ -30,7 +30,7 @@ Documentación corta, al estilo de un inventario de modelos (SR 11-7): qué hace
 | Qué hace | Decide aprobar, contraofertar o rechazar, con la oferta (`motor.politica_lote`, decisión 023) |
 | Reglas | Aprobar con ROI esperado ≥ 4% y cuota ≤ 20% del ingreso; si no, contraoferta bajando el monto y después subiendo la tasa (máximo +2 pts y dentro de la banda de mercado); si no, rechazar |
 | Backtest jul–dic 2015 (10.000 solicitudes) | 84,9% aprueba, 13,8% contraoferta, 1,3% rechaza; 15,1% iría a firma (126–202 horas de analista por cada 10.000 solicitudes a 5–8 minutos por caso) |
-| Supuestos | Costos de fondeo, operación y capital y aceptación de contraofertas: no hay datos (ver `credit_lab.valor`) |
+| Supuestos | Costos de fondeo, operación y capital y aceptación de contraofertas: no hay datos; el P&L usa valores dummy ilustrativos (ver `credit_lab.valor`) |
 
 ## Agente (LLM)
 
