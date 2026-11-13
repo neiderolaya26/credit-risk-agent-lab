@@ -8,6 +8,8 @@
 - **Decisión completa, no solo un score:** prepago por supervivencia, pérdida económica, cupo y precio con capacidad de pago, y un análisis causal del efecto de la tasa que se reporta como resultado negativo.
 - **Agente de IA con control humano:** la decisión la toma la política en código; un grafo en LangGraph con tres especialistas Claude analiza, un comité de IA da su opinión y redacta el memo, y un auditor lo revisa. Solo se aprueba solo lo que la política aprueba y el comité confirma; lo demás, incluidos los desacuerdos, lo firma un analista. Las razones para el cliente salen de un catálogo fijo, no del LLM.
 
+**Pruébalo:** [demo del motor](demo/) (Streamlit, sin LLM) · [modelos y ficha en Hugging Face](https://huggingface.co/neiderolaya26/credit-risk-lending-club)
+
 ![Utilidad extra del campeón frente al score de Lending Club](docs/img/valor_campeon.png)
 
 ## Pregunta de negocio
@@ -146,6 +148,17 @@ pytest                                                   # 81 tests; no necesita
 | 10. Robustez (opcional) | `python -m credit_lab.causal` · `python -m credit_lab.proxies` | IC con wild bootstrap y dos vías (decisión 015); costo en AUC de los proxies de edad |
 
 Los notebooks `01` a `11` documentan cada paso con sus gráficos y las conclusiones escritas por mí.
+
+### Demo
+
+`demo/streamlit_app.py` corre el motor sobre 200 solicitudes de jul–dic 2015 que el modelo no vio: PD, economía, decisión de la política, razones TreeSHAP y la carta al cliente, sin LLM. Descarga los modelos de [Hugging Face](https://huggingface.co/neiderolaya26/credit-risk-lending-club) la primera vez.
+
+```bash
+pip install -r demo/requirements.txt
+streamlit run demo/streamlit_app.py
+```
+
+`python -m credit_lab.publicar_hf ejemplos` regenera `demo/ejemplos.csv` y `python -m credit_lab.publicar_hf publicar` sube los modelos al Hub (pide `HF_TOKEN` en `.env`).
 
 ### Servidor MCP
 
