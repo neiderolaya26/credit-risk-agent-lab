@@ -35,7 +35,7 @@ def referencia(caso: dict, version: str) -> str:
 
 def huella_casos() -> str:
     """Huella corta de casos.json: si cambian los casos o sus referencias, cambia (issue #19)."""
-    return hashlib.sha256((CARPETA / "casos.json").read_bytes()).hexdigest()[:10]
+    return hashlib.sha256((CARPETA / "casos.json").read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:10]
 
 
 def propuesta(final: dict) -> str:

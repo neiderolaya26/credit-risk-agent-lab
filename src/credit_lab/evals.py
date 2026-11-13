@@ -256,7 +256,7 @@ def verificar(version: str | None = None, modelo: str = MODELO_EVAL, carpeta: Pa
         problemas.append(f"concordancia bajo el umbral de {UMBRAL_CONCORDANCIA:.0%} en {version}")
     import hashlib
 
-    huella = hashlib.sha256((carpeta / "casos.json").read_bytes()).hexdigest()[:10]
+    huella = hashlib.sha256((carpeta / "casos.json").read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:10]
     if f"casos.json {huella}" not in texto:
         problemas.append(f"el reporte de {version} no corresponde a los casos vigentes (casos.json {huella})")
     return problemas

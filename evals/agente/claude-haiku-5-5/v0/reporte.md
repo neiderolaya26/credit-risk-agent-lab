@@ -2,7 +2,7 @@
 
 5 casos · 0 intentos con error · juez claude-opus-5-5 · costo agente USD 0.06 + juez USD 0.18
 Latencia media 84 s · 11.0 llamadas por caso
-Referencia: política 020 · casos.json 67a8d0abe5
+Referencia: política 020 · casos.json 6f4d3976ad
 
 ## Notas (promedio por caso)
 
