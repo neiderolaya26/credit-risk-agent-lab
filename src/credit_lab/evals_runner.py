@@ -97,7 +97,7 @@ def correr_caso(caso: dict, s2: pd.DataFrame, herr, cliente, modelo: str, carpet
     medidor = Medidor(cliente, modelo)
     inicio = time.perf_counter()
     estado = evaluar_solicitud(construir(medidor, herr, modelo, firma_humana=False), sol,
-                               {"eval": VERSION, "caso": caso["id"]})
+                               {"eval": VERSION, "caso": caso["id"]}, modelo=modelo)
     segundos = time.perf_counter() - inicio
     nota, sin_respaldo = calificar(estado, caso, herr)
     final = estado["final"]

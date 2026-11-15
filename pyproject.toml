@@ -9,3 +9,7 @@ authors = [{ name = "Neider Olaya" }]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
+
+[tool.ruff.lint]
+# Solo errores reales (sintaxis, nombres sin definir, imports y variables sin usar); el estilo no se revisa.
+select = ["E9", "F"]

@@ -24,6 +24,8 @@ jobs:
           pip install torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu
           grep -v '^torch==' requirements.txt > requirements-ci.txt
           pip install -r requirements-ci.txt
+      - name: Lint (ruff, solo errores reales)
+        run: ruff check src tests demo
       - name: Tests (sin datos ni modelos, con casos sintéticos y clientes simulados)
         run: pytest -q
       - name: Eval de la versión del agente (issue 40, sin llamar a la API)

@@ -393,7 +393,7 @@ flowchart LR
 # entorno (Python 3.12+; en Windows PYTHONPATH usa ";")
 python -m venv .venv && .venv\Scripts\activate
 pip install -r requirements.txt
-pytest                                            # 81 tests, sin datos ni modelos
+pytest                                            # 84 tests, sin datos ni modelos
 
 # la demo en local
 pip install -r demo/requirements.txt
