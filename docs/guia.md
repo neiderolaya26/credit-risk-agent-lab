@@ -366,7 +366,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    R["📦 GitHub<br/>repo público<br/>v1.0 → v1.2.1"] --> HF["🤗 Hugging Face<br/>modelos + ficha"]
+    R["📦 GitHub<br/>repo público<br/>v1.0 → v1.2.2"] --> HF["🤗 Hugging Face<br/>modelos + ficha"]
     HF --> ST["🎈 Streamlit<br/>demo en vivo"]
     R --> W["🌐 Portafolio<br/>neiderolaya26.github.io"]
     ST --> W
@@ -458,4 +458,4 @@ python -m credit_lab.evals verificar
 | #47 | Feedback de producto (persona de PM de crédito) | por revisar |
 
 > [!NOTE]
-> **Estado:** ✅ lab cerrado con la v1.2.0 (13-nov-2026) y auditado con la v1.2.1 (15-nov-2026): la auditoría final corrigió la etiqueta del modelo en las trazas, agregó 3 tests de la política y ruff al CI, y puso al día las cifras del README (PR #52). Lo que aprendí está en el [README](../README.md#lo-que-aprendí).
+> **Estado:** ✅ lab cerrado con la v1.2.1 (13-nov-2026) y auditado con la v1.2.2 (15-nov-2026): la auditoría final corrigió la etiqueta del modelo en las trazas, agregó 3 tests de la política y ruff al CI, y puso al día las cifras del README (PR #52). Lo que aprendí está en el [README](../README.md#lo-que-aprendí).
