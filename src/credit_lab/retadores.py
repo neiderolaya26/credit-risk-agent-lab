@@ -19,7 +19,7 @@ from sklearn.neural_network import MLPClassifier
 from xgboost import XGBClassifier
 
 from credit_lab.features import ARBOLES
-from credit_lab.red_torch import DISPOSITIVO as DISPOSITIVO_TORCH
+from credit_lab.red_torch import DISPOSITIVO as DISPOSITIVO_TORCH  # noqa: F401 (lo importa credit_lab.ajustar)
 from credit_lab.red_torch import RedTorch
 from credit_lab.transformadores import preprocesador
 

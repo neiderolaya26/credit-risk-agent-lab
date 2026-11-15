@@ -625,18 +625,19 @@ def validar_firma(respuesta) -> dict:
             "comentario": str(respuesta.get("comentario") or ""), "fecha": pd.Timestamp.now(tz="UTC").isoformat()}
 
 
-def _config(metadatos: dict | None, hilo: str) -> dict:
-    return {"run_name": "evaluar_solicitud", "metadata": metadatos or {}, "tags": [MODELO],
+def _config(metadatos: dict | None, hilo: str, modelo: str = MODELO) -> dict:
+    return {"run_name": "evaluar_solicitud", "metadata": metadatos or {}, "tags": [modelo],
             "configurable": {"thread_id": hilo}}
 
 
-def evaluar_solicitud(grafo, solicitud: pd.DataFrame, metadatos: dict | None = None, hilo: str | None = None) -> dict:
+def evaluar_solicitud(grafo, solicitud: pd.DataFrame, metadatos: dict | None = None, hilo: str | None = None,
+                      modelo: str = MODELO) -> dict:
     """Corre el grafo con un hilo propio por solicitud (issue #25). Si el caso espera firma, devuelve el estado
     con final['estado'] = 'pendiente de firma', la propuesta en estado['__interrupt__'] y el hilo en
-    estado['hilo'] para completarlo con firmar()."""
+    estado['hilo'] para completarlo con firmar(). `modelo` es el que usa el grafo: etiqueta la traza."""
     hilo = hilo or uuid.uuid4().hex
     return grafo.invoke({"solicitud": a_dict(solicitud), "hilo": hilo, "especialistas": {}, "historial": []},
-                        config=_config(metadatos, hilo))
+                        config=_config(metadatos, hilo, modelo))
 
 
 def firmar(grafo, hilo: str, confirma: bool, analista: str, motivo: str | None = None, comentario: str = "") -> dict:
@@ -680,7 +681,7 @@ def main() -> None:
     sol = s2.sample(1, random_state=args.semilla)
     inicio = time.perf_counter()
     grafo = construir(medidor, modelo=args.modelo)
-    estado = evaluar_solicitud(grafo, sol, {"semilla": args.semilla})
+    estado = evaluar_solicitud(grafo, sol, {"semilla": args.semilla}, modelo=args.modelo)
     segundos = time.perf_counter() - inicio
     hilo = estado["hilo"]
     if not args.no_guardar:

@@ -99,7 +99,7 @@ flowchart TB
         G --> T["Monto máximo · tasa de equilibrio (ROI ≥ 0%)<br/>tasa sugerida (ROI ≥ 4%) · contraofertas"]
     end
 
-    subgraph AGENTE["7 · Agente LangGraph (Claude Haiku 5.5)"]
+    subgraph AGENTE["7 · Agente LangGraph (Claude: Sonnet 5.5 por defecto, evals con Haiku 5.5)"]
         direction LR
         ESP["3 especialistas en paralelo<br/>riesgo · economía · cupo y pricing<br/>tool use con esquemas estrictos"] --> COM["Comité IA: opinión, memo<br/>y qué verificar (Pydantic)"]
         POL["Política en código<br/>decide y arma la oferta"] --> COM
@@ -115,7 +115,7 @@ flowchart TB
         MCP["Servidor MCP<br/>6 herramientas de solo lectura + política"]
         REG["SQLite<br/>ejecuciones, pasos y resultado real"] --> EVA["Evals: 35 casos estratificados<br/>reglas, fidelidad y juez Opus 5.5"]
         LS["LangSmith<br/>trazas del grafo"]
-        CI["GitHub Actions<br/>81 tests + eval obligatoria"]
+        CI["GitHub Actions<br/>84 tests + eval obligatoria"]
     end
 
     DATOS --> FEAT --> RIESGO
@@ -137,7 +137,7 @@ Requiere **Python 3.12 o superior** (el CI prueba 3.12 y 3.14). Las versiones ex
 ```bash
 python -m venv .venv && .venv\Scripts\activate          # Windows (en Linux/macOS: source .venv/bin/activate)
 pip install -r requirements.txt
-pytest                                                   # 81 tests; no necesitan datos ni modelos
+pytest                                                   # 84 tests; no necesitan datos ni modelos
 ```
 
 ### Pipeline completo, en orden
@@ -214,7 +214,7 @@ python -m credit_lab.evals reporte --version v2               # evals/agente/<mo
 python -m credit_lab.evals verificar                          # falla si la versión por defecto no tiene su eval (CI)
 ```
 
-Resultados, reportes y trazas de v0 a v3 publicados en [evals/agente](evals/agente). Cada versión se compara con la política con la que se construyó, y el reporte dice cuál es.
+Resultados, reportes y trazas de v0 a v4 publicados en [evals/agente](evals/agente). Cada versión se compara con la política con la que se construyó, y el reporte dice cuál es.
 
 ## Hoja de ruta
 

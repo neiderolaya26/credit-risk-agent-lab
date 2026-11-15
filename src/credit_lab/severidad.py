@@ -43,7 +43,6 @@ class LineaBase:
 class LGDClasica:
     def fit(self, malos):
         self.var = Variables().fit(malos)
-        g = malos.groupby("sub_grade")
         self.interes_ = (malos["total_rec_int"] / malos["funded_amnt"]).groupby(malos["sub_grade"]).mean()
         self.ead_ = (ead(malos) / malos["funded_amnt"]).groupby(malos["sub_grade"]).mean()
         fit, val = _validacion(malos)

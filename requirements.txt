@@ -23,3 +23,4 @@ pydantic==2.14.2
 jupyterlab==4.6.5
 kaggle==2.2.5
 pytest==9.2.0
+ruff==0.17.5
