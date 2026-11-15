@@ -1,6 +1,6 @@
 # credit-risk-agent-lab
 
-> ✅ v1.2.0 · Proyecto construido sesión a sesión, con cada decisión registrada en [docs/decisiones.md](docs/decisiones.md). · [Guía del lab paso a paso](docs/guia.md) · [English summary](README.en.md)
+> ✅ v1.2.2 · Proyecto construido sesión a sesión, con cada decisión registrada en [docs/decisiones.md](docs/decisiones.md). · [Guía del lab paso a paso](docs/guia.md) · [English summary](README.en.md)
 
 **En 30 segundos:**
 
@@ -238,6 +238,7 @@ Resultados, reportes y trazas de v0 a v4 publicados en [evals/agente](evals/agen
 | 16 ✅ | Revisión de cierre: firma humana en rechazos y contraofertas, valor en dinero, equidad, reproducibilidad y CI | Decisión 021 |
 | 17 ✅ | Segunda revisión: doble llave en la aprobación, "escalar" ante auditoría fallida, evals de la v3, contexto del valor y Python 3.12 | Decisión 022 |
 | 18 ✅ | Revisión técnica y de producto (issues #17–#47): el código decide, topes a las contraofertas, firma persistente, razones para el cliente, P&L neto, equidad en precio, robustez causal | Decisión 023; eval v4 sin juez |
+| 19 ✅ | Auditoría final: trazas con el modelo real, tests de la política, ruff en CI y cifras del README al día | PR #52, release v1.2.2 |
 
 ## Decisiones y trade-offs
 
